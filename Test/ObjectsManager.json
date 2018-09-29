@@ -1,0 +1,28 @@
+{
+    "nonSolidObjects": [
+        {
+            "materialId": "6pwfsYxGumpgZzAfP",
+            "type": "wireframe",
+            "density": 7.07,
+            "dimensions": {
+                "length": [10, 10, 10],
+                "spacing": 1
+            },
+            "fixed": false,
+            "position": [ 0, 0, 0 ],
+            "velocity": [ 4.04, 5.05, 6.06 ]
+        },
+        {
+            "materialId": "6pwfsYxGumpgZzAfP",
+            "type": "wireframe",
+            "density": 7.07,
+            "dimensions": {
+                "length": [10, 10, 10],
+                "spacing": 1
+            },
+            "fixed": false,
+            "position": [ 0, 0, 0 ],
+            "velocity": [ 4.04, 5.05, 6.06 ]
+        }
+    ]
+}

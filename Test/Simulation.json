@@ -1,0 +1,70 @@
+{
+    "timeStep": 0.00001,
+    "totalTime": 10,
+    "gravity": [ 0, 0, -9.81 ],
+    "scenery": {
+        "objectsManager": {
+            "nonSolidObjects": [
+                {
+                    "materialId": "6pwfsYxGumpgZzAfP",
+                    "type": "wireframe",
+                    "density": 7.07,
+                    "dimensions": {
+                        "length": [ 10, 10, 10 ],
+                        "spacing": 1
+                    },
+                    "fixed": false,
+                    "position": [ 0, 0, 0 ],
+                    "velocity": [ 4.04, 5.05, 6.06 ]
+                },
+                {
+                    "materialId": "6pwfsYxGumpgZzAfP",
+                    "type": "wireframe",
+                    "density": 7.07,
+                    "dimensions": {
+                        "length": [ 10, 10, 10 ],
+                        "spacing": 1
+                    },
+                    "fixed": false,
+                    "position": [ 0, 0, 0 ],
+                    "velocity": [ 4.04, 5.05, 6.06 ]
+                }
+            ]
+        },
+        "materialsManager": [
+            {
+                "_id": "6pwfsYxGumpgZzAfP",
+                "name": "TestMaterial0",
+                "materialId1": "jhqT2zmbhEAyJAxZj",
+                "materialId2": "EapMmWq6zGpMBX3CR",
+                "distanceThreshold": 4.560,
+                "forceType": "Inverse Quadratic",
+                "dragForceType": "Quadratic",
+                "coefficients": [ 1.230, 3.450, 6.780, 9.100, 11.120, 13.140 ],
+                "dragCoefficients": [ 15.160, 17.180, 19.200, 21.220, 23.240, 25.260 ]
+            },
+            {
+                "_id": "7pwfsYxGumpgZzAfP",
+                "name": "TestMaterial1",
+                "materialId1": "khqT2zmbhEAyJAxZj",
+                "materialId2": "FapMmWq6zGpMBX3CR",
+                "distanceThreshold": 4.561,
+                "forceType": "Inverse Quadratic",
+                "dragForceType": "Quadratic",
+                "coefficients": [ 1.231, 3.451, 6.781, 9.101, 11.121, 13.141 ],
+                "dragCoefficients": [ 15.161, 17.181, 19.201, 21.221, 23.241, 25.261 ]
+            },
+            {
+                "_id": "8pwfsYxGumpgZzAfP",
+                "name": "TestMaterial2",
+                "materialId1": "6pwfsYxGumpgZzAfP",
+                "materialId2": "7pwfsYxGumpgZzAfP",
+                "distanceThreshold": 4.562,
+                "forceType": "Inverse Quadratic",
+                "dragForceType": "Quadratic",
+                "coefficients": [ 1.232, 3.452, 6.782, 9.102, 11.122, 13.142 ],
+                "dragCoefficients": [ 15.162, 17.182, 19.202, 21.222, 23.242, 25.262 ]
+            }
+        ]
+    }
+}
