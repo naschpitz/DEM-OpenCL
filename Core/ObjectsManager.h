@@ -21,8 +21,10 @@ class ObjectsManager
         const QVector<NonSolidObject>& getNonSolidObjects() const;
         const QVector<SolidObject>& getSolidObjects() const;
 
-        const QVector<ParticleCL> getParticlesCL(const MaterialsManager& materialsManager) const;
+        QVector<ParticleCL> getParticlesCL(const MaterialsManager& materialsManager) const;
+        QVector<FaceCL>     getFacesCL(const MaterialsManager& materialsManager) const;
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
+        void setFacesCL(const QVector<FaceCL>& facesCL);
 
         QJsonObject getJson() const;
 };

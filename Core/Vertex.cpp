@@ -128,3 +128,32 @@ const Vector3D& Vertex::getCurrentVelocity() const
 {
     return this->currentVelocity;
 }
+
+QJsonObject Vertex::getJson() const
+{
+    QJsonObject jsonObject;
+
+    // -- currentPosition
+    Vector3D currentPosition = this->getCurrentPosition();
+
+    QJsonArray currentPositionArray;
+    currentPositionArray.append(currentPosition.getX());
+    currentPositionArray.append(currentPosition.getY());
+    currentPositionArray.append(currentPosition.getZ());
+
+    jsonObject["currentPosition"] = currentPositionArray;
+    //
+
+    // -- currentVelocity
+    Vector3D currentVelocity = this->getCurrentVelocity();
+
+    QJsonArray currentVelocityArray;
+    currentVelocityArray.append(currentVelocity.getX());
+    currentVelocityArray.append(currentVelocity.getY());
+    currentVelocityArray.append(currentVelocity.getZ());
+
+    jsonObject["currentVelocity"] = currentVelocityArray;
+    //
+
+    return jsonObject;
+}

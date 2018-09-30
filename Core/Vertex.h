@@ -13,6 +13,7 @@
 
 #include <CL/cl2.hpp>
 #include <QJsonValue>
+#include <QJsonObject>
 
 typedef struct
 {
@@ -62,6 +63,8 @@ class Vertex
 
         virtual const Vector3D& getCurrentPosition() const;
         virtual const Vector3D& getCurrentVelocity() const;
+
+        QJsonObject getJson() const;
 };
 
 #endif // VERTEX_H

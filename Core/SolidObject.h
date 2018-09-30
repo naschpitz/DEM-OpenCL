@@ -1,7 +1,7 @@
 #ifndef SOLIDOBJECT_H
 #define SOLIDOBJECT_H
 
-#include "Particle.h"
+#include "Face.h"
 #include "Vector3D.h"
 
 #include <QJsonValue>
@@ -22,7 +22,7 @@ class SolidObject
         Vector3D position;
         Vector3D velocity;
 
-        QVector<Particle> particles;
+        QVector<Face> faces;
 
     public:
         SolidObject();
@@ -33,20 +33,17 @@ class SolidObject
 
         Vector3D getCurrentPosition() const;
         Vector3D getCurrentVelocity() const;
-        double   getCurrentMass()     const;
-        double   getCurrentVolume()   const;
 
         void getBox(Vector3D& min, Vector3D& max);
 
-        Vector3D getCurrentMomentum()              const;
-        Vector3D getCurrentAngularMomentum()       const;
-        Vector3D getCurrentForce()                 const;
-        double   getCurrentKineticEnergyTotal()    const;
-        double   getCurrentKineticEnergyExternal() const;
-        double   getCurrentKineticEnergyInternal() const;
+        double        getArea()                         const;
+        const double& getMass()                         const;
+        Vector3D      getCurrentMomentum()              const;
+        Vector3D      getCurrentForce()                 const;
+        double        getCurrentKineticEnergyTotal()    const;
 
-        const QVector<Particle>& getParticles() const;
-        void setParticlesCL(const QVector<ParticleCL>& particlesCL);
+        const QVector<Face>& getFaces() const;
+        void setFacesCL(const QVector<FaceCL>& facesCL);
         QJsonObject getJson() const;
 
     private:

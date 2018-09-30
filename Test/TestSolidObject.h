@@ -22,8 +22,6 @@ class TestSolidObject : public QObject
         void getBox();
         void getCurrentMomentum();
         void getCurrentKineticEnergyTotal();
-        void getCurrentKineticEnergyExternal();
-        void getCurrentKineticEnergyInternal();
 };
 
 #endif // TESTSOLIDOBJECT_H

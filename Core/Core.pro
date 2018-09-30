@@ -74,4 +74,7 @@ DISTFILES += \
     ParticleWorker.cl \
     Material.cl \
     MaterialsManager.cl \
-    SimulationRun.json
+    SimulationRun.json \
+    Face.cl \
+    FaceWorker.cl \
+    Edge.cl

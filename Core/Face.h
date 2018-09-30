@@ -30,7 +30,10 @@ typedef struct
     cl_double4 currentTorque;
     cl_double4 oldTorque;
 
-    VertexCL v1, v2, v3;
+    cl_double4 currentPosition;
+    cl_double4 currentVelocity;
+
+    VertexCL vertexes[3];
 } FaceCL;
 
 class Face
@@ -40,6 +43,10 @@ class Face
         QString materialId;
 
         double area;
+        double mass;
+
+        Vector3D currentPosition;
+        Vector3D currentVelocity;
 
         Vector3D currentForce;
         Vector3D oldForce;
@@ -47,13 +54,37 @@ class Face
         Vector3D currentTorque;
         Vector3D oldTorque;
 
-        Vertex v1, v2, v3;
+        QVector<Vertex> vertexes;
 
     public:
         Face();
+        Face(const Vertex& v1, const Vertex& v2, const Vertex& v3);
 
-        Vector3D      getNormal() const;
-        const double& getArea()   const;
+        const QVector<Vertex>& getVertexes() const;
+
+        FaceCL getCL(uint index, uint materialIndex) const;
+        void setCL(const FaceCL& particleCL);
+
+        void displaceBy(const Vector3D& displacement);
+        void setFixed(bool fixed);
+        void setMass(const double& mass);
+        void setMaterial(const QString& materialId);
+        void setVelocity(const Vector3D& velocity);
+
+        const QString& getId() const;
+
+        Vector3D       getNormal() const;
+        const double&  getArea()   const;
+
+        Vector3D getCurrentMomentum() const;
+        double   getCurrentKineticEnergy() const;
+
+        const Vector3D& getCurrentPosition() const;
+        const Vector3D& getCurrentVelocity() const;
+        const Vector3D& getCurrentForce() const;
+        const Vector3D& getCurrentTorque() const;
+
+        QJsonObject getJson() const;
 
     private:
         void calculateArea();

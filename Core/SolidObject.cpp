@@ -74,93 +74,51 @@ void SolidObject::loadStl()
             int v2Index = polygon.vertexlist[1];
             int v3Index = polygon.vertexlist[2];
 
-            const Vector3D v1 = vertexes.at(v1Index - 1).getCurrentPosition();
-            const Vector3D v2 = vertexes.at(v2Index - 1).getCurrentPosition();
-            const Vector3D v3 = vertexes.at(v3Index - 1).getCurrentPosition();
+            Vertex v1 = vertexes.at(v1Index - 1);
+            Vertex v2 = vertexes.at(v2Index - 1);
+            Vertex v3 = vertexes.at(v3Index - 1);
 
-            Vector3D e1 = v2 - v1;
-            Vector3D e2 = v3 - v1;
-
-            double u = -1.0;
-            double v = e1.getModuleSquared() / Vector3D::dotProduct(e1, e2);
-
-            Vector3D p = (u * e1) + (v * e2);
-            Vector3D unitE1 = e1.getUnitary();
-            Vector3D unitE2 = e2.getUnitary();
-            Vector3D unitP = p.getUnitary();
-
-            double modE1 = e1.getModule();
-            double modE2 = e2.getModule();
-            double modP  = p.getModule();
-
-            double smallest = modE1 < modE2 ? modE1 : modE2;
-            double radius = smallest / 10.0 / 2.0;
-
-            QVector<Particle> particles;
-
-            for (double lengthP = 0; lengthP < modP; lengthP += 2 * radius + 0.001 * radius)
-            {
-                for (double lengthE1 = 0; lengthE1 < modE1; lengthE1 += 2 * radius + 0.001 * radius)
-                {
-                    Vector3D vPos = lengthE1 * unitE1 + lengthP * unitP;
-
-                    u = Vector3D::dotProduct(vPos, unitE1) / modE1;
-                    v = Vector3D::dotProduct(vPos, unitE2) / modE2;
-
-                    if (u >= 0 && u <= 1 && v >= 0 && v <= 1 && (u + v) <= 1) {
-                        Vector3D pos = v1 + vPos;
-
-                        Particle particle(pos, radius);
-
-                        bool coincident = false;
-                        foreach(const Particle& thisParticle, this->particles)
-                            coincident |= thisParticle.isInside(particle);
-
-                        if (!coincident)
-                            particles.append(particle);
-                    }
-                }
-            }
-
-            this->particles.append(particles);
+            Face face(v1, v2, v3);
+            this->faces.append(face);
         }
     }
 }
 
 void SolidObject::setFixed()
 {
-    for (QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
+    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->setFixed(this->fixed);
     }
 }
 
 void SolidObject::setMass()
 {
-    double volume = this->getCurrentVolume();
-    double density = this->mass / volume;
+    double totalArea = this->getArea();
 
-    for (QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
-        it->setDensity(density);
+    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+        double mass = (this->mass * it->getArea()) / totalArea;
+
+        it->setMass(mass);
     }
 }
 
 void SolidObject::setMaterialId()
 {
-    for (QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
+    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->setMaterial(this->materialId);
     }
 }
 
 void SolidObject::setPosition()
 {
-    for (QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
+    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->displaceBy(this->position);
     }
 }
 
 void SolidObject::setVelocity()
 {
-    for (QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
+    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->setVelocity(this->velocity);
     }
 }
@@ -179,40 +137,25 @@ Vector3D SolidObject::getCurrentPosition() const
 {
     Vector3D position;
 
-    foreach (const Particle& particle, this->particles)
-        position += particle.getCurrentPosition() * particle.getVolume();
+    foreach (const Face& face, this->faces)
+        position += face.getCurrentPosition() * face.getArea();
 
-    return position / this->getCurrentVolume();
+    return position / this->getArea();
 }
 
 Vector3D SolidObject::getCurrentVelocity() const
 {
     Vector3D velocity;
 
-    foreach (const Particle& particle, this->particles)
-        velocity += particle.getCurrentVelocity() * particle.getVolume();
+    foreach (const Face& face, this->faces)
+        velocity += face.getCurrentVelocity() * face.getArea();
 
-    return velocity / this->getCurrentVolume();
+    return velocity / this->getArea();
 }
 
-double SolidObject::getCurrentMass() const
+const double& SolidObject::getMass() const
 {
-    double mass = 0;
-
-    foreach (const Particle& particle, this->particles)
-        mass += particle.getMass();
-
-    return mass;
-}
-
-double SolidObject::getCurrentVolume() const
-{
-    double volume = 0;
-
-    foreach (const Particle& particle, this->particles)
-        volume += particle.getVolume();
-
-    return volume;
+    return this->mass;
 }
 
 void SolidObject::getBox(Vector3D &min, Vector3D &max)
@@ -221,31 +164,25 @@ void SolidObject::getBox(Vector3D &min, Vector3D &max)
     double minY, maxY;
     double minZ, maxZ;
 
-    minX = maxX = this->particles[0].getCurrentPosition().getX();
-    minY = maxY = this->particles[0].getCurrentPosition().getY();
-    minZ = maxZ = this->particles[0].getCurrentPosition().getZ();
+    minX = maxX = this->faces[0].getVertexes()[0].getCurrentPosition().getX();
+    minY = maxY = this->faces[0].getVertexes()[0].getCurrentPosition().getY();
+    minZ = maxZ = this->faces[0].getVertexes()[0].getCurrentPosition().getZ();
 
-    foreach (const Particle& particle, this->particles)
-    {
-        const Vector3D &position = particle.getCurrentPosition();
+    foreach(const Face& face, this->faces){
+        const QVector<Vertex>& vertexes = face.getVertexes();
 
-        double newMinX = position.getX() - particle.getRadius();
-        double newMaxX = position.getX() + particle.getRadius();
+        foreach(const Vertex& vertex, vertexes){
+            const Vector3D &position = vertex.getCurrentPosition();
 
-        if (newMinX < minX) minX = newMinX;
-        if (newMaxX > maxX) maxX = newMaxX;
+            if(position.getX() < minX) minX = position.getX();
+            if(position.getX() > maxX) maxX = position.getX();
 
-        double newMinY = position.getY() - particle.getRadius();
-        double newMaxY = position.getY() + particle.getRadius();
+            if(position.getY() < minY) minY = position.getY();
+            if(position.getY() > maxY) maxY = position.getY();
 
-        if (newMinY < minY) minY = newMinY;
-        if (newMaxY > maxY) maxY = newMaxY;
-
-        double newMinZ = position.getZ() - particle.getRadius();
-        double newMaxZ = position.getZ() + particle.getRadius();
-
-        if (newMinZ < minZ) minZ = newMinZ;
-        if (newMaxZ > maxZ) maxZ = newMaxZ;
+            if(position.getZ() < minZ) minZ = position.getZ();
+            if(position.getZ() > maxZ) maxZ = position.getZ();
+        }
     }
 
     min.setX(minX);
@@ -257,63 +194,55 @@ void SolidObject::getBox(Vector3D &min, Vector3D &max)
     max.setZ(maxZ);
 }
 
+double SolidObject::getArea() const
+{
+    double area = 0;
+
+    foreach (const Face& face, this->faces)
+        area += face.getArea();
+
+    return area;
+}
+
 Vector3D SolidObject::getCurrentMomentum() const
 {
     Vector3D momentum;
 
-    foreach (const Particle& particle, this->particles)
-        momentum += particle.getCurrentMomentum();
+    foreach (const Face& face, this->faces)
+        momentum += face.getCurrentMomentum();
 
     return momentum;
-}
-
-Vector3D SolidObject::getCurrentAngularMomentum() const
-{
-    return Vector3D();
 }
 
 Vector3D SolidObject::getCurrentForce() const
 {
     Vector3D force;
 
-    foreach (const Particle& particle, this->particles)
-        force += particle.getCurrentForce();
+    foreach (const Face& face, this->faces)
+        force += face.getCurrentForce();
 
     return force;
 }
 
 double SolidObject::getCurrentKineticEnergyTotal() const
 {
-    double kineticEnergyTotal = 0;
+    double kineticEnergy = 0;
 
-    foreach (const Particle& particle, this->particles)
-        kineticEnergyTotal += particle.getCurrentKineticEnergyTotal();
+    foreach (const Face& face, this->faces)
+        kineticEnergy += face.getCurrentKineticEnergy();
 
-    return kineticEnergyTotal;
+    return kineticEnergy;
 }
 
-double SolidObject::getCurrentKineticEnergyExternal() const
+const QVector<Face>& SolidObject::getFaces() const
 {
-    Vector3D momentum = this->getCurrentMomentum();
-    double   mass     = this->getCurrentMass();
-
-    return momentum.getModuleSquared() / (2.0 * mass);
+    return this->faces;
 }
 
-double SolidObject::getCurrentKineticEnergyInternal() const
+void SolidObject::setFacesCL(const QVector<FaceCL>& facesCL)
 {
-    return this->getCurrentKineticEnergyTotal() - this->getCurrentKineticEnergyExternal();
-}
-
-const QVector<Particle>& SolidObject::getParticles() const
-{
-    return this->particles;
-}
-
-void SolidObject::setParticlesCL(const QVector<ParticleCL>& particlesCL)
-{
-    for(int i = 0; i < particlesCL.count(); i++) {
-        this->particles[i].setCL(particlesCL[i]);
+    for(int i = 0; i < facesCL.count(); i++) {
+        this->faces[i].setCL(facesCL[i]);
     }
 }
 
@@ -356,14 +285,14 @@ QJsonObject SolidObject::getJson() const
     jsonObject["currentForce"] = currentForceArray;
     //
 
-    // -- particles
-    QJsonArray particlesArray;
+    // -- faces
+    QJsonArray facesArray;
 
-    foreach(const Particle& particle, this->particles) {
-        particlesArray.append(particle.getJson());
+    foreach(const Face& face, this->faces) {
+        facesArray.append(face.getJson());
     }
 
-    jsonObject["particles"] = particlesArray;
+    jsonObject["faces"] = facesArray;
     //
 
     return jsonObject;

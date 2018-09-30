@@ -163,40 +163,7 @@ QJsonObject Particle::getJson() const
 {
     QJsonObject jsonObject;
 
-    // -- currentPosition
-    Vector3D currentPosition = this->getCurrentPosition();
-
-    QJsonArray currentPositionArray;
-    currentPositionArray.append(currentPosition.getX());
-    currentPositionArray.append(currentPosition.getY());
-    currentPositionArray.append(currentPosition.getZ());
-
-    jsonObject["currentPosition"] = currentPositionArray;
-    //
-
-    // -- oldPosition
-    Vector3D oldPosition = this->oldPosition;
-
-    QJsonArray oldPositionArray;
-    oldPositionArray.append(oldPosition.getX());
-    oldPositionArray.append(oldPosition.getY());
-    oldPositionArray.append(oldPosition.getZ());
-
-    jsonObject["oldPosition"] = oldPositionArray;
-    //
-
-    // -- currentVelocity
-    Vector3D currentVelocity = this->getCurrentVelocity();
-
-    QJsonArray currentVelocityArray;
-    currentVelocityArray.append(currentVelocity.getX());
-    currentVelocityArray.append(currentVelocity.getY());
-    currentVelocityArray.append(currentVelocity.getZ());
-
-    jsonObject["currentVelocity"] = currentVelocityArray;
-    //
-
-    // -- totalForce
+    // -- currentForce
     Vector3D currentForce = this->getCurrentForce();
 
     QJsonArray currentForceArray;

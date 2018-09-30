@@ -9,9 +9,12 @@
 
 typedef struct
 {
-    double currentTime;
-    double timeStep;
-    double totalTime;
+    cl_ulong numParticles;
+    cl_ulong numFaces;
+
+    cl_double currentTime;
+    cl_double timeStep;
+    cl_double totalTime;
 
     cl_double4 gravity;
 } SimulationCL;

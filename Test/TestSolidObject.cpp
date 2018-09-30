@@ -25,13 +25,15 @@ void TestSolidObject::constructor()
     Vector3D expectedPosition(30.007183295555333, -0.00075968578842276378, -0.00029202407892601811);
     Vector3D expectedVelocity(4.04, 5.05, 6.06);
 
+    Vector3D currentPosition = solidObject.getCurrentPosition();
+
     QCOMPARE(solidObject.getCurrentPosition(), expectedPosition);
     QCOMPARE(solidObject.getCurrentVelocity(), expectedVelocity);
 
     double expectedMass = 7.07;
 
-    QVERIFY(solidObject.getCurrentMass() <= expectedMass + 0.0001);
-    QVERIFY(solidObject.getCurrentMass() >= expectedMass - 0.0001);
+    QVERIFY(solidObject.getMass() <= expectedMass + 0.0001);
+    QVERIFY(solidObject.getMass() >= expectedMass - 0.0001);
 }
 
 void TestSolidObject::getMaterialId()
@@ -94,30 +96,4 @@ void TestSolidObject::getCurrentKineticEnergyTotal()
 
     QVERIFY(currentKineticEnergyTotal <= expectedKineticEnergyTotal + 0.0001);
     QVERIFY(currentKineticEnergyTotal >= expectedKineticEnergyTotal - 0.0001);
-}
-
-void TestSolidObject::getCurrentKineticEnergyExternal()
-{
-    SolidObject solidObject(this->solidObjectJsonValue);
-
-    double expectedMass = 7.07;
-
-    Vector3D expectedVelocity(4.04, 5.05, 6.06);
-
-    double currentKineticEnergyExternal = solidObject.getCurrentKineticEnergyExternal();
-    double expectedKineticEnergyExtrnal = expectedMass * expectedVelocity.getModuleSquared() / 2.0;
-
-    QVERIFY(currentKineticEnergyExternal <= expectedKineticEnergyExtrnal + 0.0001);
-    QVERIFY(currentKineticEnergyExternal >= expectedKineticEnergyExtrnal - 0.0001);
-}
-
-void TestSolidObject::getCurrentKineticEnergyInternal()
-{
-    SolidObject solidObject(this->solidObjectJsonValue);
-
-    double currentKineticEnergyInternal = solidObject.getCurrentKineticEnergyInternal();
-    double expectedKineticEnergyInternal = 0.0;
-
-    QVERIFY(currentKineticEnergyInternal <= expectedKineticEnergyInternal + 0.0001);
-    QVERIFY(currentKineticEnergyInternal >= expectedKineticEnergyInternal - 0.0001);
 }

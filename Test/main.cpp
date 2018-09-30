@@ -1,3 +1,4 @@
+#include "../Core/Face.cpp"
 #include "../Core/Material.cpp"
 #include "../Core/MaterialsManager.cpp"
 #include "../Core/NonSolidObject.cpp"

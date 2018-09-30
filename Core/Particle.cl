@@ -24,12 +24,12 @@ typedef struct
     Vertex vertex;
 } Particle;
 
-void particle_addCurrentForce(Particle* particle, double4 force, double4 pointOfForce)
+void particle_addCurrentForce(Particle* particle, const double4* force, const double4* pointOfForce)
 {
-    particle->currentForce += force;
+    particle->currentForce += (*force);
 
-    double4 r = pointOfForce - particle->vertex.currentPosition;
-    particle->currentTorque += cross(r, force);
+    double4 r = (*pointOfForce) - particle->vertex.currentPosition;
+    particle->currentTorque += cross(r, (*force));
 }
 
 void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, double4 *closestOnThisPaticle, double4 *closestOnOtherParticle)
@@ -41,31 +41,31 @@ void particle_getClosestTo(const Particle* thisParticle, const Particle* otherPa
     (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * thisParticle->radius;
 }
 
-double4 particle_getCurrentAcceleration(const Particle* thisParticle)
+double4 particle_getCurrentAcceleration(const Particle* particle)
 {
-    return thisParticle->currentForce / thisParticle->mass;
+    return particle->currentForce / particle->mass;
 }
 
-bool particle_isInternal(const Particle* thisParticle, const double4 vector)
+bool particle_isInternal(const Particle* particle, const double4 vector)
 {
-    double4 distance = thisParticle->vertex.currentPosition - vector;
+    double4 distance = particle->vertex.currentPosition - vector;
 
-    if(length(distance) < thisParticle->radius)
+    if(length(distance) < particle->radius)
         return true;
 
     return false;
 }
 
-void particle_integrate(Particle* thisParticle, double timeStep)
+void particle_integrate(Particle* particle, double timeStep)
 {
-    double4 currentAcceleration = particle_getCurrentAcceleration(thisParticle);
+    double4 currentAcceleration = particle_getCurrentAcceleration(particle);
 
-    thisParticle->vertex.acceleration = currentAcceleration;
+    particle->vertex.acceleration = currentAcceleration;
 
-    vertex_integrate(&(thisParticle->vertex), timeStep);
+    vertex_integrate(&(particle->vertex), timeStep);
 
-    thisParticle->oldForce = thisParticle->currentForce;
-    thisParticle->oldTorque = thisParticle->currentTorque;
+    particle->oldForce = particle->currentForce;
+    particle->oldTorque = particle->currentTorque;
 }
 
 #endif // PARTICLE_CL

@@ -105,28 +105,55 @@ void Simulation::run()
     const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
 
     std::vector<ParticleCL> particlesCL = this->scenery.getObjectsManager().getParticlesCL(materialsManager).toStdVector();
+    std::vector<FaceCL> facesCL = this->scenery.getObjectsManager().getFacesCL(materialsManager).toStdVector();
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
-    std::vector<SimulationCL> simulationCL = { this->getCL() };
+
+    SimulationCL simulationCL = this->getCL();
+    simulationCL.numParticles = particlesCL.size();
+    simulationCL.numFaces = facesCL.size();
+
+    std::vector<SimulationCL> simulationsCL = { simulationCL };
 
     openClCore.writeBuffer<ParticleCL>(particlesCL);
+    openClCore.writeBuffer<FaceCL>(facesCL);
     openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
-    openClCore.writeBuffer<SimulationCL>(simulationCL);
+    openClCore.writeBuffer<SimulationCL>(simulationsCL);
 
-    openClCore.addKernel("initialize", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("initialize", particlesCL);
-    openClCore.addArgument<SimulationCL>("initialize", simulationCL);
+    openClCore.addKernel("initialize_particles", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
+    openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
+
+    openClCore.addKernel("initialize_faces", facesCL.size());
+    openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
+    openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
 
     openClCore.run();
     openClCore.clearKernels();
 
-    openClCore.addKernel("calculate_forces", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("calculate_forces", particlesCL);
-    openClCore.addArgument<MaterialsManagerCL>("calculate_forces", materialsManagerCL);
-    openClCore.addArgument<SimulationCL>("calculate_forces", simulationCL);
+    openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
+    openClCore.addArgument<SimulationCL>("calculate_particle_to_particle", simulationsCL);
 
-    openClCore.addKernel("integrate", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("integrate", particlesCL);
-    openClCore.addArgument<SimulationCL>("integrate", simulationCL);
+    openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
+    openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
+    openClCore.addArgument<SimulationCL>("calculate_particle_to_face", simulationsCL);
+
+    openClCore.addKernel("calculate_face_to_particle", facesCL.size());
+    openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
+    openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
+    openClCore.addArgument<SimulationCL>("calculate_face_to_particle", simulationsCL);
+
+    openClCore.addKernel("integrate_particles", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
+    openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
+
+    openClCore.addKernel("integrate_faces", facesCL.size());
+    openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
+    openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
 
     uint logSteps = this->logTime / this->timeStep;
 
