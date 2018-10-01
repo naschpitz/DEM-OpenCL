@@ -30,6 +30,7 @@ FaceCL Face::getCL(uint index, uint materialIndex) const
     faceCL.materialIndex = materialIndex;
 
     faceCL.area = this->area;
+    faceCL.mass = this->mass;
 
     faceCL.currentPosition = {this->currentPosition.getX(), this->currentPosition.getY(), this->currentPosition.getZ(), 0};
     faceCL.currentVelocity = {this->currentVelocity.getX(), this->currentVelocity.getY(), this->currentVelocity.getZ(), 0};

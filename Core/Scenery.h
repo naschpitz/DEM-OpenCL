@@ -22,6 +22,7 @@ class Scenery
         const QJsonObject getJson() const;
 
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
+        void setFacesCL(const QVector<FaceCL>& facesCL);
 };
 
 #endif // SCENERY_H

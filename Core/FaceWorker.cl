@@ -1,11 +1,15 @@
 #ifndef FACEWORKER_CL
 #define FACEWORKER_CL
 
+#include "../Face.cl"
 #include "../Particle.cl"
 #include "../Material.cl"
 
-void faceToParticleWorker_run(Face* thisFace, const Particle* otherParticle, const Material* material)
+void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
 {
+    face_calculateCurrentPosition(thisFace);
+    face_calculateCurrentVelocity(thisFace);
+
     double4 closestOnThisFace, closestOnOtherParticle;
 
     face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle);

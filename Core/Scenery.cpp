@@ -41,3 +41,8 @@ void Scenery::setParticlesCL(const QVector<ParticleCL>& particlesCL)
 {
     this->objectsManager.setParticlesCL(particlesCL);
 }
+
+void Scenery::setFacesCL(const QVector<FaceCL>& facesCL)
+{
+    this->objectsManager.setFacesCL(facesCL);
+}

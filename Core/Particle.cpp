@@ -174,6 +174,10 @@ QJsonObject Particle::getJson() const
     jsonObject["currentForce"] = currentForceArray;
     //
 
+    // -- vertex
+    jsonObject["vertex"] = ((Vertex*)this)->getJson();
+    //
+
     return jsonObject;
 }
 

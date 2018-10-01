@@ -33,7 +33,7 @@ void vertex_integrate(Vertex* vertex, double timeStep)
         vertex->currentPosition = 2 * vertex->currentPosition - vertex->oldPosition + vertex->acceleration * timeStep * timeStep;
 
         // Calculates the new speed.
-        vertex->currentVelocity = (vertex->currentPosition - vertex->oldPosition) / timeStep;
+        vertex->currentVelocity = (vertex->currentPosition - tempPosition) / timeStep;
     }
 
     // Recovers the position stored before and assigns it to the vertice's past position field.

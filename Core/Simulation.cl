@@ -64,18 +64,16 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     size_t idx  = get_global_id(0);
     size_t size = get_global_size(0);
 
+    Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Simulation simulation = ptrSimulation[0];
-    Particle thisParticle = particles[idx];
 
     thisParticle.currentForce = (0, 0, 0, 0);
     thisParticle.currentTorque = (0, 0, 0, 0);
 
     for(ulong i = 0; i < size; i++) {
-        if(i == idx) {
-            thisParticle.currentForce += thisParticle.mass * simulation.gravity;
+        if(i == idx)
             continue;
-        }
 
         Particle otherParticle = particles[i];
 
@@ -94,9 +92,9 @@ kernel void calculate_particle_to_face(global Particle* particles, constant Face
 {
     size_t idx  = get_global_id(0);
 
+    Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Simulation simulation = ptrSimulation[0];
-    Particle thisParticle = particles[idx];
 
     ulong numFaces = simulation.numFaces;
 
@@ -104,11 +102,6 @@ kernel void calculate_particle_to_face(global Particle* particles, constant Face
     thisParticle.currentTorque = (0, 0, 0, 0);
 
     for(ulong i = 0; i < numFaces; i++) {
-        if(i == idx) {
-            thisParticle.currentForce += thisParticle.mass * simulation.gravity;
-            continue;
-        }
-
         Face otherFace = faces[i];
 
         int thisMaterialIndex = thisParticle.materialIndex;
@@ -126,9 +119,9 @@ kernel void calculate_face_to_particle(global Face* faces, constant Particle* pa
 {
     size_t idx  = get_global_id(0);
 
+    Face thisFace = faces[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Simulation simulation = ptrSimulation[0];
-    Face thisFace = faces[idx];
 
     ulong numParticles = simulation.numParticles;
 
@@ -136,11 +129,6 @@ kernel void calculate_face_to_particle(global Face* faces, constant Particle* pa
     thisFace.currentTorque = (0, 0, 0, 0);
 
     for(ulong i = 0; i < numParticles; i++) {
-        if(i == idx) {
-            thisFace.currentForce += thisFace.mass * simulation.gravity;
-            continue;
-        }
-
         Particle otherParticle = particles[i];
 
         int thisMaterialIndex = thisFace.materialIndex;
@@ -152,6 +140,30 @@ kernel void calculate_face_to_particle(global Face* faces, constant Particle* pa
     }
 
     faces[idx] = thisFace;
+}
+
+kernel void apply_particles_gravity(global Particle* particles, constant Simulation* ptrSimulation)
+{
+    size_t idx = get_global_id(0);
+
+    Particle particle = particles[idx];
+    Simulation simulation = ptrSimulation[0];
+
+    particle.currentForce += particle.mass * simulation.gravity;
+
+    particles[idx] = particle;
+}
+
+kernel void apply_faces_gravity(global Face* faces, constant Simulation* ptrSimulation)
+{
+    size_t idx = get_global_id(0);
+
+    Face face = faces[idx];
+    Simulation simulation = ptrSimulation[0];
+
+    face.currentForce += face.mass * simulation.gravity;
+
+    faces[idx] = face;
 }
 
 kernel void integrate_particles(global Particle* particles, constant Simulation* ptrSimulation)

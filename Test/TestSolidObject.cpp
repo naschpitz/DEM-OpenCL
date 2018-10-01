@@ -27,13 +27,14 @@ void TestSolidObject::constructor()
 
     Vector3D currentPosition = solidObject.getCurrentPosition();
 
-    QCOMPARE(solidObject.getCurrentPosition(), expectedPosition);
-    QCOMPARE(solidObject.getCurrentVelocity(), expectedVelocity);
+    QCOMPARE(currentPosition, expectedPosition);
+    QCOMPARE(currentPosition, expectedVelocity);
 
+    double mass = solidObject.getMass();
     double expectedMass = 7.07;
 
-    QVERIFY(solidObject.getMass() <= expectedMass + 0.0001);
-    QVERIFY(solidObject.getMass() >= expectedMass - 0.0001);
+    QVERIFY(mass <= expectedMass + 0.0001);
+    QVERIFY(mass >= expectedMass - 0.0001);
 }
 
 void TestSolidObject::getMaterialId()

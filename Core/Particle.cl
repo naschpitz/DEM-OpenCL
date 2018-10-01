@@ -38,7 +38,7 @@ void particle_getClosestTo(const Particle* thisParticle, const Particle* otherPa
     double4 distanceUnitary = vector_getUnitary(distance);
 
     (*closestOnThisPaticle)   = thisParticle->vertex.currentPosition + distanceUnitary * thisParticle->radius;
-    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * thisParticle->radius;
+    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
 }
 
 double4 particle_getCurrentAcceleration(const Particle* particle)

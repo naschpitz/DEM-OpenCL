@@ -147,6 +147,14 @@ void Simulation::run()
     openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
     openClCore.addArgument<SimulationCL>("calculate_face_to_particle", simulationsCL);
 
+    openClCore.addKernel("apply_particles_gravity", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
+    openClCore.addArgument<SimulationCL>("apply_particles_gravity", simulationsCL);
+
+    openClCore.addKernel("apply_faces_gravity", facesCL.size());
+    openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
+    openClCore.addArgument<SimulationCL>("apply_faces_gravity", simulationsCL);
+
     openClCore.addKernel("integrate_particles", particlesCL.size());
     openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
     openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
@@ -161,7 +169,10 @@ void Simulation::run()
     {        
         if (this->currentStep % logSteps == 0) {
             openClCore.readBuffer(particlesCL);
+            openClCore.readBuffer(facesCL);
+
             this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
+            this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
 
             this->addFrame();
             this->writeLog();

@@ -23,15 +23,16 @@ typedef struct
     cl_uint materialIndex;
 
     cl_double area;
+    cl_double mass;
+
+    cl_double4 currentPosition;
+    cl_double4 currentVelocity;
 
     cl_double4 currentForce;
     cl_double4 oldForce;
 
     cl_double4 currentTorque;
     cl_double4 oldTorque;
-
-    cl_double4 currentPosition;
-    cl_double4 currentVelocity;
 
     VertexCL vertexes[3];
 } FaceCL;
@@ -73,8 +74,8 @@ class Face
 
         const QString& getId() const;
 
-        Vector3D       getNormal() const;
-        const double&  getArea()   const;
+        Vector3D      getNormal() const;
+        const double& getArea()   const;
 
         Vector3D getCurrentMomentum() const;
         double   getCurrentKineticEnergy() const;

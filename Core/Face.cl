@@ -82,6 +82,11 @@ void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, doub
 
     else // Inside the triangle.
         (*closestOnThisFace) = p1 + u * edge_getDistance(&e1) + v * edge_getDistance(&e2);
+
+    double4 distance = otherParticle->vertex.currentPosition - (*closestOnThisFace);
+    double4 distanceUnitary = vector_getUnitary(distance);
+
+    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
 }
 
 void face_calculateCurrentPosition(Face* face)

@@ -1,7 +1,7 @@
 {
     "timeStep": 0.000001,
     "totalTime": 1,
-    "logTime": 0.1,
+    "logTime": 0.00001,
     "gravity": [ 0, 0, -9.81 ],
     "scenery": {
         "objectsManager": {
