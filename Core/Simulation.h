@@ -1,27 +1,38 @@
+#ifndef CL_HPP_MINIMUM_OPENCL_VERSION
+#define CL_HPP_MINIMUM_OPENCL_VERSION 110
+#endif
+
+#ifndef CL_HPP_TARGET_OPENCL_VERSION
+#define CL_HPP_TARGET_OPENCL_VERSION 120
+#endif
+
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
 #include "Scenery.h"
 #include "Vector3D.h"
 
+#include <CL/cl2.hpp>
+#include <QJsonDocument>
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QObject>
+#include <QThread>
 
 typedef struct
 {
-    cl_ulong numParticles;
-    cl_ulong numFaces;
-
     cl_double currentTime;
     cl_double timeStep;
     cl_double totalTime;
-
-    cl_double4 gravity;
 } SimulationCL;
 
-class Simulation
+class Simulation : public QThread
 {
+    Q_OBJECT
+
     private:
+        QString _id;
+
         double currentTime;
         long   currentStep;
         double timeStep;
@@ -29,12 +40,16 @@ class Simulation
         long   totalSteps;
         double logTime;
 
-        QJsonObject log;
-        Vector3D gravity;
         Scenery scenery;
 
+        bool paused;
+        bool stoped;
+
     public:
+        Simulation();
         Simulation(const QJsonValue& jsonValue);
+
+        const QString& getId() const;
 
         void addFrame();
         QJsonObject getJson() const;
@@ -42,12 +57,21 @@ class Simulation
         SimulationCL getCL() const;
 
         const double& getCurrentTime() const;
-        const Vector3D& getGravity() const;
         const Scenery& getScenery() const;
         const double& getTimeStep() const;
         const double& getTotalTime() const;
 
+        bool isPaused() const;
+        bool isStoped() const;
+
+        void pause();
+        void stop();
+
+    protected:
         void run();
+
+    signals:
+        void newFrame(QJsonDocument frame);
 };
 
 #endif // SIMULATION_H

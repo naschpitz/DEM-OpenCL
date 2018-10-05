@@ -1,5 +1,5 @@
 {
-    "objectsManager": {
+    "objects": {
         "nonSolidObjects": [
             {
                 "materialId": "6pwfsYxGumpgZzAfP",
@@ -27,7 +27,7 @@
             }
         ]
     },
-    "materialsManager": [
+    "materials": [
         {
             "_id": "6pwfsYxGumpgZzAfP",
             "name": "TestMaterial0",

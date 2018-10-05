@@ -1,3 +1,4 @@
+QT += network
 QT -= gui
 
 CONFIG += c++1z console
@@ -28,7 +29,8 @@ HEADERS += \
     ObjectsManager.h \
     Vector3D.h \
     Particle.h \
-    Face.h
+    Face.h \
+    Server.h
 
 SOURCES += \
     main.cpp \
@@ -43,7 +45,8 @@ SOURCES += \
     MaterialsManager.cpp \
     ObjectsManager.cpp \
     Vector3D.cpp \
-    Face.cpp
+    Face.cpp \
+    Server.cpp
 
 OTHER_FILES +=
 
@@ -77,4 +80,5 @@ DISTFILES += \
     SimulationRun.json \
     Face.cl \
     FaceWorker.cl \
-    Edge.cl
+    Edge.cl \
+    Scenery.cl

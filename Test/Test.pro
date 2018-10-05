@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += testlib
+QT       += testlib network
 
 QT       -= gui
 
@@ -39,8 +39,7 @@ SOURCES += \
     TestObjectsManager.cpp \
     TestParticle.cpp \
     TestScenery.cpp \
-    TestSolidObject.cpp \
-    TestSimulation.cpp
+    TestSolidObject.cpp
 
 LIBS += -lOpenCL
 
@@ -79,5 +78,4 @@ HEADERS += \
     TestObjectsManager.h \
     TestParticle.h \
     TestScenery.h \
-    TestSolidObject.h \
-    TestSimulation.h
+    TestSolidObject.h

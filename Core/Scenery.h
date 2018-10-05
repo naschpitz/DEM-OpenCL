@@ -1,3 +1,11 @@
+#ifndef CL_HPP_MINIMUM_OPENCL_VERSION
+#define CL_HPP_MINIMUM_OPENCL_VERSION 110
+#endif
+
+#ifndef CL_HPP_TARGET_OPENCL_VERSION
+#define CL_HPP_TARGET_OPENCL_VERSION 120
+#endif
+
 #ifndef SCENERY_H
 #define SCENERY_H
 
@@ -6,17 +14,31 @@
 #include "ObjectsManager.h"
 #include "Vector3D.h"
 
+#include <CL/cl2.hpp>
 #include <QJsonValue>
+
+typedef struct
+{
+    cl_ulong numParticles;
+    cl_ulong numFaces;
+
+    cl_double4 gravity;
+} SceneryCL;
 
 class Scenery
 {
     private:
+        Vector3D gravity;
+
         ObjectsManager objectsManager;
         MaterialsManager materialsManager;
 
     public:
         Scenery();
         Scenery(const QJsonValue& jsonValue);
+
+        SceneryCL getCL() const;
+
         const ObjectsManager& getObjectsManager() const;
         const MaterialsManager& getMaterialsManager() const;
         const QJsonObject getJson() const;

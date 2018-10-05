@@ -7,7 +7,6 @@
 #include "../Core/OpenCL.cpp"
 #include "../Core/Particle.cpp"
 #include "../Core/Scenery.cpp"
-#include "../Core/Simulation.cpp"
 #include "../Core/Vector3D.cpp"
 #include "../Core/Vertex.cpp"
 
@@ -19,9 +18,9 @@
 #include "TestOpenCL.h"
 #include "TestParticle.h"
 #include "TestScenery.h"
-#include "TestSimulation.h"
 #include "TestVector3D.h"
 
+#include <QObject>
 #include <QTest>
 #include <QCoreApplication>
 #include <clocale>
@@ -38,7 +37,6 @@ int main(int argc, char **argv)
     TestOpenCL           testOpenCL;
     TestParticle         testParticle;
     TestScenery          testScenery;
-    TestSimulation       testSimulation;
     TestSolidObject      testSolidObject;
     TestVector3D         testVector3D;
 
@@ -49,7 +47,6 @@ int main(int argc, char **argv)
     QTest::qExec(&testOpenCL);
     QTest::qExec(&testParticle);
     QTest::qExec(&testScenery);
-    QTest::qExec(&testSimulation);
     QTest::qExec(&testSolidObject);
     QTest::qExec(&testVector3D);
 

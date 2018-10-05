@@ -1,6 +1,7 @@
 #include <Particle.h>
 
 #include <QJsonArray>
+#include <QStringList>
 
 Particle::Particle()
 {
@@ -175,7 +176,12 @@ QJsonObject Particle::getJson() const
     //
 
     // -- vertex
-    jsonObject["vertex"] = ((Vertex*)this)->getJson();
+    QJsonObject vertexJsonObjects = ((Vertex*)this)->getJson();
+    QStringList keys = vertexJsonObjects.keys();
+
+    for(QStringList::iterator it = keys.begin(); it != keys.end(); it++) {
+        jsonObject[(*it)] = vertexJsonObjects[(*it)];
+    }
     //
 
     return jsonObject;

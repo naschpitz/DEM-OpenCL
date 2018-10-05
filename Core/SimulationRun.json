@@ -2,9 +2,9 @@
     "timeStep": 0.000001,
     "totalTime": 1,
     "logTime": 0.00001,
-    "gravity": [ 0, 0, -9.81 ],
     "scenery": {
-        "objectsManager": {
+        "gravity": [ 0, 0, -9.81 ],
+        "objects": {
             "nonSolidObjects": [
                 {
                     "name": "Air",
@@ -41,7 +41,7 @@
                 }
             ]
         },
-        "materialsManager": [
+        "materials": [
             {
                 "_id": "6pwfsYxGumpgZzAfP",
                 "name": "Air",

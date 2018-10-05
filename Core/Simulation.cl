@@ -3,9 +3,10 @@
 
 #include "../Face.cl"
 #include "../FaceWorker.cl"
+#include "../MaterialsManager.cl"
 #include "../Particle.cl"
 #include "../ParticleWorker.cl"
-#include "../MaterialsManager.cl"
+#include "../Scenery.cl"
 
 typedef struct
 {
@@ -15,8 +16,6 @@ typedef struct
     double currentTime;
     double timeStep;
     double totalTime;
-
-    double4 gravity;
 } Simulation;
 
 kernel void initialize_particles(global Particle* particles, constant Simulation* ptrSimulation)
@@ -59,14 +58,14 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
     faces[idx] = thisFace;
 }
 
-kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Simulation* ptrSimulation)
+kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
 {
     size_t idx  = get_global_id(0);
     size_t size = get_global_size(0);
 
     Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
-    Simulation simulation = ptrSimulation[0];
+    Scenery scenery = ptrScenery[0];
 
     thisParticle.currentForce = (0, 0, 0, 0);
     thisParticle.currentTorque = (0, 0, 0, 0);
@@ -88,20 +87,18 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     particles[idx] = thisParticle;
 }
 
-kernel void calculate_particle_to_face(global Particle* particles, constant Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Simulation* ptrSimulation)
+kernel void calculate_particle_to_face(global Particle* particles, constant Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
 {
     size_t idx  = get_global_id(0);
 
     Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
-    Simulation simulation = ptrSimulation[0];
-
-    ulong numFaces = simulation.numFaces;
+    Scenery scenery = ptrScenery[0];
 
     thisParticle.currentForce = (0, 0, 0, 0);
     thisParticle.currentTorque = (0, 0, 0, 0);
 
-    for(ulong i = 0; i < numFaces; i++) {
+    for(ulong i = 0; i < scenery.numFaces; i++) {
         Face otherFace = faces[i];
 
         int thisMaterialIndex = thisParticle.materialIndex;
@@ -115,20 +112,18 @@ kernel void calculate_particle_to_face(global Particle* particles, constant Face
     particles[idx] = thisParticle;
 }
 
-kernel void calculate_face_to_particle(global Face* faces, constant Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Simulation* ptrSimulation)
+kernel void calculate_face_to_particle(global Face* faces, constant Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
 {
     size_t idx  = get_global_id(0);
 
     Face thisFace = faces[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
-    Simulation simulation = ptrSimulation[0];
-
-    ulong numParticles = simulation.numParticles;
+    Scenery scenery = ptrScenery[0];
 
     thisFace.currentForce = (0, 0, 0, 0);
     thisFace.currentTorque = (0, 0, 0, 0);
 
-    for(ulong i = 0; i < numParticles; i++) {
+    for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];
 
         int thisMaterialIndex = thisFace.materialIndex;
@@ -142,26 +137,26 @@ kernel void calculate_face_to_particle(global Face* faces, constant Particle* pa
     faces[idx] = thisFace;
 }
 
-kernel void apply_particles_gravity(global Particle* particles, constant Simulation* ptrSimulation)
+kernel void apply_particles_gravity(global Particle* particles, constant Scenery* ptrScenery)
 {
     size_t idx = get_global_id(0);
 
     Particle particle = particles[idx];
-    Simulation simulation = ptrSimulation[0];
+    Scenery scenery = ptrScenery[0];
 
-    particle.currentForce += particle.mass * simulation.gravity;
+    particle.currentForce += particle.mass * scenery.gravity;
 
     particles[idx] = particle;
 }
 
-kernel void apply_faces_gravity(global Face* faces, constant Simulation* ptrSimulation)
+kernel void apply_faces_gravity(global Face* faces, constant Scenery* ptrScenery)
 {
     size_t idx = get_global_id(0);
 
     Face face = faces[idx];
-    Simulation simulation = ptrSimulation[0];
+    Scenery scenery = ptrScenery[0];
 
-    face.currentForce += face.mass * simulation.gravity;
+    face.currentForce += face.mass * scenery.gravity;
 
     faces[idx] = face;
 }
