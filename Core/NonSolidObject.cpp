@@ -9,51 +9,38 @@ NonSolidObject::NonSolidObject()
 
 }
 
-NonSolidObject::NonSolidObject(const QJsonValue& jsonValue)
+NonSolidObject::NonSolidObject(const QJsonObject& jsonObject)
 {
-    this->name = jsonValue["name"].toString();
-    this->materialId = jsonValue["materialId"].toString();
-    this->type = jsonValue["type"].toString();
+    this->id = jsonObject["_id"].toString();
+    this->material = jsonObject["material"].toString();
 
-    this->fixed   = jsonValue["fixed"].toBool();
-    this->density = jsonValue["density"].toDouble();
+    this->fixed   = jsonObject["fixed"].toBool();
+    this->density = jsonObject["density"].toDouble();
 
-    QJsonObject dimensions  = jsonValue["dimensions"].toObject();
+    QJsonObject dimensions  = jsonObject["dimensions"].toObject();
     QJsonArray  lengthArray = dimensions["length"].toArray();
 
     this->length = Vector3D(lengthArray[0].toDouble(), lengthArray[1].toDouble(), lengthArray[2].toDouble());
     this->spacing = dimensions["spacing"].toDouble();
 
-    QJsonArray positionArray = jsonValue["position"].toArray();
-    QJsonArray velocityArray = jsonValue["velocity"].toArray();
+    QJsonArray positionArray = jsonObject["position"].toArray();
+    QJsonArray velocityArray = jsonObject["velocity"].toArray();
 
     this->position = Vector3D(positionArray[0].toDouble(), positionArray[1].toDouble(), positionArray[2].toDouble());
     this->velocity = Vector3D(velocityArray[0].toDouble(), velocityArray[1].toDouble(), velocityArray[2].toDouble());
 
-    if (type == "wireframe") {
-        this->buildObject();
-        this->setMaterial();
-        this->setDensity();
-        this->setFixed();
-        this->setPosition();
-        this->setVelocity();
-    }
-
-    if (type == "instance") {
-        QJsonValue particles = jsonValue["particles"];
-        foreach(QJsonValue value, particles.toArray()) {
-            Particle particle(value);
-            this->particles.push_back(particle);
-
-            this->idsMap[particle.getId()] = this->particles.count();
-        }
-    }
+    this->buildObject();
+    this->setMaterial();
+    this->setDensity();
+    this->setFixed();
+    this->setPosition();
+    this->setVelocity();
 }
 
 void NonSolidObject::setMaterial()
 {
     for(QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
-        it->setMaterial(this->materialId);
+        it->setMaterial(this->material);
     }
 }
 
@@ -85,14 +72,14 @@ void NonSolidObject::setVelocity()
     }
 }
 
-const QString& NonSolidObject::getName() const
+const QString& NonSolidObject::getId() const
 {
-    return this->name;
+    return this->id;
 }
 
-const QString& NonSolidObject::getMaterialId() const
+const QString& NonSolidObject::getMaterial() const
 {
-    return this->materialId;
+    return this->material;
 }
 
 Vector3D NonSolidObject::getCurrentPosition() const
@@ -241,7 +228,7 @@ QJsonObject NonSolidObject::getJson() const
 {
     QJsonObject jsonObject;
 
-    jsonObject["name"] = this->name;
+    jsonObject["_id"] = this->id;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();

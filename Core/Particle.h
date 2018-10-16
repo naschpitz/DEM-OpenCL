@@ -11,7 +11,6 @@
 
 #include "Vertex.h"
 
-#include <QJsonValue>
 #include <QJsonObject>
 
 typedef struct
@@ -37,8 +36,7 @@ typedef struct
 class Particle : public Vertex
 {
     private:
-        QString _id;
-        QString materialId;
+        QString materialName;
 
         double radius;
         double density;
@@ -56,12 +54,12 @@ class Particle : public Vertex
         Particle();
         Particle(const double& x, const double& y, const double& z, const double& radius);
         Particle(const Vector3D& vector, const double& radius);
-        Particle(const QJsonValue& jsonValue);
+        Particle(const QJsonObject& jsonObject);
 
         ParticleCL getCL(uint index, uint materialIndex) const;
         void setCL(const ParticleCL& particleCL);
 
-        void setMaterial(const QString& materialId);
+        void setMaterial(const QString& materialName);
         void setDensity(const double& density);
 
         const QString& getId() const;

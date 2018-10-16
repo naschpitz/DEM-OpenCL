@@ -9,15 +9,17 @@ Scenery::Scenery()
 
 }
 
-Scenery::Scenery(const QJsonValue& jsonValue)
+Scenery::Scenery(const QJsonObject& jsonObject)
 {
-    QJsonArray gravityArray = jsonValue["gravity"].toArray();
+    this->id = jsonObject["_id"].toString();
+
+    QJsonArray gravityArray = jsonObject["gravity"].toArray();
     this->gravity = Vector3D(gravityArray[0].toDouble(), gravityArray[1].toDouble(), gravityArray[2].toDouble());
 
-    QJsonValue materialsManager = jsonValue["materials"];
+    QJsonArray materialsManager = jsonObject["materials"].toArray();
     this->materialsManager = MaterialsManager(materialsManager);
 
-    QJsonValue objectsManager = jsonValue["objects"];
+    QJsonObject objectsManager = jsonObject["objects"].toObject();
     this->objectsManager = ObjectsManager(objectsManager);
 }
 
@@ -47,6 +49,7 @@ const QJsonObject Scenery::getJson() const
 {
     QJsonObject jsonObject;
 
+    jsonObject["_id"] = this->id;
     jsonObject["objects"] = this->objectsManager.getJson();
 
     return jsonObject;

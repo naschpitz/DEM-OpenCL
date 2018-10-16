@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QMap>
 #include <QString>
-#include <QJsonValue>
+#include <QJsonArray>
 
 typedef struct
 {
@@ -22,12 +22,12 @@ class MaterialsManager
 
     public:
         MaterialsManager();
-        MaterialsManager(const QJsonValue& jsonValue);
+        MaterialsManager(const QJsonArray& materialsArray);
 
         MaterialsManagerCL getCL() const;
 
         const QVector<Material>& getMaterials() const;
-        uint getMaterialIndex(const QString& materialId) const;
+        uint getMaterialIndex(const QString& id) const;
 };
 
 #endif // MATERIALMANAGER_H

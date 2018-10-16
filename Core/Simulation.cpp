@@ -12,39 +12,34 @@
 
 Simulation::Simulation(const QJsonValue& jsonValue)
 {
-    this->_id = jsonValue["_id"].toString();
+    this->id = jsonValue["_id"].toString();
 
     this->currentTime = 0;
     this->currentStep = 0;
-    this->timeStep   = jsonValue["timeStep"].toDouble();
-    this->totalTime  = jsonValue["totalTime"].toDouble();
-    this->logTime    = jsonValue["logTime"].toDouble();
-    this->totalSteps = this->totalTime / this->timeStep;
+    this->frameTime   = jsonValue["frameTime"].toDouble();
+    this->timeStep    = jsonValue["timeStep"].toDouble();
+    this->totalTime   = jsonValue["totalTime"].toDouble();
+    this->totalSteps  = this->totalTime / this->timeStep;
 
-    QJsonValue sceneryJsonValue = jsonValue["scenery"];
-    this->scenery = Scenery(sceneryJsonValue);
+    QJsonObject sceneryJsonObject = jsonValue["scenery"].toObject();
+    this->scenery = Scenery(sceneryJsonObject);
 }
 
 const QString& Simulation::getId() const
 {
-    return this->_id;
+    return this->id;
 }
 
 void Simulation::addFrame()
 {
     QJsonObject newFrame;
-    newFrame["owner"] = this->_id;
 
-    newFrame["paused"] = this->paused;
-    newFrame["stoped"] = this->stoped;
     newFrame["currentTime"] = this->currentTime;
     newFrame["currentStep"] = (int)this->currentStep;
 
     newFrame["scenery"] = this->scenery.getJson();
 
-    QJsonDocument jsonDocument(newFrame);
-
-    emit(this->newFrame(jsonDocument));
+    emit(this->newFrame(newFrame));
 }
 
 SimulationCL Simulation::getCL() const
@@ -127,6 +122,7 @@ void Simulation::run()
     openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
     openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
 
+    /*
     openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
     openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
     openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
@@ -146,6 +142,7 @@ void Simulation::run()
     openClCore.addKernel("apply_faces_gravity", facesCL.size());
     openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
     openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
+    */
 
     openClCore.addKernel("integrate_particles", particlesCL.size());
     openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
@@ -155,11 +152,11 @@ void Simulation::run()
     openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
     openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
 
-    uint logSteps = this->logTime / this->timeStep;
+    uint frameSteps = this->frameTime / this->timeStep;
 
-    while((this->currentTime < this->totalTime) && !this->paused)
+    while((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
     {        
-        if (this->currentStep % logSteps == 0) {
+        if (this->currentStep % frameSteps == 0) {
             openClCore.readBuffer(particlesCL);
             openClCore.readBuffer(facesCL);
 

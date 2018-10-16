@@ -9,20 +9,20 @@
 #ifndef NONSOLIDOBJECT_H
 #define NONSOLIDOBJECT_H
 
+#include "Color.h"
 #include "Particle.h"
 #include "Vector3D.h"
 
 #include <QVector>
 #include <QMap>
-#include <QJsonValue>
+#include <QJsonObject>
 #include <CL/cl2.hpp>
 
 class NonSolidObject
 {
     private:
-        QString name;
-        QString materialId;
-        QString type;
+        QString id;
+        QString material;
 
         bool fixed;
         double density;
@@ -34,14 +34,13 @@ class NonSolidObject
         Vector3D velocity;
 
         QVector<Particle> particles;
-        QMap<QString, uint> idsMap;
 
     public:
         NonSolidObject();
-        NonSolidObject(const QJsonValue& jsonValue);
+        NonSolidObject(const QJsonObject& jsonObject);
 
-        const QString& getName()       const;
-        const QString& getMaterialId() const;
+        const QString& getId()     const;
+        const QString& getMaterial() const;
 
         Vector3D getCurrentPosition() const;
         Vector3D getCurrentVelocity() const;

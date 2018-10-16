@@ -6,8 +6,6 @@
 
 QT       += testlib network
 
-QT       -= gui
-
 TARGET = Test
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -62,7 +60,6 @@ DISTFILES += \
     Material.json \
     MaterialsManager.json \
     NonSolidObjectWireframe.json \
-    NonSolidObjectInstance.json \
     ObjectsManager.json \
     Particle.json \
     Scenery.json \

@@ -1,5 +1,4 @@
 QT += network
-QT -= gui
 
 CONFIG += c++1z console
 CONFIG -= app_bundle
@@ -30,7 +29,8 @@ HEADERS += \
     Vector3D.h \
     Particle.h \
     Face.h \
-    Server.h
+    Server.h \
+    Color.h
 
 SOURCES += \
     main.cpp \
@@ -46,7 +46,8 @@ SOURCES += \
     ObjectsManager.cpp \
     Vector3D.cpp \
     Face.cpp \
-    Server.cpp
+    Server.cpp \
+    Color.cpp
 
 OTHER_FILES +=
 

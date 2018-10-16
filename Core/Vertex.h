@@ -12,7 +12,6 @@
 #include "Vector3D.h"
 
 #include <CL/cl2.hpp>
-#include <QJsonValue>
 #include <QJsonObject>
 
 typedef struct
@@ -50,7 +49,7 @@ class Vertex
         Vertex(const Vertex& other);
         Vertex(const Vector3D& vector);
         Vertex(const double& x, const double& y, const double& z);
-        Vertex(const QJsonValue& jsonValue);
+        Vertex(const QJsonObject& jsonObject);
 
         VertexCL getCL() const;
         void setCL(const VertexCL& vertexCL);

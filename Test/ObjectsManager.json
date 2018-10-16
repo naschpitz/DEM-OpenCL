@@ -1,7 +1,7 @@
 {
     "nonSolidObjects": [
         {
-            "materialId": "6pwfsYxGumpgZzAfP",
+            "material": "6pwfsYxGumpgZzAfP",
             "type": "wireframe",
             "density": 7.07,
             "dimensions": {
@@ -13,7 +13,7 @@
             "velocity": [ 4.04, 5.05, 6.06 ]
         },
         {
-            "materialId": "6pwfsYxGumpgZzAfP",
+            "material": "6pwfsYxGumpgZzAfP",
             "type": "wireframe",
             "density": 7.07,
             "dimensions": {

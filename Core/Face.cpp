@@ -83,21 +83,18 @@ void Face::setMass(const double& mass)
     this->mass = mass;
 }
 
-void Face::setMaterial(const QString& materialId)
+void Face::setMaterial(const QString& material)
 {
-    this->materialId = materialId;
+    this->material = material;
 }
 
 void Face::setVelocity(const Vector3D& velocity)
 {
+    this->currentVelocity = velocity;
+
     for(QVector<Vertex>::iterator it = this->vertexes.begin(); it != this->vertexes.end(); it++) {
         it->setVelocity(velocity);
     }
-}
-
-const QString& Face::getId() const
-{
-    return this->_id;
 }
 
 Vector3D Face::getNormal() const
@@ -120,7 +117,7 @@ Vector3D Face::getCurrentMomentum() const
 
 double Face::getCurrentKineticEnergy() const
 {
-    return this->mass * this->currentVelocity.getModuleSquared();
+    return this->mass * this->currentVelocity.getModuleSquared() / 2;
 }
 
 const Vector3D& Face::getCurrentPosition() const

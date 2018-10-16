@@ -20,13 +20,12 @@ void TestMaterial::constructor()
 {
     Material material(this->jsonValue);
 
-    QCOMPARE(material.getId(), "6pwfsYxGumpgZzAfP");
-    QCOMPARE(material.getName(), "TestMaterial");
-    QCOMPARE(material.getMaterialId1(), "jhqT2zmbhEAyJAxZj");
-    QCOMPARE(material.getMaterialId2(), "EapMmWq6zGpMBX3CR");
+    QCOMPARE(material.getId(), "TestMaterial");
+    QCOMPARE(material.getMaterial1(), "TestMaterialA");
+    QCOMPARE(material.getMaterial2(), "TestMaterialB");
     QCOMPARE(material.getDistanceThreshold(), 4.56);
-    QCOMPARE(material.getForceType(), "Inverse Quadratic");
-    QCOMPARE(material.getDragForceType(), "Quadratic");
+    QCOMPARE(material.getForceType(), "inverse_quadratic");
+    QCOMPARE(material.getDragForceType(), "quadratic");
 
     QVERIFY(material.getCoefficients().size() == 6);
     QCOMPARE(material.getCoefficients().at(0), 1.23);
@@ -47,16 +46,15 @@ void TestMaterial::constructor()
 
 void TestMaterial::getCL()
 {
-    QMap<QString, int> idsMap;
-    idsMap["6pwfsYxGumpgZzAfP"] = 0;
-    idsMap["jhqT2zmbhEAyJAxZj"] = 1;
-    idsMap["EapMmWq6zGpMBX3CR"] = 2;
+    QMap<QString, int> namesMap;
+    namesMap["TestMaterial"]  = 0;
+    namesMap["TestMaterialA"] = 1;
+    namesMap["TestMaterialB"] = 2;
 
     Material material(this->jsonValue);
 
-    MaterialCL materialCL = material.getCL(idsMap);
+    MaterialCL materialCL = material.getCL(namesMap);
 
-    QCOMPARE(materialCL.index, 0);
     QCOMPARE(materialCL.materialIndex1, 1);
     QCOMPARE(materialCL.materialIndex2, 2);
     QCOMPARE(materialCL.distanceThreshold, 4.56);

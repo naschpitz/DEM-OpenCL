@@ -2,7 +2,7 @@
     "objects": {
         "nonSolidObjects": [
             {
-                "materialId": "6pwfsYxGumpgZzAfP",
+                "material": "6pwfsYxGumpgZzAfP",
                 "type": "wireframe",
                 "density": 7.07,
                 "dimensions": {
@@ -14,7 +14,7 @@
                 "velocity": [ 4.04, 5.05, 6.06 ]
             },
             {
-                "materialId": "6pwfsYxGumpgZzAfP",
+                "material": "6pwfsYxGumpgZzAfP",
                 "type": "wireframe",
                 "density": 7.07,
                 "dimensions": {
@@ -31,8 +31,8 @@
         {
             "_id": "6pwfsYxGumpgZzAfP",
             "name": "TestMaterial0",
-            "materialId1": "jhqT2zmbhEAyJAxZj",
-            "materialId2": "EapMmWq6zGpMBX3CR",
+            "material1": "jhqT2zmbhEAyJAxZj",
+            "material2": "EapMmWq6zGpMBX3CR",
             "distanceThreshold": 4.560,
             "forceType": "Inverse Quadratic",
             "dragForceType": "Quadratic",
@@ -42,8 +42,8 @@
         {
             "_id": "7pwfsYxGumpgZzAfP",
             "name": "TestMaterial1",
-            "materialId1": "khqT2zmbhEAyJAxZj",
-            "materialId2": "FapMmWq6zGpMBX3CR",
+            "material1": "khqT2zmbhEAyJAxZj",
+            "material2": "FapMmWq6zGpMBX3CR",
             "distanceThreshold": 4.561,
             "forceType": "Inverse Quadratic",
             "dragForceType": "Quadratic",
@@ -53,8 +53,8 @@
         {
             "_id": "8pwfsYxGumpgZzAfP",
             "name": "TestMaterial2",
-            "materialId1": "6pwfsYxGumpgZzAfP",
-            "materialId2": "7pwfsYxGumpgZzAfP",
+            "material1": "6pwfsYxGumpgZzAfP",
+            "material2": "7pwfsYxGumpgZzAfP",
             "distanceThreshold": 4.562,
             "forceType": "Inverse Quadratic",
             "dragForceType": "Quadratic",

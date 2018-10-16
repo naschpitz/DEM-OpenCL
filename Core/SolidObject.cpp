@@ -12,26 +12,26 @@ SolidObject::SolidObject()
 
 }
 
-SolidObject::SolidObject(const QJsonValue& jsonValue)
+SolidObject::SolidObject(const QJsonObject& jsonObject)
 {
-    this->name = jsonValue["name"].toString();
-    this->materialId = jsonValue["materialId"].toString();
+    this->id = jsonObject["_id"].toString();
+    this->material = jsonObject["material"].toString();
 
-    this->stl = jsonValue["stl"].toString();
-    this->maximumTetrahedronVol = jsonValue["maximumTetrahedronVolume"].toDouble(-1);
+    this->stl = jsonObject["stl"].toString();
+    this->maximumTetrahedronVol = jsonObject["maximumTetrahedronVolume"].toDouble(-1);
 
     this->loadStl();
 
-    this->fixed = jsonValue["fixed"].toBool();
-    this->mass  = jsonValue["mass"].toDouble();
+    this->fixed = jsonObject["fixed"].toBool();
+    this->mass  = jsonObject["mass"].toDouble();
 
-    QJsonArray positionArray = jsonValue["position"].toArray();
-    QJsonArray velocityArray = jsonValue["velocity"].toArray();
+    QJsonArray positionArray = jsonObject["position"].toArray();
+    QJsonArray velocityArray = jsonObject["velocity"].toArray();
 
     this->position = Vector3D(positionArray[0].toDouble(), positionArray[1].toDouble(), positionArray[2].toDouble());
     this->velocity = Vector3D(velocityArray[0].toDouble(), velocityArray[1].toDouble(), velocityArray[2].toDouble());
 
-    this->setMaterialId();
+    this->setMaterial();
     this->setFixed();
     this->setMass();
     this->setPosition();
@@ -79,6 +79,8 @@ void SolidObject::loadStl()
             Vertex v3 = vertexes.at(v3Index - 1);
 
             Face face(v1, v2, v3);
+            face.setVelocity(this->velocity);
+
             this->faces.append(face);
         }
     }
@@ -102,10 +104,10 @@ void SolidObject::setMass()
     }
 }
 
-void SolidObject::setMaterialId()
+void SolidObject::setMaterial()
 {
     for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
-        it->setMaterial(this->materialId);
+        it->setMaterial(this->material);
     }
 }
 
@@ -123,14 +125,14 @@ void SolidObject::setVelocity()
     }
 }
 
-const QString& SolidObject::getName() const
+const QString& SolidObject::getId() const
 {
-    return this->name;
+    return this->id;
 }
 
-const QString& SolidObject::getMaterialId() const
+const QString& SolidObject::getMaterial() const
 {
-    return this->materialId;
+    return this->material;
 }
 
 Vector3D SolidObject::getCurrentPosition() const
@@ -250,7 +252,7 @@ QJsonObject SolidObject::getJson() const
 {
     QJsonObject jsonObject;
 
-    jsonObject["name"] = this->name;
+    jsonObject["_id"] = this->id;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();

@@ -40,8 +40,7 @@ typedef struct
 class Face
 {
     private:
-        QString _id;
-        QString materialId;
+        QString material;
 
         double area;
         double mass;
@@ -69,10 +68,8 @@ class Face
         void displaceBy(const Vector3D& displacement);
         void setFixed(bool fixed);
         void setMass(const double& mass);
-        void setMaterial(const QString& materialId);
+        void setMaterial(const QString& material);
         void setVelocity(const Vector3D& velocity);
-
-        const QString& getId() const;
 
         Vector3D      getNormal() const;
         const double& getArea()   const;

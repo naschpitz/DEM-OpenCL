@@ -2,7 +2,7 @@
 #define TESTOBJECTSMANAGER_H
 
 #include <QObject>
-#include <QJsonValue>
+#include <QJsonObject>
 
 #include "../Core/ObjectsManager.h"
 
@@ -11,7 +11,7 @@ class TestObjectsManager : public QObject
     Q_OBJECT
 
     private:
-        QJsonValue objectsManagerJsonValue;
+        QJsonObject objectsManagerJsonValue;
 
     public:
         TestObjectsManager();

@@ -28,24 +28,23 @@ Particle::Particle(const Vector3D& vector, const double& radius) : Vertex(vector
     this->mass = 0;
 }
 
-Particle::Particle(const QJsonValue& jsonValue) : Vertex(jsonValue["vertex"])
+Particle::Particle(const QJsonObject& jsonObject) : Vertex(jsonObject["vertex"].toObject())
 {
-    this->_id        = jsonValue["_id"].toString();
-    this->materialId = jsonValue["materialId"].toString();
+    this->materialName = jsonObject["materialName"].toString();
 
-    this->radius  = jsonValue["radius"].toDouble();
-    this->density = jsonValue["density"].toDouble();
-    this->mass    = jsonValue["mass"].toDouble();
-    this->volume  = jsonValue["volume"].toDouble();
+    this->radius  = jsonObject["radius"].toDouble();
+    this->density = jsonObject["density"].toDouble();
+    this->mass    = jsonObject["mass"].toDouble();
+    this->volume  = jsonObject["volume"].toDouble();
 
-    QJsonArray currentForceArray = jsonValue["currentForce"].toArray();
-    QJsonArray oldForceArray = jsonValue["oldForce"].toArray();
+    QJsonArray currentForceArray = jsonObject["currentForce"].toArray();
+    QJsonArray oldForceArray = jsonObject["oldForce"].toArray();
 
     this->currentForce = Vector3D(currentForceArray[0].toDouble(), currentForceArray[1].toDouble(), currentForceArray[2].toDouble());
     this->oldForce = Vector3D(oldForceArray[0].toDouble(), oldForceArray[1].toDouble(), oldForceArray[2].toDouble());
 
-    QJsonArray currentTorqueArray = jsonValue["currentTorque"].toArray();
-    QJsonArray oldTorqueArray = jsonValue["oldTorque"].toArray();
+    QJsonArray currentTorqueArray = jsonObject["currentTorque"].toArray();
+    QJsonArray oldTorqueArray = jsonObject["oldTorque"].toArray();
 
     this->currentTorque = Vector3D(currentTorqueArray[0].toDouble(), currentTorqueArray[1].toDouble(), currentTorqueArray[2].toDouble());
     this->oldTorque = Vector3D(oldTorqueArray[0].toDouble(), oldTorqueArray[1].toDouble(), oldTorqueArray[2].toDouble());
@@ -87,20 +86,15 @@ void Particle::setCL(const ParticleCL& particleCL)
     ((Vertex *)(this))->setCL(particleCL.vertex);
 }
 
-void Particle::setMaterial(const QString& materialId)
+void Particle::setMaterial(const QString& materialName)
 {
-    this->materialId = materialId;
+    this->materialName = materialName;
 }
 
 void Particle::setDensity(const double& density)
 {
     this->density = density;
     this->mass = density * this->volume;
-}
-
-const QString& Particle::getId() const
-{
-    return this->_id;
 }
 
 const double& Particle::getRadius() const
@@ -163,6 +157,8 @@ double Particle::getCurrentKineticEnergyInternal() const
 QJsonObject Particle::getJson() const
 {
     QJsonObject jsonObject;
+
+    jsonObject["radius"] = this->getRadius();
 
     // -- currentForce
     Vector3D currentForce = this->getCurrentForce();

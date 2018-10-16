@@ -16,17 +16,6 @@ TestNonSolidObject::TestNonSolidObject()
 
     QJsonDocument nonSolidObjectWireframeJsonDocument = QJsonDocument::fromJson(nonSolidObjectWireframeFileString.toUtf8());
     this->nonSolidObjectWireframeJsonValue = nonSolidObjectWireframeJsonDocument.object();
-
-    //-----------------------------------------------------------------//
-
-    QFile nonSolidObjectInstanceFile("../NonSolidObjectInstance.json");
-    nonSolidObjectInstanceFile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString nonSolidObjectInstanceFileString = nonSolidObjectInstanceFile.readAll();
-    nonSolidObjectInstanceFile.close();
-
-    QJsonDocument nonSolidObjectInstanceJsonDocument = QJsonDocument::fromJson(nonSolidObjectInstanceFileString.toUtf8());
-    this->nonSolidObjectInstanceJsonValue = nonSolidObjectInstanceJsonDocument.object();
 }
 
 void TestNonSolidObject::constructorWireframe()
@@ -47,31 +36,13 @@ void TestNonSolidObject::constructorWireframe()
     QVERIFY(nonSolidObject.getCurrentMass() >= expectedMass - 0.0001);
 }
 
-void TestNonSolidObject::constructorInstance()
-{
-    NonSolidObject nonSolidObject(this->nonSolidObjectInstanceJsonValue);
-
-    Vector3D expectedPosition(0, 1, 2);
-    Vector3D expectedVelocity(9, 10, 11);
-
-    QCOMPARE(nonSolidObject.getCurrentPosition(), expectedPosition);
-    QCOMPARE(nonSolidObject.getCurrentVelocity(), expectedVelocity);
-
-    double expectedVolume = 0.5236;
-    double density        = 7.07;
-    double expectedMass   = expectedVolume * density;
-
-    QVERIFY(nonSolidObject.getCurrentMass() <= expectedMass + 0.0001);
-    QVERIFY(nonSolidObject.getCurrentMass() >= expectedMass - 0.0001);
-}
-
 void TestNonSolidObject::getMaterialId()
 {
     NonSolidObject nonSolidObject(this->nonSolidObjectWireframeJsonValue);
 
-    const QString expectedMaterialId = "6pwfsYxGumpgZzAfP";
+    const QString expectedMaterial = "6pwfsYxGumpgZzAfP";
 
-    QVERIFY(nonSolidObject.getMaterialId() == expectedMaterialId);
+    QVERIFY(nonSolidObject.getMaterial() == expectedMaterial);
 }
 
 void TestNonSolidObject::getBox()

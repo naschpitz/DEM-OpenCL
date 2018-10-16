@@ -2,7 +2,7 @@
 #define TESTSCENERY_H
 
 #include <QObject>
-#include <QJsonValue>
+#include <QJsonObject>
 
 #include "../Core/Scenery.h"
 
@@ -11,7 +11,7 @@ class TestScenery : public QObject
     Q_OBJECT
 
     private:
-        QJsonValue sceneryJsonValue;
+        QJsonObject sceneryJsonValue;
 
     public:
         TestScenery();

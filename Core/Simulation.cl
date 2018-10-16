@@ -10,9 +10,6 @@
 
 typedef struct
 {
-    ulong numParticles;
-    ulong numFaces;
-
     double currentTime;
     double timeStep;
     double totalTime;

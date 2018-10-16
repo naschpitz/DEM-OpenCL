@@ -1,18 +1,20 @@
 #ifndef SOLIDOBJECT_H
 #define SOLIDOBJECT_H
 
+#include "Color.h"
 #include "Face.h"
 #include "Vector3D.h"
 
-#include <QJsonValue>
+#include <QJsonObject>
 #include <QString>
 #include <QVector>
 
 class SolidObject
 {
     private:
-        QString name;
-        QString materialId;
+        QString id;
+        QString material;
+
         QString stl;
         double maximumTetrahedronVol;
 
@@ -26,10 +28,10 @@ class SolidObject
 
     public:
         SolidObject();
-        SolidObject(const QJsonValue& jsonValue);
+        SolidObject(const QJsonObject& jsonObject);
 
-        const QString& getName()       const;
-        const QString& getMaterialId() const;
+        const QString& getId()     const;
+        const QString& getMaterial() const;
 
         Vector3D getCurrentPosition() const;
         Vector3D getCurrentVelocity() const;
@@ -51,7 +53,7 @@ class SolidObject
 
         void setFixed();
         void setMass();
-        void setMaterialId();
+        void setMaterial();
         void setPosition();
         void setVelocity();
 };

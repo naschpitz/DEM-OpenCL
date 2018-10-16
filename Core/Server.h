@@ -22,7 +22,7 @@ class Server : public QTcpServer
         void acceptConnection();
         void readyRead();
         void clientError(QAbstractSocket::SocketError);
-        void newFrame(QJsonDocument frame);
+        void newFrame(QJsonObject frame);
         void simulationFinished();
 
         Simulation* getSimulationById(const QString& _id);

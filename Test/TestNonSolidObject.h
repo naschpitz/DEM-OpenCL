@@ -2,7 +2,7 @@
 #define TESTNONSOLIDOBJECT_H
 
 #include <QObject>
-#include <QJsonValue>
+#include <QJsonObject>
 
 #include "../Core/NonSolidObject.h"
 
@@ -11,15 +11,13 @@ class TestNonSolidObject : public QObject
     Q_OBJECT
 
     private:
-        QJsonValue nonSolidObjectWireframeJsonValue;
-        QJsonValue nonSolidObjectInstanceJsonValue;
+        QJsonObject nonSolidObjectWireframeJsonValue;
 
     public:
         TestNonSolidObject();
 
     private Q_SLOTS:
         void constructorWireframe();
-        void constructorInstance();
         void getMaterialId();
         void getBox();
         void getCurrentMomentum();

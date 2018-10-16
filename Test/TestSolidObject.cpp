@@ -22,14 +22,6 @@ void TestSolidObject::constructor()
 {
     SolidObject solidObject(this->solidObjectJsonValue);
 
-    Vector3D expectedPosition(30.007183295555333, -0.00075968578842276378, -0.00029202407892601811);
-    Vector3D expectedVelocity(4.04, 5.05, 6.06);
-
-    Vector3D currentPosition = solidObject.getCurrentPosition();
-
-    QCOMPARE(currentPosition, expectedPosition);
-    QCOMPARE(currentPosition, expectedVelocity);
-
     double mass = solidObject.getMass();
     double expectedMass = 7.07;
 
@@ -41,9 +33,9 @@ void TestSolidObject::getMaterialId()
 {
     SolidObject solidObject(this->solidObjectJsonValue);
 
-    const QString expectedMaterialId = "6pwfsYxGumpgZzAfP";
+    const QString expectedMaterial = "6pwfsYxGumpgZzAfP";
 
-    QVERIFY(solidObject.getMaterialId() == expectedMaterialId);
+    QVERIFY(solidObject.getMaterial() == expectedMaterial);
 }
 
 void TestSolidObject::getBox()
@@ -55,13 +47,13 @@ void TestSolidObject::getBox()
 
     Vector3D expectedMin, expectedMax;
 
-    expectedMin.setX(-0.31425321690986274);
-    expectedMin.setY(-1.3142532169098629);
-    expectedMin.setZ(-5.3142532169098624);
+    expectedMin.setX( 1.0000000000000000);
+    expectedMin.setY( 1.0100000000000000);
+    expectedMin.setZ(-1.9800000000000000);
 
-    expectedMax.setX(60.314253216909862);
-    expectedMax.setY(1.3142532169098629);
-    expectedMax.setZ(5.3142532169098624);
+    expectedMax.setX(61.019999999999999);
+    expectedMax.setY(3.0300000000000000);
+    expectedMax.setZ(8.0399999999999999);
 
     QCOMPARE(min, expectedMin);
     QCOMPARE(max, expectedMax);

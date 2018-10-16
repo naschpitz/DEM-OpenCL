@@ -2,7 +2,7 @@
 #define TESTMATERIALSMANAGER_H
 
 #include <QObject>
-#include <QJsonValue>
+#include <QJsonArray>
 
 #include "../Core/MaterialsManager.h"
 
@@ -11,7 +11,7 @@ class TestMaterialsManager : public QObject
     Q_OBJECT
 
     private:
-        QJsonValue jsonValue;
+        QJsonArray jsonArray;
 
     public:
         TestMaterialsManager();

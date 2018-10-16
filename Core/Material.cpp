@@ -11,41 +11,38 @@ Material::Material()
 
 }
 
-Material::Material(const QJsonValue& jsonValue)
+Material::Material(const QJsonObject& jsonObject)
 {
-    QString _id = jsonValue["_id"].toString();
-    QString name = jsonValue["name"].toString();
+    QString id = jsonObject["_id"].toString();
 
-    QString materialId1 = jsonValue["materialId1"].toString();
-    QString materialId2 = jsonValue["materialId2"].toString();
+    QString material1 = jsonObject["material1"].toString();
+    QString material2 = jsonObject["material2"].toString();
 
-    double distanceThreshold = jsonValue["distanceThreshold"].toDouble();
+    double distanceThreshold = jsonObject["distanceThreshold"].toDouble();
 
-    QString forceType     = jsonValue["forceType"].toString();
-    QString dragForceType = jsonValue["dragForceType"].toString();
+    QString forceType     = jsonObject["forceType"].toString();
+    QString dragForceType = jsonObject["dragForceType"].toString();
 
-    this->setId(_id);
-    this->setName(name);
-    this->setParentsIds(materialId1, materialId2);
+    this->setId(id);
+    this->setParents(material1, material2);
     this->setDistanceThreshold(distanceThreshold);
     this->setForceType(forceType);
     this->setDragForceType(dragForceType);
 
-    QJsonValue coefficients = jsonValue["coefficients"];
+    QJsonValue coefficients = jsonObject["coefficients"];
     foreach(QJsonValue value, coefficients.toArray())
         this->addCoefficient(value.toDouble());
 
-    QJsonValue dragCoefficients = jsonValue["dragCoefficients"];
+    QJsonValue dragCoefficients = jsonObject["dragCoefficients"];
     foreach(QJsonValue value, dragCoefficients.toArray())
         this->addDragCoefficient(value.toDouble());
 }
 
-MaterialCL Material::getCL(const QMap<QString, int>& idsMap) const
+MaterialCL Material::getCL(const QMap<QString, int>& namesMap) const
 {
     MaterialCL materialCL;
-    materialCL.index = idsMap[this->_id];
-    materialCL.materialIndex1 = idsMap.contains(this->materialId1) ? idsMap[this->materialId1] : -1;
-    materialCL.materialIndex2 = idsMap.contains(this->materialId2) ? idsMap[this->materialId2] : -1;
+    materialCL.materialIndex1 = namesMap.contains(this->material1) ? namesMap[this->material1] : -1;
+    materialCL.materialIndex2 = namesMap.contains(this->material2) ? namesMap[this->material2] : -1;
     materialCL.distanceThreshold = this->distanceThreshold;
     materialCL.forceType = this->fromQStringToForceType(this->forceType);
     materialCL.dragForceType = this->fromQStringToDragForceType(this->dragForceType);
@@ -63,22 +60,17 @@ MaterialCL Material::getCL(const QMap<QString, int>& idsMap) const
 
 const QString& Material::getId() const
 {
-    return this->_id;
+    return this->id;
 }
 
-const QString& Material::getName() const
+const QString& Material::getMaterial1() const
 {
-    return this->name;
+    return this->material1;
 }
 
-const QString& Material::getMaterialId1() const
+const QString& Material::getMaterial2() const
 {
-    return this->materialId1;
-}
-
-const QString& Material::getMaterialId2() const
-{
-    return this->materialId2;
+    return this->material2;
 }
 
 const double& Material::getDistanceThreshold() const
@@ -106,20 +98,15 @@ const QVector<double>& Material::getDragCoefficients() const
     return this->dragCoefficients;
 }
 
-void Material::setId(const QString& _id)
+void Material::setId(const QString& id)
 {
-    this->_id = _id;
+    this->id = id;
 }
 
-void Material::setName(const QString& name)
+void Material::setParents(const QString& material1, const QString& material2)
 {
-    this->name = name;
-}
-
-void Material::setParentsIds(const QString& materialId1, const QString& materialId2)
-{
-    this->materialId1 = materialId1;
-    this->materialId2 = materialId2;
+    this->material1 = material1;
+    this->material2 = material2;
 }
 
 void Material::setDistanceThreshold(const double& distanceThreshold)
@@ -149,22 +136,22 @@ void Material::addDragCoefficient(const double& dragCoefficient)
 
 int Material::fromQStringToForceType(const QString& forceTypeString) const
 {
-    if(forceTypeString == "Hook's Law")
+    if(forceTypeString == "hooks_law")
         return hooks_law;
 
-    else if(forceTypeString == "Inverse Linear")
+    else if(forceTypeString == "inverse_linear")
         return inverse_linear;
 
-    else if(forceTypeString == "Inverse Quadratic")
+    else if(forceTypeString == "inverse_quadratic")
         return inverse_quadratic;
 
-    else if(forceTypeString == "Inverse Cubic")
+    else if(forceTypeString == "inverse_cubic")
         return inverse_cubic;
 
-    else if(forceTypeString == "Adiabatic Compression")
+    else if(forceTypeString == "adiabatic_compression")
         return adiabatic_compression;
 
-    else if(forceTypeString == "Realistic Material")
+    else if(forceTypeString == "realistic_material")
         return realistic_material;
 
     else
@@ -173,13 +160,13 @@ int Material::fromQStringToForceType(const QString& forceTypeString) const
 
 int Material::fromQStringToDragForceType(const QString& dragForceTypeString) const
 {
-    if(dragForceTypeString == "Linear")
+    if(dragForceTypeString == "linear")
         return linear;
 
-    else if(dragForceTypeString == "Quadratic")
+    else if(dragForceTypeString == "quadratic")
         return quadratic;
 
-    else if(dragForceTypeString == "Cubic")
+    else if(dragForceTypeString == "cubic")
         return cubic;
 
     else
@@ -188,5 +175,5 @@ int Material::fromQStringToDragForceType(const QString& dragForceTypeString) con
 
 bool Material::operator==(const Material &other) const
 {
-    return this->_id == other._id;
+    return this->id == other.id;
 }

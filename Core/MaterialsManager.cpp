@@ -8,12 +8,10 @@ MaterialsManager::MaterialsManager()
 
 }
 
-MaterialsManager::MaterialsManager(const QJsonValue& jsonValue)
+MaterialsManager::MaterialsManager(const QJsonArray& materialsArray)
 {
-    QJsonArray materialsArray = jsonValue.toArray();
-
     foreach(QJsonValue materialValue, materialsArray) {
-        Material material(materialValue);
+        Material material(materialValue.toObject());
 
         this->idsMap[material.getId()] = this->materials.count();
 
@@ -41,7 +39,7 @@ const QVector<Material>& MaterialsManager::getMaterials() const
     return this->materials;
 }
 
-uint MaterialsManager::getMaterialIndex(const QString& materialId) const
+uint MaterialsManager::getMaterialIndex(const QString& id) const
 {
-    return this->idsMap[materialId];
+    return this->idsMap[id];
 }

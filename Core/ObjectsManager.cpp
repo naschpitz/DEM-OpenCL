@@ -13,15 +13,15 @@ ObjectsManager::ObjectsManager(const QJsonValue& jsonValue)
     QJsonArray nonSolidObjectsArray = jsonValue["nonSolidObjects"].toArray();
 
     foreach(QJsonValue nonSolidObjectValue, nonSolidObjectsArray) {
-        NonSolidObject nonSolidObject(nonSolidObjectValue);
+        NonSolidObject nonSolidObject(nonSolidObjectValue.toObject());
 
         this->nonSolidObjects.push_back(nonSolidObject);
     }
 
     QJsonArray solidObjectsArray = jsonValue["solidObjects"].toArray();
 
-    foreach(QJsonValue solidObjectValye, solidObjectsArray) {
-        SolidObject solidObject(solidObjectValye);
+    foreach(QJsonValue solidObjectValue, solidObjectsArray) {
+        SolidObject solidObject(solidObjectValue.toObject());
 
         this->solidObjects.push_back(solidObject);
     }
@@ -44,7 +44,7 @@ QVector<ParticleCL> ObjectsManager::getParticlesCL(const MaterialsManager& mater
     QVector<ParticleCL> particlesCL;
 
     foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
-        uint materialIndex = materialsManager.getMaterialIndex(nonSolidObject.getMaterialId());
+        uint materialIndex = materialsManager.getMaterialIndex(nonSolidObject.getMaterial());
 
         const QVector<Particle>& particles = nonSolidObject.getParticles();
 
@@ -66,7 +66,7 @@ QVector<FaceCL> ObjectsManager::getFacesCL(const MaterialsManager &materialsMana
     QVector<FaceCL> facesCL;
 
     foreach(const SolidObject& solidObject, this->solidObjects) {
-        uint materialIndex = materialsManager.getMaterialIndex(solidObject.getMaterialId());
+        uint materialIndex = materialsManager.getMaterialIndex(solidObject.getMaterial());
 
         const QVector<Face>& faces = solidObject.getFaces();
 

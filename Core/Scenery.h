@@ -14,8 +14,9 @@
 #include "ObjectsManager.h"
 #include "Vector3D.h"
 
+#include <QJsonObject>
+
 #include <CL/cl2.hpp>
-#include <QJsonValue>
 
 typedef struct
 {
@@ -28,6 +29,7 @@ typedef struct
 class Scenery
 {
     private:
+        QString id;
         Vector3D gravity;
 
         ObjectsManager objectsManager;
@@ -35,7 +37,7 @@ class Scenery
 
     public:
         Scenery();
-        Scenery(const QJsonValue& jsonValue);
+        Scenery(const QJsonObject& jsonObject);
 
         SceneryCL getCL() const;
 

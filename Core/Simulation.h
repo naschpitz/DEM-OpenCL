@@ -13,7 +13,6 @@
 #include "Vector3D.h"
 
 #include <CL/cl2.hpp>
-#include <QJsonDocument>
 #include <QJsonValue>
 #include <QJsonObject>
 #include <QObject>
@@ -31,14 +30,14 @@ class Simulation : public QThread
     Q_OBJECT
 
     private:
-        QString _id;
+        QString id;
 
         double currentTime;
         long   currentStep;
+        double frameTime;
         double timeStep;
         double totalTime;
         long   totalSteps;
-        double logTime;
 
         Scenery scenery;
 
@@ -71,7 +70,7 @@ class Simulation : public QThread
         void run();
 
     signals:
-        void newFrame(QJsonDocument frame);
+        void newFrame(QJsonObject frame);
 };
 
 #endif // SIMULATION_H

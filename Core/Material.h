@@ -34,8 +34,6 @@ enum DragForceType
 
 typedef struct
 {
-    cl_int index;
-
     cl_int materialIndex1;
     cl_int materialIndex2;
 
@@ -51,11 +49,10 @@ typedef struct
 class Material
 {
     private:
-        QString _id;
-        QString name;
+        QString id;
 
-        QString materialId1;
-        QString materialId2;
+        QString material1;
+        QString material2;
 
         double distanceThreshold;
 
@@ -67,14 +64,13 @@ class Material
 
     public:
         Material();
-        Material(const QJsonValue& jsonValue);
+        Material(const QJsonObject& jsonObject);
 
         MaterialCL getCL(const QMap<QString, int>& idsMap) const;
 
-        const QString& getId()          const;
-        const QString& getName()        const;
-        const QString& getMaterialId1() const;
-        const QString& getMaterialId2() const;
+        const QString& getId()        const;
+        const QString& getMaterial1() const;
+        const QString& getMaterial2() const;
 
         const double&  getDistanceThreshold() const;
 
@@ -87,9 +83,8 @@ class Material
         virtual bool operator==(const Material &other) const;
 
     private:
-        void setId(const QString& _id);
-        void setName(const QString& name);
-        void setParentsIds(const QString& materialId1, const QString& materialId2);
+        void setId(const QString& id);
+        void setParents(const QString& material1, const QString& material2);
 
         void setDensity(const double& density);
         void setDistanceThreshold(const double& distanceThreshold);

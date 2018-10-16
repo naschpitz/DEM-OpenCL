@@ -13,25 +13,22 @@ TestMaterialsManager::TestMaterialsManager()
     file.close();
 
     QJsonDocument jsonDocument = QJsonDocument::fromJson(fileString.toUtf8());
-    this->jsonValue = jsonDocument.object()["root"];
+    this->jsonArray = jsonDocument.object()["root"].toArray();
 }
 
 void TestMaterialsManager::constructor()
 {
-    MaterialsManager materialsManager(this->jsonValue);
+    MaterialsManager materialsManager(this->jsonArray);
 
     const QVector<Material>& materials = materialsManager.getMaterials();
 
     QVERIFY(materials.count() == 3);
 
     // Material 0
-    QCOMPARE(materials[0].getId(), "6pwfsYxGumpgZzAfP");
-    QCOMPARE(materials[0].getName(), "TestMaterial0");
-    QCOMPARE(materials[0].getMaterialId1(), "jhqT2zmbhEAyJAxZj");
-    QCOMPARE(materials[0].getMaterialId2(), "EapMmWq6zGpMBX3CR");
+    QCOMPARE(materials[0].getId(), "TestMaterial0");
     QCOMPARE(materials[0].getDistanceThreshold(), 4.560);
-    QCOMPARE(materials[0].getForceType(), "Inverse Quadratic");
-    QCOMPARE(materials[0].getDragForceType(), "Quadratic");
+    QCOMPARE(materials[0].getForceType(), "inverse_quadratic");
+    QCOMPARE(materials[0].getDragForceType(), "quadratic");
 
     QVERIFY(materials[0].getCoefficients().size() == 6);
     QCOMPARE(materials[0].getCoefficients().at(0), 1.230);
@@ -50,13 +47,10 @@ void TestMaterialsManager::constructor()
     QCOMPARE(materials[0].getDragCoefficients().at(5), 25.260);
 
     // Material 1
-    QCOMPARE(materials[1].getId(), "7pwfsYxGumpgZzAfP");
-    QCOMPARE(materials[1].getName(), "TestMaterial1");
-    QCOMPARE(materials[1].getMaterialId1(), "khqT2zmbhEAyJAxZj");
-    QCOMPARE(materials[1].getMaterialId2(), "FapMmWq6zGpMBX3CR");
+    QCOMPARE(materials[1].getId(), "TestMaterial1");
     QCOMPARE(materials[1].getDistanceThreshold(), 4.561);
-    QCOMPARE(materials[1].getForceType(), "Inverse Quadratic");
-    QCOMPARE(materials[1].getDragForceType(), "Quadratic");
+    QCOMPARE(materials[1].getForceType(), "inverse_quadratic");
+    QCOMPARE(materials[1].getDragForceType(), "quadratic");
 
     QVERIFY(materials[1].getCoefficients().size() == 6);
     QCOMPARE(materials[1].getCoefficients().at(0), 1.231);
@@ -75,13 +69,12 @@ void TestMaterialsManager::constructor()
     QCOMPARE(materials[1].getDragCoefficients().at(5), 25.261);
 
     // Material 2
-    QCOMPARE(materials[2].getId(), "8pwfsYxGumpgZzAfP");
-    QCOMPARE(materials[2].getName(), "TestMaterial2");
-    QCOMPARE(materials[2].getMaterialId1(), "6pwfsYxGumpgZzAfP");
-    QCOMPARE(materials[2].getMaterialId2(), "7pwfsYxGumpgZzAfP");
+    QCOMPARE(materials[2].getId(), "TestMaterial2");
+    QCOMPARE(materials[2].getMaterial1(), "TestMaterial0");
+    QCOMPARE(materials[2].getMaterial2(), "TestMaterial1");
     QCOMPARE(materials[2].getDistanceThreshold(), 4.562);
-    QCOMPARE(materials[2].getForceType(), "Inverse Quadratic");
-    QCOMPARE(materials[2].getDragForceType(), "Quadratic");
+    QCOMPARE(materials[2].getForceType(), "inverse_quadratic");
+    QCOMPARE(materials[2].getDragForceType(), "quadratic");
 
     QVERIFY(materials[2].getCoefficients().size() == 6);
     QCOMPARE(materials[2].getCoefficients().at(0), 1.232);
@@ -102,7 +95,7 @@ void TestMaterialsManager::constructor()
 
 void TestMaterialsManager::getCL()
 {
-    MaterialsManager materialsManager(this->jsonValue);
+    MaterialsManager materialsManager(this->jsonArray);
 
     MaterialsManagerCL materialsManagerCL = materialsManager.getCL();
 
@@ -110,7 +103,6 @@ void TestMaterialsManager::getCL()
 
     // Material 0
     MaterialCL& materialCL0 = materialsManagerCL.materials[0];
-    QCOMPARE(materialCL0.index, 0);
     QCOMPARE(materialCL0.materialIndex1, -1);
     QCOMPARE(materialCL0.materialIndex2, -1);
     QCOMPARE(materialCL0.distanceThreshold, 4.560);
@@ -133,7 +125,6 @@ void TestMaterialsManager::getCL()
 
     // Material 1
     MaterialCL& materialCL1 = materialsManagerCL.materials[1];
-    QCOMPARE(materialCL1.index, 1);
     QCOMPARE(materialCL1.materialIndex1, -1);
     QCOMPARE(materialCL1.materialIndex2, -1);
     QCOMPARE(materialCL1.distanceThreshold, 4.561);
@@ -156,7 +147,6 @@ void TestMaterialsManager::getCL()
 
     // Material 2
     MaterialCL& materialCL2 = materialsManagerCL.materials[2];
-    QCOMPARE(materialCL2.index, 2);
     QCOMPARE(materialCL2.materialIndex1, 0);
     QCOMPARE(materialCL2.materialIndex2, 1);
     QCOMPARE(materialCL2.distanceThreshold, 4.562);

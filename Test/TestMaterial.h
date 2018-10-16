@@ -2,7 +2,7 @@
 #define TESTMATEIRAL_H
 
 #include <QObject>
-#include <QJsonValue>
+#include <QJsonObject>
 
 #include "../Core/Material.h"
 
@@ -11,7 +11,7 @@ class TestMaterial : public QObject
     Q_OBJECT
 
     private:
-        QJsonValue jsonValue;
+        QJsonObject jsonValue;
 
     public:
         TestMaterial();

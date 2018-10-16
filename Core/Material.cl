@@ -22,8 +22,6 @@ enum DragForceType
 
 typedef struct
 {
-    int index;
-
     int materialIndex1;
     int materialIndex2;
 

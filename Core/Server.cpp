@@ -26,6 +26,7 @@ void Server::acceptConnection()
 void Server::clientError(QAbstractSocket::SocketError error)
 {
     this->clientSocket = NULL;
+    this->resumeAccepting();
 }
 
 void Server::readyRead()
@@ -49,13 +50,13 @@ void Server::parse(const QJsonDocument &jsonDocument)
     QString command = jsonObject["command"].toString();
     QJsonValue payloadJsonValue = jsonObject["payload"];
 
-    if (command == "start simulation") {
+    if (command == "start_simulation") {
         QString _id = payloadJsonValue["_id"].toString();
 
         Simulation* simulation = this->getSimulationById(_id);
-        simulation = simulation ? new Simulation(payloadJsonValue) : simulation;
+        simulation = simulation ? simulation : new Simulation(payloadJsonValue);
 
-        connect(simulation, SIGNAL(newFrame(QJsonDocument)), this, SLOT(newFrame(QJsonDocument)), Qt::BlockingQueuedConnection);
+        connect(simulation, SIGNAL(newFrame(QJsonObject)), this, SLOT(newFrame(QJsonObject)), Qt::BlockingQueuedConnection);
         connect(simulation, SIGNAL(finished()), this, SLOT(simulationFinished()), Qt::BlockingQueuedConnection);
 
         this->simulations.insert(simulation);
@@ -63,18 +64,41 @@ void Server::parse(const QJsonDocument &jsonDocument)
         simulation->start();
     }
 
-    if (command == "pause simulation") {
+    if (command == "pause_simulation") {
         QString _id = payloadJsonValue["_id"].toString();
 
         Simulation* simulation = this->getSimulationById(_id);
 
-        (*this->simulations.find(simulation))->pause();
+        simulation->pause();
+    }
+
+    if (command == "stop_simulation") {
+        QString _id = payloadJsonValue["_id"].toString();
+
+        Simulation* simulation = this->getSimulationById(_id);
+
+        simulation->stop();
+
+        disconnect(simulation);
+        simulation->deleteLater();
+
+        this->simulations.remove(simulation);
     }
 }
 
-void Server::newFrame(QJsonDocument frame)
+void Server::newFrame(QJsonObject frame)
 {
-    this->clientSocket->write(frame.toJson());
+    QJsonObject package;
+
+    package["command"] = "new_frame";
+    package["payload"] = frame;
+
+    QJsonDocument document(package);
+
+    QByteArray data = document.toJson();
+    data += "### END ###";
+
+    this->clientSocket->write(data);
     this->clientSocket->waitForBytesWritten(600000);
 }
 
@@ -82,7 +106,7 @@ void Server::simulationFinished()
 {
     Simulation* simulation = (Simulation*)QObject::sender();
 
-    disconnect(simulation, SIGNAL(newFrame(QJsonDocument)), this, SLOT(newFrame(QJsonDocument)));
+    disconnect(simulation, SIGNAL(newFrame(QJsonObject)), this, SLOT(newFrame(QJsonObject)));
     disconnect(simulation, SIGNAL(finished()), this, SLOT(simulationFinished()));
 
     if (simulation->isStoped())
