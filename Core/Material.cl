@@ -47,7 +47,7 @@ double4 material_calculateForce(const Material* material, double4 distance, bool
             return (material->coefficients[0] / lengthDistance) * vector_getUnitary(distance);
 
         case inverse_quadratic:
-            return (material->coefficients[0] / (lengthDistance * lengthDistance) * vector_getUnitary(distance);
+            return (material->coefficients[0] / (lengthDistance * lengthDistance)) * vector_getUnitary(distance);
 
         case inverse_cubic:
             return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * vector_getUnitary(distance);

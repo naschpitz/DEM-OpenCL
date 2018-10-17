@@ -119,6 +119,12 @@ void Simulation::run()
     openClCore.run();
     openClCore.clearKernels();
 
+    openClCore.addKernel("reset_particles_forces", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
+
+    openClCore.addKernel("reset_faces_forces", facesCL.size());
+    openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
+
     openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
     openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
     openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);

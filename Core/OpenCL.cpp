@@ -80,7 +80,7 @@ void Core::buildPlatform()
     cl::Platform::get(&(this->platforms));
 
     if(this->platforms.size() == 0) {
-        std::cout<<"No platforms found. Check OpenCL installation!\n";
+        std::cout << "No platforms found. Check OpenCL installation!\n";
         exit(1);
     }
 

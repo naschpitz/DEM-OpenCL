@@ -92,9 +92,6 @@ kernel void calculate_particle_to_face(global Particle* particles, constant Face
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
-    thisParticle.currentForce = (0, 0, 0, 0);
-    thisParticle.currentTorque = (0, 0, 0, 0);
-
     for(ulong i = 0; i < scenery.numFaces; i++) {
         Face otherFace = faces[i];
 
@@ -116,9 +113,6 @@ kernel void calculate_face_to_particle(global Face* faces, constant Particle* pa
     Face thisFace = faces[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
-
-    thisFace.currentForce = (0, 0, 0, 0);
-    thisFace.currentTorque = (0, 0, 0, 0);
 
     for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];
@@ -180,6 +174,36 @@ kernel void integrate_faces(global Face* faces, constant Simulation* ptrSimulati
     face_integrate(&face, simulation.timeStep);
 
     faces[idx] = face;
+}
+
+kernel void reset_particles_forces(global Particle* particles)
+{
+    size_t idx = get_global_id(0);
+
+    Particle thisParticle = particles[idx];
+
+    thisParticle.currentForce = (0, 0, 0, 0);
+    thisParticle.oldForce     = (0, 0, 0, 0);
+
+    thisParticle.currentTorque = (0, 0, 0, 0);
+    thisParticle.oldTorque     = (0, 0, 0, 0);
+
+    particles[idx] = thisParticle;
+}
+
+kernel void reset_faces_forces(global Face* faces)
+{
+    size_t idx = get_global_id(0);
+
+    Face thisFace = faces[idx];
+
+    thisFace.currentForce = (0, 0, 0, 0);
+    thisFace.oldForce     = (0, 0, 0, 0);
+
+    thisFace.currentTorque = (0, 0, 0, 0);
+    thisFace.oldTorque     = (0, 0, 0, 0);
+
+    faces[idx] = thisFace;
 }
 
 #endif // SIMULATION_CL
