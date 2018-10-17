@@ -7,22 +7,25 @@
 #include <QTextStream>
 #include <iostream>
 
+#include "RequestSender.h"
 #include "OpenCL.h"
 #include "Particle.h"
 
-Simulation::Simulation(const QJsonValue& jsonValue)
+Simulation::Simulation(const QJsonObject& jsonObject)
 {
-    this->id = jsonValue["_id"].toString();
+    this->id = jsonObject["_id"].toString();
 
     this->currentTime = 0;
     this->currentStep = 0;
-    this->frameTime   = jsonValue["frameTime"].toDouble();
-    this->timeStep    = jsonValue["timeStep"].toDouble();
-    this->totalTime   = jsonValue["totalTime"].toDouble();
+    this->frameTime   = jsonObject["frameTime"].toDouble();
+    this->timeStep    = jsonObject["timeStep"].toDouble();
+    this->totalTime   = jsonObject["totalTime"].toDouble();
     this->totalSteps  = this->totalTime / this->timeStep;
 
-    QJsonObject sceneryJsonObject = jsonValue["scenery"].toObject();
+    QJsonObject sceneryJsonObject = jsonObject["scenery"].toObject();
     this->scenery = Scenery(sceneryJsonObject);
+
+    connect(this, &Simulation::newFrame, &RequestSender::newFrame);
 }
 
 const QString& Simulation::getId() const
@@ -36,10 +39,9 @@ void Simulation::addFrame()
 
     newFrame["currentTime"] = this->currentTime;
     newFrame["currentStep"] = (int)this->currentStep;
-
     newFrame["scenery"] = this->scenery.getJson();
 
-    emit(this->newFrame(newFrame));
+    emit this->newFrame(newFrame);
 }
 
 SimulationCL Simulation::getCL() const
@@ -122,7 +124,6 @@ void Simulation::run()
     openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
     openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
 
-    /*
     openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
     openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
     openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
@@ -142,7 +143,6 @@ void Simulation::run()
     openClCore.addKernel("apply_faces_gravity", facesCL.size());
     openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
     openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
-    */
 
     openClCore.addKernel("integrate_particles", particlesCL.size());
     openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);

@@ -42,12 +42,12 @@ SOURCES += \
 LIBS += -lOpenCL
 
 ## TetGen Library
-unix:!macx: LIBS += -L$$PWD/../ExternalLibs/tetgen1.5.0/ -ltet
+unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.0/ -ltet
 
-INCLUDEPATH += $$PWD/../ExternalLibs/tetgen1.5.0
-DEPENDPATH += $$PWD/../ExternalLibs/tetgen1.5.0
+INCLUDEPATH += $$PWD/../libs/tetgen1.5.0
+DEPENDPATH += $$PWD/../libs/tetgen1.5.0
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/../ExternalLibs/tetgen1.5.0/libtet.a
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.0/libtet.a
 
 DESTDIR = bin
 OBJECTS_DIR = obj

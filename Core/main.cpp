@@ -1,37 +1,62 @@
 #include <QCoreApplication>
-#include <QFile>
+#include <QDir>
 #include <QString>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 
-#include <iostream>
-
+#include "httplistener.h"
+#include "RequestMapper.h"
 #include "Simulation.h"
-#include "Server.h"
+
+using namespace stefanfrings;
+
+QString searchConfigFile()
+{
+    QString binDir=QCoreApplication::applicationDirPath();
+    QString appName=QCoreApplication::applicationName();
+    QString fileName(appName+".ini");
+
+    QStringList searchList;
+    searchList.append(binDir);
+    searchList.append(binDir+"/etc");
+    searchList.append(binDir+"/../etc");
+    searchList.append(binDir+"/../../etc"); // for development without shadow build
+    searchList.append(binDir+"/../"+appName+"/etc"); // for development with shadow build
+    searchList.append(binDir+"/../../"+appName+"/etc"); // for development with shadow build
+    searchList.append(binDir+"/../../../"+appName+"/etc"); // for development with shadow build
+    searchList.append(binDir+"/../../../../"+appName+"/etc"); // for development with shadow build
+    searchList.append(binDir+"/../../../../../"+appName+"/etc"); // for development with shadow build
+    searchList.append(QDir::rootPath()+"etc/opt");
+    searchList.append(QDir::rootPath()+"etc");
+
+    foreach (QString dir, searchList)
+    {
+        QFile file(dir+"/"+fileName);
+        if (file.exists())
+        {
+            // found
+            fileName=QDir(file.fileName()).canonicalPath();
+            qDebug("Using config file %s",qPrintable(fileName));
+            return fileName;
+        }
+    }
+
+    // not found
+    foreach (QString dir, searchList)
+    {
+        qWarning("%s/%s not found",qPrintable(dir),qPrintable(fileName));
+    }
+    qFatal("Cannot find config file %s",qPrintable(fileName));
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QCoreApplication app(argc, argv);
 
-    Server* server = new Server();
+    QString configFileName = searchConfigFile();
 
-    /*
-    QFile simulationFile("../SimulationRun.json");
-    simulationFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    QSettings* listenerSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
+    listenerSettings->beginGroup("listener");
+    new HttpListener(listenerSettings, new RequestMapper(&app), &app);
 
-    QString simulationFileString = simulationFile.readAll();
-    simulationFile.close();
-
-    QJsonDocument simulatioJsonDocument = QJsonDocument::fromJson(simulationFileString.toUtf8());
-    QJsonValue simulationJsonValue = simulatioJsonDocument.object();
-
-    Simulation simulation(simulationJsonValue);
-
-    simulation.start();
-
-    exit(0);
-    */
-
-    return a.exec();
+    return app.exec();
 }

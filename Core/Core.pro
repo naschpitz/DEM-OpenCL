@@ -1,4 +1,4 @@
-QT += network
+QT += core network
 
 CONFIG += c++1z console
 CONFIG -= app_bundle
@@ -16,6 +16,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+DESTDIR = bin
+OBJECTS_DIR = obj
+MOC_DIR = moc
+
 HEADERS += \
     OpenCL.h \
     NonSolidObject.h \
@@ -29,8 +33,9 @@ HEADERS += \
     Vector3D.h \
     Particle.h \
     Face.h \
-    Server.h \
-    Color.h
+    Color.h \
+    RequestMapper.h \
+    RequestSender.h
 
 SOURCES += \
     main.cpp \
@@ -46,29 +51,11 @@ SOURCES += \
     ObjectsManager.cpp \
     Vector3D.cpp \
     Face.cpp \
-    Server.cpp \
-    Color.cpp
+    Color.cpp \
+    RequestMapper.cpp \
+    RequestSender.cpp
 
 OTHER_FILES +=
-
-LIBS+= -lOpenCL
-
-## TetGen Library
-unix:!macx: LIBS += -L$$PWD/../ExternalLibs/tetgen1.5.0/ -ltet
-
-INCLUDEPATH += $$PWD/../ExternalLibs/tetgen1.5.0
-DEPENDPATH += $$PWD/../ExternalLibs/tetgen1.5.0
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../ExternalLibs/tetgen1.5.0/libtet.a
-
-DESTDIR = bin
-OBJECTS_DIR = obj
-MOC_DIR = moc
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
     Vertex.cl \
@@ -83,3 +70,24 @@ DISTFILES += \
     FaceWorker.cl \
     Edge.cl \
     Scenery.cl
+
+LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
+
+## TetGen Library
+unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.0/ -ltet
+
+INCLUDEPATH += $$PWD/../libs/tetgen1.5.0
+DEPENDPATH += $$PWD/../libs/tetgen1.5.0
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.0/libtet.a
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
+#---------------------------------------------------------------------------------------
+# The following lines include the sources of the QtWebAppLib library
+#---------------------------------------------------------------------------------------
+
+include(../libs/QtWebApp/httpserver/httpserver.pri)

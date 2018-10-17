@@ -13,7 +13,6 @@
 #include "Vector3D.h"
 
 #include <CL/cl2.hpp>
-#include <QJsonValue>
 #include <QJsonObject>
 #include <QObject>
 #include <QThread>
@@ -46,7 +45,7 @@ class Simulation : public QThread
 
     public:
         Simulation();
-        Simulation(const QJsonValue& jsonValue);
+        Simulation(const QJsonObject& jsonObject);
 
         const QString& getId() const;
 
