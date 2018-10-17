@@ -36,29 +36,31 @@ typedef struct
 
 double4 material_calculateForce(const Material* material, double4 distance, bool internal, double contactArea, double originalLength, double4 oldForce)
 {
+    double lengthDistance = length(distance);
+
     switch(material->forceType)
     {
         case hooks_law:
             return -(material->coefficients[0]) * distance;
 
         case inverse_linear:
-            return (material->coefficients[0] / length(distance)) * vector_getUnitary(distance);
+            return (material->coefficients[0] / lengthDistance) * vector_getUnitary(distance);
 
         case inverse_quadratic:
-            return (material->coefficients[0] / length(distance) * length(distance)) * vector_getUnitary(distance);
+            return (material->coefficients[0] / (lengthDistance * lengthDistance) * vector_getUnitary(distance);
 
         case inverse_cubic:
-            return (material->coefficients[0] / length(distance) * length(distance) * length(distance)) * vector_getUnitary(distance);
+            return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * vector_getUnitary(distance);
 
         case adiabatic_compression:
         {
             double newRadius;
 
             if(internal)
-                newRadius = material->coefficients[0] - length(distance) / 2.;
+                newRadius = material->coefficients[0] - lengthDistance / 2.;
 
             else
-                newRadius = material->coefficients[0] + length(distance) / 2.;
+                newRadius = material->coefficients[0] + lengthDistance / 2.;
 
             double newRadius2 = newRadius * newRadius;
 
