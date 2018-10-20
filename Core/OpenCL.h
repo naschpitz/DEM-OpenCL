@@ -63,7 +63,6 @@ namespace OpenCL
 
             template<class T> void writeBuffer(std::vector<T> &hBuffer);
             template<class T> void readBuffer(std::vector<T> &hBuffer);
-            template<class T> void copyBuffer(std::vector<T> &hSourceBuffer, std::vector<T> &hDestinationBuffer);
             template<class T> void addArgument(std::string kernelName, std::vector<T> &hBuffer);
 
             void run();
@@ -82,16 +81,6 @@ namespace OpenCL
         cl::Buffer dBuffer = this->bufferMap[&hBuffer];
 
         this->queue.enqueueReadBuffer(dBuffer, CL_TRUE, 0, sizeof(T) * hBuffer.size(), hBuffer.data());
-    }
-
-    template<class T> void Core::copyBuffer(std::vector<T> &hSourceBuffer, std::vector<T> &hDestinationBuffer)
-    {
-        cl::Buffer dSourceBuffer = this->bufferMap[&hSourceBuffer];
-        cl::Buffer dDestinationBuffer = this->bufferMap[&hDestinationBuffer];
-
-        cl::Event event;
-        this->queue.enqueueCopyBuffer(dSourceBuffer, dDestinationBuffer, 0, 0, sizeof(T) * hSourceBuffer.size(), __null, &event);
-        this->queue.enqueueBarrierWithWaitList(0, &event);
     }
 
     template<class T> void Core::addArgument(std::string kernelName, std::vector<T> &hBuffer)

@@ -5,8 +5,8 @@
 
 typedef struct
 {
-    Material materials[20];
     int size;
+    Material materials[20];
 } MaterialsManager;
 
 const Material* materialsManager_getMaterial(int materialIndex1, int materialIndex2, const MaterialsManager* materialsManager)

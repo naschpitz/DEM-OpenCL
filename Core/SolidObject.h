@@ -1,7 +1,6 @@
 #ifndef SOLIDOBJECT_H
 #define SOLIDOBJECT_H
 
-#include "Color.h"
 #include "Face.h"
 #include "Vector3D.h"
 

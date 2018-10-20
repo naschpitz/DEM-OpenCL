@@ -9,7 +9,6 @@
 #ifndef NONSOLIDOBJECT_H
 #define NONSOLIDOBJECT_H
 
-#include "Color.h"
 #include "Particle.h"
 #include "Vector3D.h"
 

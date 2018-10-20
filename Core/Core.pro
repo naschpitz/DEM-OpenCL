@@ -1,4 +1,5 @@
 QT += core network
+QT -= gui
 
 CONFIG += c++1z console
 CONFIG -= app_bundle
@@ -33,7 +34,6 @@ HEADERS += \
     Vector3D.h \
     Particle.h \
     Face.h \
-    Color.h \
     RequestMapper.h \
     RequestSender.h
 
@@ -51,7 +51,6 @@ SOURCES += \
     ObjectsManager.cpp \
     Vector3D.cpp \
     Face.cpp \
-    Color.cpp \
     RequestMapper.cpp \
     RequestSender.cpp
 
@@ -65,11 +64,11 @@ DISTFILES += \
     ParticleWorker.cl \
     Material.cl \
     MaterialsManager.cl \
-    SimulationRun.json \
     Face.cl \
     FaceWorker.cl \
     Edge.cl \
-    Scenery.cl
+    Scenery.cl \
+    Simulation2.cl
 
 LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
 

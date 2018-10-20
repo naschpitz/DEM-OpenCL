@@ -47,7 +47,7 @@ void SolidObject::loadStl()
     file.write(this->stl.toUtf8().data());
     file.flush();
 
-    in.load_stl(QString("temp.stl").toLatin1().data());
+    in.load_stl(QString("temp.stl").toUtf8().data());
 
     file.remove();
 

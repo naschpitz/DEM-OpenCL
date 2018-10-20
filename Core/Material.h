@@ -37,10 +37,10 @@ typedef struct
     cl_int materialIndex1;
     cl_int materialIndex2;
 
-    cl_double distanceThreshold;
-
     cl_int forceType;
     cl_int dragForceType;
+
+    cl_double distanceThreshold;
 
     cl_double coefficients[10];
     cl_double dragCoefficients[10];

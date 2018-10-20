@@ -1,4 +1,3 @@
-#include "../Core/Color.cpp"
 #include "../Core/Face.cpp"
 #include "../Core/Material.cpp"
 #include "../Core/MaterialsManager.cpp"

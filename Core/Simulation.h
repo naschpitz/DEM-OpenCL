@@ -33,10 +33,16 @@ class Simulation : public QThread
 
         double currentTime;
         long   currentStep;
-        double frameTime;
+
         double timeStep;
         double totalTime;
         long   totalSteps;
+
+        double frameTime;
+        double infoTime;
+
+        double stepsPerSecond;
+        long et;
 
         Scenery scenery;
 
@@ -47,17 +53,21 @@ class Simulation : public QThread
         Simulation();
         Simulation(const QJsonObject& jsonObject);
 
-        const QString& getId() const;
-
-        void addFrame();
-        QJsonObject getJson() const;
-        void writeLog() const;
         SimulationCL getCL() const;
 
+        const QString& getId() const;
         const double& getCurrentTime() const;
-        const Scenery& getScenery() const;
-        const double& getTimeStep() const;
+        const long& getCurrentStep()   const;
+
+        const double& getTimeStep()  const;
         const double& getTotalTime() const;
+        const long& getTotalSteps()  const;
+
+        const double& getStepsPerSecond() const;
+        long getEta() const;
+        long getEt()  const;
+
+        const Scenery& getScenery() const;
 
         bool isPaused() const;
         bool isStoped() const;
@@ -69,7 +79,8 @@ class Simulation : public QThread
         void run();
 
     signals:
-        void newFrame(QJsonObject frame);
+        void newFrame(const Simulation* simulation);
+        void newInfo(const Simulation* simulation);
 };
 
 #endif // SIMULATION_H

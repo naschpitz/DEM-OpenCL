@@ -10,8 +10,8 @@
 
 typedef struct
 {
-    MaterialCL materials[20];
     cl_int size;
+    MaterialCL materials[20];
 } MaterialsManagerCL;
 
 class MaterialsManager

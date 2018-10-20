@@ -25,10 +25,10 @@ typedef struct
     int materialIndex1;
     int materialIndex2;
 
-    double distanceThreshold;
-
     int forceType;
     int dragForceType;
+
+    double distanceThreshold;
 
     double coefficients[10];
     double dragCoefficients[10];

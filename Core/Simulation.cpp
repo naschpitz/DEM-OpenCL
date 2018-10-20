@@ -5,11 +5,17 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QTextStream>
+#include <QTime>
 #include <iostream>
 
 #include "RequestSender.h"
 #include "OpenCL.h"
 #include "Particle.h"
+
+Simulation::Simulation()
+{
+
+}
 
 Simulation::Simulation(const QJsonObject& jsonObject)
 {
@@ -17,31 +23,17 @@ Simulation::Simulation(const QJsonObject& jsonObject)
 
     this->currentTime = 0;
     this->currentStep = 0;
-    this->frameTime   = jsonObject["frameTime"].toDouble();
     this->timeStep    = jsonObject["timeStep"].toDouble();
     this->totalTime   = jsonObject["totalTime"].toDouble();
+    this->frameTime   = jsonObject["frameTime"].toDouble();
+    this->infoTime    = jsonObject["infoTime"].toDouble();
     this->totalSteps  = this->totalTime / this->timeStep;
 
     QJsonObject sceneryJsonObject = jsonObject["scenery"].toObject();
     this->scenery = Scenery(sceneryJsonObject);
 
-    connect(this, &Simulation::newFrame, &RequestSender::newFrame);
-}
-
-const QString& Simulation::getId() const
-{
-    return this->id;
-}
-
-void Simulation::addFrame()
-{
-    QJsonObject newFrame;
-
-    newFrame["currentTime"] = this->currentTime;
-    newFrame["currentStep"] = (int)this->currentStep;
-    newFrame["scenery"] = this->scenery.getJson();
-
-    emit this->newFrame(newFrame);
+    connect(this, SIGNAL(newFrame(const Simulation*)), &(RequestSender::getInstance()), SLOT(newFrame(const Simulation*)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newInfo(const Simulation*)), &(RequestSender::getInstance()), SLOT(newInfo(const Simulation*)), Qt::BlockingQueuedConnection);
 }
 
 SimulationCL Simulation::getCL() const
@@ -53,6 +45,16 @@ SimulationCL Simulation::getCL() const
     simulationCL.totalTime = this->totalTime;
 
     return simulationCL;
+}
+
+const QString& Simulation::getId() const
+{
+    return this->id;
+}
+
+const long& Simulation::getCurrentStep() const
+{
+    return this->currentStep;
 }
 
 const double& Simulation::getCurrentTime() const
@@ -73,6 +75,28 @@ const double& Simulation::getTimeStep() const
 const double& Simulation::getTotalTime() const
 {
     return this->totalTime;
+}
+
+const long& Simulation::getTotalSteps() const
+{
+    return this->totalSteps;
+}
+
+const double& Simulation::getStepsPerSecond() const
+{
+    return this->stepsPerSecond;
+}
+
+long Simulation::getEta() const
+{
+    long remaningSteps = this->getTotalSteps() - this->getCurrentStep();
+
+    return remaningSteps / this->getStepsPerSecond();
+}
+
+long Simulation::getEt() const
+{
+    return this->et / 1000;
 }
 
 bool Simulation::isPaused() const
@@ -160,6 +184,11 @@ void Simulation::run()
 
     uint frameSteps = this->frameTime / this->timeStep;
 
+    QTime time;
+    time.start();
+
+    double previousStep = this->currentStep;
+
     while((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
     {        
         if (this->currentStep % frameSteps == 0) {
@@ -169,23 +198,27 @@ void Simulation::run()
             this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
             this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
 
-            this->addFrame();
+            emit this->newFrame(this);
+        }
+
+        int mSecElapsed = time.elapsed();
+
+        if (mSecElapsed > (this->infoTime * 1000) || this->currentStep == this->totalSteps) {
+            long numSteps = this->currentStep - previousStep;
+            this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
+            this->et += mSecElapsed;
+
+            previousStep = this->currentStep;
+
+            emit this->newInfo(this);
+
+            time.restart();
         }
 
         openClCore.run();
 
         this->currentTime += this->timeStep;
         this->currentStep += 1;
-    }
-
-    if(this->paused || this->stoped) {
-        openClCore.readBuffer(particlesCL);
-        openClCore.readBuffer(facesCL);
-
-        this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
-        this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
-
-        this->addFrame();
     }
 }
 
