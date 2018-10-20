@@ -30,6 +30,7 @@ class Scenery
 {
     private:
         QString id;
+        QString owner;
         Vector3D gravity;
 
         ObjectsManager objectsManager;

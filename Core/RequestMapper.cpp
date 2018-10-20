@@ -15,9 +15,7 @@ RequestMapper::~RequestMapper()
 
 void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 {
-    QByteArray path=request.getPath();
-
-    // For the following pathes, each request gets its own new instance of the related controller.
+    QByteArray path = request.getPath();
 
     if (path.startsWith("/simulations/start")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
@@ -35,8 +33,44 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         this->simulations.insert(simulation);
 
         simulation->start();
+    }
 
-        response.write("OK");
+    if (path.startsWith("/simulations/pause")) {
+        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+
+        QJsonDocument jsonDocument;
+        jsonDocument = QJsonDocument::fromJson(request.getBody());
+
+        QJsonObject jsonObject = jsonDocument.object();
+
+        QString _id = jsonObject["_id"].toString();
+
+        Simulation* simulation = this->getSimulationById(_id);
+
+        if (!simulation)
+            response.setStatus(412, "Simulation not running");
+
+        simulation->pause();
+    }
+
+    if (path.startsWith("/simulations/stop")) {
+        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+
+        QJsonDocument jsonDocument;
+        jsonDocument = QJsonDocument::fromJson(request.getBody());
+
+        QJsonObject jsonObject = jsonDocument.object();
+
+        QString _id = jsonObject["_id"].toString();
+
+        Simulation* simulation = this->getSimulationById(_id);
+        this->simulations.remove(simulation);
+
+        if (!simulation)
+            response.setStatus(412, "Simulation not running");
+
+        simulation->stop();
+        simulation->deleteLater();
     }
 }
 
