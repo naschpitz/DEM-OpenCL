@@ -70,7 +70,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
             response.setStatus(412, "Simulation not running");
 
         simulation->stop();
-        simulation->deleteLater();
+        //simulation->deleteLater();
     }
 }
 
