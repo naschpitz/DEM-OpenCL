@@ -78,6 +78,9 @@ class Simulation : public QThread
     protected:
         void run();
 
+    public slots:
+        void selfDelete();
+
     signals:
         void newFrame();
         void newLog(QString message = QString());

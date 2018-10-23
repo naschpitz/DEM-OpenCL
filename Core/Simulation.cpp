@@ -36,6 +36,7 @@ Simulation::Simulation(const QJsonObject& jsonObject)
     connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(newLog()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
 
 SimulationCL Simulation::getCL() const
@@ -138,57 +139,80 @@ void Simulation::run()
     openClCore.writeBuffer<SceneryCL>(sceneriesCL);
     emit this->newLog("Objects copy to GPU's memory done");
 
-    openClCore.addKernel("initialize_particles", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
-    openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
+    bool hasParticles = particlesCL.size();
+    bool hasFaces = facesCL.size();
 
-    openClCore.addKernel("initialize_faces", facesCL.size());
-    openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
-    openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
+    if(hasParticles) {
+        openClCore.addKernel("initialize_particles", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
+        openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
+    }
+
+    if(hasFaces) {
+        openClCore.addKernel("initialize_faces", facesCL.size());
+        openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
+        openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
+    }
 
     emit this->newLog("Initiating objects");
     openClCore.run();
     openClCore.clearKernels();
     emit this->newLog("Objects initialized");
 
-    openClCore.addKernel("reset_particles_forces", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
+    if(hasParticles) {
+        openClCore.addKernel("reset_particles_forces", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
+    }
 
-    openClCore.addKernel("reset_faces_forces", facesCL.size());
-    openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
+    if(hasFaces) {
+        openClCore.addKernel("reset_faces_forces", facesCL.size());
+        openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
+    }
 
-    openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
-    openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
-    openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
+    if(hasParticles) {
+        openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
+        openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
+    }
 
-    openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
-    openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
-    openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
-    openClCore.addArgument<SceneryCL>("calculate_particle_to_face", sceneriesCL);
+    if(hasParticles && hasFaces) {
+        openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
+        openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
+        openClCore.addArgument<SceneryCL>("calculate_particle_to_face", sceneriesCL);
 
-    openClCore.addKernel("calculate_face_to_particle", facesCL.size());
-    openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
-    openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
-    openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
-    openClCore.addArgument<SceneryCL>("calculate_face_to_particle", sceneriesCL);
+        openClCore.addKernel("calculate_face_to_particle", facesCL.size());
+        openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
+        openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
+        openClCore.addArgument<SceneryCL>("calculate_face_to_particle", sceneriesCL);
+    }
 
-    openClCore.addKernel("apply_particles_gravity", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
-    openClCore.addArgument<SceneryCL>("apply_particles_gravity", sceneriesCL);
+    if(hasParticles) {
+        openClCore.addKernel("apply_particles_gravity", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
+        openClCore.addArgument<SceneryCL>("apply_particles_gravity", sceneriesCL);
+    }
 
-    openClCore.addKernel("apply_faces_gravity", facesCL.size());
-    openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
-    openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
+    if(hasFaces) {
+        openClCore.addKernel("apply_faces_gravity", facesCL.size());
+        openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
+        openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
+    }
 
-    openClCore.addKernel("integrate_particles", particlesCL.size());
-    openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
-    openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
+    if(hasParticles) {
+        openClCore.addKernel("integrate_particles", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
+        openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
+    }
 
-    openClCore.addKernel("integrate_faces", facesCL.size());
-    openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
-    openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
+    if(hasFaces) {
+        openClCore.addKernel("integrate_faces", facesCL.size());
+        openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
+        openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
+    }
 
     uint frameSteps = this->frameTime / this->timeStep;
 
@@ -245,4 +269,8 @@ void Simulation::stop()
         emit this->newLog();
 }
 
-
+void Simulation::selfDelete()
+{
+    if (this->isStopped())
+        this->deleteLater();
+}

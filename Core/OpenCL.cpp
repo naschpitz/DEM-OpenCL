@@ -8,6 +8,9 @@ using namespace OpenCL;
 
 Core::Core()
 {
+    this->programBuilt = false;
+
+    this->showDevices();
     this->buildPlatform();
     this->buildDevice();
     this->buildContext();
@@ -71,7 +74,15 @@ void Core::addKernel(std::string kernelName, uint nElements)
     Kernel kernel;
     kernel.name = kernelName;
     kernel.nElements = nElements;
-    kernel.kernel = cl::Kernel(this->program, kernelName.c_str());
+
+    cl_int result;
+
+    kernel.kernel = cl::Kernel(this->program, kernelName.c_str(), &result);
+
+    if (result != CL_SUCCESS) {
+        std::cout << "Error creating kernel: " << result << "\n";
+        exit(1);
+    }
 
     this->kernels.push_back(kernel);
 }
@@ -94,7 +105,7 @@ void Core::buildDevice()
     // Get default device of the default platform.
     this->platform.getDevices(CL_DEVICE_TYPE_ALL, &(this->devices));
 
-    if(this->devices.size()==0) {
+    if(this->devices.size() == 0) {
         std::cout << "No devices found. Check OpenCL installation!\n";
         exit(1);
     }
@@ -104,7 +115,14 @@ void Core::buildDevice()
 
 void Core::buildContext()
 {
-    this->context = cl::Context({this->device});
+    cl_int result;
+
+    this->context = cl::Context({this->device}, NULL, NULL, NULL, &result);
+
+    if (result != CL_SUCCESS) {
+        std::cout << "Error creating context: " << result << "\n";
+        exit(1);
+    }
 }
 
 void Core::buildQueue()
@@ -115,8 +133,16 @@ void Core::buildQueue()
 
 void Core::buildProgram()
 {
-    this->program = cl::Program(this->context, this->sources);
-    if(this->program.build({this->device}) != CL_SUCCESS){
+    cl_int result;
+
+    this->program = cl::Program(this->context, this->sources, &result);
+
+    if(result != CL_SUCCESS) {
+        std::cout << "Error creating program: " << result << "\n";
+        exit(1);
+    }
+
+    if(this->program.build({this->device}) != CL_SUCCESS) {
         std::cout << "Error building: " << this->program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(this->device) << "\n";
         exit(1);
     }
@@ -132,7 +158,13 @@ void Core::clearKernels()
 void Core::run()
 {
     for(std::vector<Kernel>::iterator it = this->kernels.begin(); it != this->kernels.end(); it++) {
-        this->queue.enqueueNDRangeKernel(it->kernel, cl::NullRange, cl::NDRange(it->nElements), cl::NullRange);
+        cl_int result = this->queue.enqueueNDRangeKernel(it->kernel, cl::NullRange, cl::NDRange(it->nElements), cl::NullRange);
+
+        if(result != CL_SUCCESS) {
+            std::cout << "Error enqueueing kernel: " << result << "\n";
+            exit(1);
+        }
+
         this->queue.enqueueBarrierWithWaitList();
     }
 

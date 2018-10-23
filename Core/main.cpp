@@ -55,9 +55,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
 
-    OpenCL::Core openClCore;
-    openClCore.showDevices();
-
     std::setlocale(LC_NUMERIC, "C");
 
     QString configFileName = searchConfigFile();
