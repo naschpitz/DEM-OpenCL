@@ -23,6 +23,7 @@ Simulation::Simulation(const QJsonObject& jsonObject)
 
     this->currentTime = 0;
     this->currentStep = 0;
+    this->et          = 0;
     this->timeStep    = jsonObject["timeStep"].toDouble();
     this->totalTime   = jsonObject["totalTime"].toDouble();
     this->frameTime   = jsonObject["frameTime"].toDouble();
@@ -32,8 +33,9 @@ Simulation::Simulation(const QJsonObject& jsonObject)
     QJsonObject sceneryJsonObject = jsonObject["scenery"].toObject();
     this->scenery = Scenery(sceneryJsonObject);
 
-    connect(this, SIGNAL(newFrame(const Simulation*)), &(RequestSender::getInstance()), SLOT(newFrame(const Simulation*)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(newInfo(const Simulation*)), &(RequestSender::getInstance()), SLOT(newInfo(const Simulation*)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newLog()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
 }
 
 SimulationCL Simulation::getCL() const
@@ -104,7 +106,7 @@ bool Simulation::isPaused() const
     return this->paused;
 }
 
-bool Simulation::isStoped() const
+bool Simulation::isStopped() const
 {
     return this->stoped;
 }
@@ -112,10 +114,6 @@ bool Simulation::isStoped() const
 void Simulation::run()
 {
     this->paused = this->stoped = false;
-
-    OpenCL::Core openClCore;
-
-    openClCore.addSourceFile("../Simulation.cl");
 
     const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
 
@@ -126,11 +124,19 @@ void Simulation::run()
     std::vector<FaceCL> facesCL = this->scenery.getObjectsManager().getFacesCL(materialsManager).toStdVector();
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
 
+    OpenCL::Core openClCore;
+
+    emit this->newLog("Loading OpenCL kernel");
+    openClCore.addSourceFile("../Simulation.cl");
+    emit this->newLog("OpenCL kernel loaded");
+
+    emit this->newLog("Initiating objects copy to GPU's memory");
     openClCore.writeBuffer<ParticleCL>(particlesCL);
     openClCore.writeBuffer<FaceCL>(facesCL);
     openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
     openClCore.writeBuffer<SimulationCL>(simulationsCL);
     openClCore.writeBuffer<SceneryCL>(sceneriesCL);
+    emit this->newLog("Objects copy to GPU's memory done");
 
     openClCore.addKernel("initialize_particles", particlesCL.size());
     openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
@@ -140,8 +146,10 @@ void Simulation::run()
     openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
     openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
 
+    emit this->newLog("Initiating objects");
     openClCore.run();
     openClCore.clearKernels();
+    emit this->newLog("Objects initialized");
 
     openClCore.addKernel("reset_particles_forces", particlesCL.size());
     openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
@@ -189,6 +197,8 @@ void Simulation::run()
 
     double previousStep = this->currentStep;
 
+    emit this->newLog("Simulation begin");
+
     while((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
     {        
         if (this->currentStep % frameSteps == 0) {
@@ -198,7 +208,7 @@ void Simulation::run()
             this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
             this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
 
-            emit this->newFrame(this);
+            emit this->newFrame();
         }
 
         int mSecElapsed = time.elapsed();
@@ -210,7 +220,7 @@ void Simulation::run()
 
             previousStep = this->currentStep;
 
-            emit this->newInfo(this);
+            emit this->newLog();
 
             time.restart();
         }
@@ -230,6 +240,9 @@ void Simulation::pause()
 void Simulation::stop()
 {
     this->stoped = true;
+
+    if (this->isPaused())
+        emit this->newLog();
 }
 
 

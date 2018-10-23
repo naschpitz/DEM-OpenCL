@@ -14,8 +14,8 @@ class RequestSender : public QObject
         static RequestSender& getInstance();
 
     public slots:
-        void newFrame(const Simulation* simulation);
-        void newInfo(const Simulation* simulation);
+        void newFrame();
+        void newLog(QString message = QString());
 
     private:
         QString serverAddress;

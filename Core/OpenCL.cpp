@@ -41,6 +41,8 @@ void Core::showDevices()
             std::cout << "      Device: " << devices[j].getInfo<CL_DEVICE_NAME>() << "\n";
         }
     }
+
+    std::cout.flush();
 }
 
 void Core::addSourceFile(std::string fileName)

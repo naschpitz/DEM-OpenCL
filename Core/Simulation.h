@@ -70,7 +70,7 @@ class Simulation : public QThread
         const Scenery& getScenery() const;
 
         bool isPaused() const;
-        bool isStoped() const;
+        bool isStopped() const;
 
         void pause();
         void stop();
@@ -79,8 +79,8 @@ class Simulation : public QThread
         void run();
 
     signals:
-        void newFrame(const Simulation* simulation);
-        void newInfo(const Simulation* simulation);
+        void newFrame();
+        void newLog(QString message = QString());
 };
 
 #endif // SIMULATION_H

@@ -3,6 +3,7 @@
 #include <QString>
 
 #include "httplistener.h"
+#include "OpenCL.h"
 #include "RequestMapper.h"
 #include "Simulation.h"
 
@@ -53,6 +54,9 @@ QString searchConfigFile()
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+
+    OpenCL::Core openClCore;
+    openClCore.showDevices();
 
     std::setlocale(LC_NUMERIC, "C");
 

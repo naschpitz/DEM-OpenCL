@@ -16,8 +16,10 @@ RequestSender& RequestSender::getInstance()
     return instance;
 }
 
-void RequestSender::newFrame(const Simulation* simulation)
+void RequestSender::newFrame()
 {    
+    Simulation *simulation = (Simulation*)QObject::sender();
+
     QJsonObject jsonObject;
 
     jsonObject["owner"]       = simulation->getId();
@@ -32,21 +34,52 @@ void RequestSender::newFrame(const Simulation* simulation)
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
 }
 
-void RequestSender::newInfo(const Simulation* simulation)
+void RequestSender::newLog(QString message)
 {
+    Simulation *simulation = (Simulation*)QObject::sender();
+
     QJsonObject jsonObject;
 
     jsonObject["owner"] = simulation->getId();
 
-    jsonObject["currentStep"] = (int)simulation->getCurrentStep();
-    jsonObject["currentTime"] = simulation->getCurrentTime();
-    jsonObject["stepsPerSecond"] = simulation->getStepsPerSecond();
-    jsonObject["et"] = (int)simulation->getEt();
-    jsonObject["eta"] = (int)simulation->getEta();
+    QString state;
+    if (simulation->isRunning() && simulation->getCurrentStep() == 0) {
+        state = "new";
+    }
+
+    else if (simulation->isRunning()) {
+        state = "running";
+    }
+
+    else if (simulation->isStopped()) {
+        state = "stopped";
+        message = "Simulation stopped";
+    }
+
+    else if (simulation->isPaused()) {
+        state = "paused";
+        message = "Simulation paused";
+    }
+
+    else {
+        state = "done";
+        message = "Simulation done";
+    }
+
+    jsonObject["state"] = state;
+
+    QJsonObject progressJsonObject;
+    progressJsonObject["currentStep"] = (int)simulation->getCurrentStep();
+    progressJsonObject["currentTime"] = simulation->getCurrentTime();
+    progressJsonObject["stepsPerSecond"] = simulation->getStepsPerSecond();
+    progressJsonObject["et"] = (int)simulation->getEt();
+    progressJsonObject["eta"] = (int)simulation->getEta();
+
+    jsonObject["progress"] = progressJsonObject;
 
     QJsonDocument document(jsonObject);
     QByteArray data = document.toJson();
 
-    QString url = this->serverAddress + "/simulationsInfos";
+    QString url = this->serverAddress + "/simulationsLogs";
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
 }

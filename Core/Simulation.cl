@@ -84,7 +84,7 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     particles[idx] = thisParticle;
 }
 
-kernel void calculate_particle_to_face(global Particle* particles, constant Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
+kernel void calculate_particle_to_face(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
 {
     size_t idx  = get_global_id(0);
 
@@ -106,7 +106,7 @@ kernel void calculate_particle_to_face(global Particle* particles, constant Face
     particles[idx] = thisParticle;
 }
 
-kernel void calculate_face_to_particle(global Face* faces, constant Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
+kernel void calculate_face_to_particle(global Face* faces, global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
 {
     size_t idx  = get_global_id(0);
 

@@ -12,7 +12,6 @@ class ObjectsManager
     private:
         QVector<NonSolidObject> nonSolidObjects;
         QVector<SolidObject> solidObjects;
-        QMap<QString, uint> idsMap;
 
     public:
         ObjectsManager();

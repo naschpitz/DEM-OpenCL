@@ -47,7 +47,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 
         Simulation* simulation = this->getSimulationById(_id);
 
-        if (!simulation)
+        if (!simulation->isRunning())
             response.setStatus(412, "Simulation not running");
 
         simulation->pause();
@@ -67,10 +67,9 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         this->simulations.remove(simulation);
 
         if (!simulation)
-            response.setStatus(412, "Simulation not running");
+            response.setStatus(412, "Simulation not paused or running");
 
         simulation->stop();
-        //simulation->deleteLater();
     }
 }
 
