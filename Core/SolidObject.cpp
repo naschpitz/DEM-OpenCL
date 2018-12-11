@@ -252,7 +252,7 @@ QJsonObject SolidObject::getJson() const
 {
     QJsonObject jsonObject;
 
-    jsonObject["_id"] = this->id;
+    jsonObject["owner"] = this->id;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();
@@ -262,7 +262,7 @@ QJsonObject SolidObject::getJson() const
     currentPositionArray.append(currentPosition.getY());
     currentPositionArray.append(currentPosition.getZ());
 
-    jsonObject["currentPosition"] = currentPositionArray;
+    jsonObject["position"] = currentPositionArray;
     //
 
     // -- currentVelocity
@@ -273,7 +273,7 @@ QJsonObject SolidObject::getJson() const
     currentVelocityArray.append(currentVelocity.getY());
     currentVelocityArray.append(currentVelocity.getZ());
 
-    jsonObject["currentVelocity"] = currentVelocityArray;
+    jsonObject["velocity"] = currentVelocityArray;
     //
 
     // -- currentForce
@@ -284,7 +284,7 @@ QJsonObject SolidObject::getJson() const
     currentForceArray.append(currentForce.getY());
     currentForceArray.append(currentForce.getZ());
 
-    jsonObject["currentForce"] = currentForceArray;
+    jsonObject["force"] = currentForceArray;
     //
 
     // -- faces

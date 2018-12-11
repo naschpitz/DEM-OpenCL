@@ -228,7 +228,7 @@ QJsonObject NonSolidObject::getJson() const
 {
     QJsonObject jsonObject;
 
-    jsonObject["_id"] = this->id;
+    jsonObject["owner"] = this->id;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();
@@ -238,7 +238,7 @@ QJsonObject NonSolidObject::getJson() const
     currentPositionArray.append(currentPosition.getY());
     currentPositionArray.append(currentPosition.getZ());
 
-    jsonObject["currentPosition"] = currentPositionArray;
+    jsonObject["position"] = currentPositionArray;
     //
 
     // -- currentVelocity
@@ -249,10 +249,10 @@ QJsonObject NonSolidObject::getJson() const
     currentVelocityArray.append(currentVelocity.getY());
     currentVelocityArray.append(currentVelocity.getZ());
 
-    jsonObject["currentVelocity"] = currentVelocityArray;
+    jsonObject["velocity"] = currentVelocityArray;
     //
 
-    // -- totalForce
+    // -- currentForce
     Vector3D currentForce = this->getCurrentForce();
 
     QJsonArray currentForceArray;
@@ -260,7 +260,25 @@ QJsonObject NonSolidObject::getJson() const
     currentForceArray.append(currentForce.getY());
     currentForceArray.append(currentForce.getZ());
 
-    jsonObject["currentForce"] = currentForceArray;
+    jsonObject["force"] = currentForceArray;
+    //
+
+    // -- kineticEnergyTotal
+    double currentKineticEnergyTotal = this->getCurrentKineticEnergyTotal();
+
+    jsonObject["kineticEnergyTotal"] = currentKineticEnergyTotal;
+    //
+
+    // -- kineticEnergyInternal
+    double currentKineticEnergyInternal = this->getCurrentKineticEnergyInternal();
+
+    jsonObject["kineticEnergyInternal"] = currentKineticEnergyInternal;
+    //
+
+    // -- kineticEnergyExternal
+    double currentKineticEnergyExternal = this->getCurrentKineticEnergyExternal();
+
+    jsonObject["kineticEnergyExternal"] = currentKineticEnergyExternal;
     //
 
     // -- particles

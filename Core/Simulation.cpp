@@ -27,7 +27,7 @@ Simulation::Simulation(const QJsonObject& jsonObject)
     this->timeStep    = jsonObject["timeStep"].toDouble();
     this->totalTime   = jsonObject["totalTime"].toDouble();
     this->frameTime   = jsonObject["frameTime"].toDouble();
-    this->infoTime    = jsonObject["infoTime"].toDouble();
+    this->logTime    = jsonObject["logTime"].toDouble();
     this->totalSteps  = this->totalTime / this->timeStep;
 
     QJsonObject sceneryJsonObject = jsonObject["scenery"].toObject();
@@ -237,7 +237,7 @@ void Simulation::run()
 
         int mSecElapsed = time.elapsed();
 
-        if (mSecElapsed > (this->infoTime * 1000) || this->currentStep == this->totalSteps) {
+        if (mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
             long numSteps = this->currentStep - previousStep;
             this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
             this->et += mSecElapsed;

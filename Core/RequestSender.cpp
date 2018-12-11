@@ -22,10 +22,10 @@ void RequestSender::newFrame()
 
     QJsonObject jsonObject;
 
-    jsonObject["owner"]       = simulation->getId();
-    jsonObject["currentStep"] = (int)simulation->getCurrentStep();
-    jsonObject["currentTime"] = simulation->getCurrentTime();
-    jsonObject["scenery"]     = simulation->getScenery().getJson();
+    jsonObject["owner"]   = simulation->getId();
+    jsonObject["step"]    = (int)simulation->getCurrentStep();
+    jsonObject["time"]    = simulation->getCurrentTime();
+    jsonObject["scenery"] = simulation->getScenery().getJson();
 
     QJsonDocument document(jsonObject);
     QByteArray data = document.toJson();
@@ -69,8 +69,8 @@ void RequestSender::newLog(QString message)
     jsonObject["state"] = state;
 
     QJsonObject progressJsonObject;
-    progressJsonObject["currentStep"] = (int)simulation->getCurrentStep();
-    progressJsonObject["currentTime"] = simulation->getCurrentTime();
+    progressJsonObject["step"] = (int)simulation->getCurrentStep();
+    progressJsonObject["time"] = simulation->getCurrentTime();
     progressJsonObject["stepsPerSecond"] = simulation->getStepsPerSecond();
     progressJsonObject["et"] = (int)simulation->getEt();
     progressJsonObject["eta"] = (int)simulation->getEta();

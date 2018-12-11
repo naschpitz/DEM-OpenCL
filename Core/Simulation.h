@@ -39,7 +39,7 @@ class Simulation : public QThread
         long   totalSteps;
 
         double frameTime;
-        double infoTime;
+        double logTime;
 
         double stepsPerSecond;
         long et;

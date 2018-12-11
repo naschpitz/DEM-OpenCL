@@ -49,7 +49,7 @@ const QJsonObject Scenery::getJson() const
 {
     QJsonObject jsonObject;
 
-    jsonObject["_id"] = this->id;
+    jsonObject["owner"] = this->id;
     jsonObject["objects"] = this->objectsManager.getJson();
 
     return jsonObject;
