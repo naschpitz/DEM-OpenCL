@@ -68,7 +68,9 @@ DISTFILES += \
     FaceWorker.cl \
     Edge.cl \
     Scenery.cl \
-    Simulation2.cl
+    Simulation2.cl \
+    ReducedParticle.cl \
+    ReducedVertex.cl
 
 LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
 

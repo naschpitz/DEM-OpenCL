@@ -154,7 +154,7 @@ void Simulation::run()
         openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
     }
 
-    emit this->newLog("Initiating objects");
+    emit this->newLog("Initializing objects");
     openClCore.run();
     openClCore.clearKernels();
     emit this->newLog("Objects initialized");

@@ -6,6 +6,8 @@
 #include "../MaterialsManager.cl"
 #include "../Particle.cl"
 #include "../ParticleWorker.cl"
+#include "../ReducedParticle.cl"
+#include "../ReducedVertex.cl"
 #include "../Scenery.cl"
 
 typedef struct
@@ -60,12 +62,46 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     size_t idx  = get_global_id(0);
     size_t size = get_global_size(0);
 
+    size_t lidx = get_local_id(0);
+    size_t lsize = get_local_size(0);
+
+    size_t ngroups = size / lsize;
+
+    __local ReducedParticle reducedParticlesCache[256];
+
     Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
     thisParticle.currentForce = (0, 0, 0, 0);
     thisParticle.currentTorque = (0, 0, 0, 0);
+
+    /*
+    for(size_t i = 0; i < ngroups; i++) {
+        Particle particle = particles[i*lsize + lidx];
+        reducedParticlesCache[lidx] = reducedParticle_fromParticle(&particle);
+        barrier(CLK_LOCAL_MEM_FENCE);
+
+        for(size_t j = 0; j < lsize; j++) {
+            ReducedParticle reducedParticle = reducedParticlesCache[j];
+            Particle otherParticle = reducedParticle_toParticle(&reducedParticle);
+
+            if (thisParticle.index == otherParticle.index)
+                continue;
+
+            int thisMaterialIndex = thisParticle.materialIndex;
+            int otherMateriaIndex = otherParticle.materialIndex;
+
+            const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
+
+            particleToParticleWorker_run(&thisParticle, &otherParticle, material);
+        }
+
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    particles[idx] = thisParticle;
+*/
 
     for(ulong i = 0; i < size; i++) {
         if(i == idx)
@@ -82,6 +118,7 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     }
 
     particles[idx] = thisParticle;
+
 }
 
 kernel void calculate_particle_to_face(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)

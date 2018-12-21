@@ -35,7 +35,7 @@ void Core::showDevices()
 
         platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &(devices));
 
-        if(devices.size()==0) {
+        if(devices.size() == 0) {
             std::cout << "      No devices found. Check OpenCL installation!\n";
             exit(1);
         }
