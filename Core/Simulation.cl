@@ -62,6 +62,8 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     size_t idx  = get_global_id(0);
     size_t size = get_global_size(0);
 
+    size_t offset = get_global_offset(0);
+
     size_t lidx = get_local_id(0);
     size_t lsize = get_local_size(0);
 
@@ -103,11 +105,11 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     particles[idx] = thisParticle;
 */
 
-    for(ulong i = 0; i < size; i++) {
-        if(i == idx)
-            continue;
-
+    for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];
+
+        if(thisParticle.index == otherParticle.index)
+            continue;
 
         int thisMaterialIndex = thisParticle.materialIndex;
         int otherMateriaIndex = otherParticle.materialIndex;
@@ -118,7 +120,6 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     }
 
     particles[idx] = thisParticle;
-
 }
 
 kernel void calculate_particle_to_face(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)

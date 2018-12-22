@@ -228,7 +228,7 @@ QJsonObject NonSolidObject::getJson() const
 {
     QJsonObject jsonObject;
 
-    jsonObject["owner"] = this->id;
+    jsonObject["_id"] = this->id;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();

@@ -30,7 +30,6 @@ namespace OpenCL
             cl::Platform platform;
 
             std::vector<cl::Device> devices;
-            cl::Device device;
 
             cl::Context context;
 
@@ -39,7 +38,7 @@ namespace OpenCL
             bool programBuilt;
             cl::Program program;
 
-            cl::CommandQueue queue;
+            std::vector<cl::CommandQueue> queues;
 
             std::vector<Kernel> kernels;
 
@@ -73,21 +72,33 @@ namespace OpenCL
         cl::Buffer dBuffer(this->context, CL_MEM_READ_WRITE, sizeof(T) * hBuffer.size());
         this->bufferMap[&hBuffer] = dBuffer;
 
-        this->queue.enqueueWriteBuffer(dBuffer, CL_TRUE, 0, sizeof(T) * hBuffer.size(), hBuffer.data());
+        for(std::vector<cl::CommandQueue>::iterator it = this->queues.begin(); it != this->queues.end(); it++) {
+            it->enqueueWriteBuffer(dBuffer, CL_TRUE, 0, sizeof(T) * hBuffer.size(), hBuffer.data());
+        }
     }
 
     template<class T> void Core::readBuffer(std::vector<T> &hBuffer)
     {
         cl::Buffer dBuffer = this->bufferMap[&hBuffer];
 
-        this->queue.enqueueReadBuffer(dBuffer, CL_TRUE, 0, sizeof(T) * hBuffer.size(), hBuffer.data());
+        uint countPerQueue = hBuffer.size() / this->queues.size();
+
+        std::cout << "CountPerQueue: " << countPerQueue << "\n";
+
+        for(std::vector<cl::CommandQueue>::iterator it = this->queues.begin(); it != this->queues.end(); it++) {
+            uint offset = std::distance(this->queues.begin(), it) * countPerQueue;
+
+            std::cout << "Offset: " << offset << "\n";
+
+            it->enqueueReadBuffer(dBuffer, CL_TRUE, sizeof(T) * offset, sizeof(T) * countPerQueue, hBuffer.data() + offset);
+        }
     }
 
     template<class T> void Core::addArgument(std::string kernelName, std::vector<T> &hBuffer)
     {
         cl::Buffer dBuffer = this->bufferMap[&hBuffer];
 
-        for (std::vector<Kernel>::iterator it = this->kernels.begin(); it != this->kernels.end(); it++) {
+        for(std::vector<Kernel>::iterator it = this->kernels.begin(); it != this->kernels.end(); it++) {
             if(it->name.compare(kernelName) == 0) {
                 it->kernel.setArg(it->argsCount, dBuffer);
                 it->argsCount++;

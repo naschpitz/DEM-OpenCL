@@ -68,7 +68,6 @@ DISTFILES += \
     FaceWorker.cl \
     Edge.cl \
     Scenery.cl \
-    Simulation2.cl \
     ReducedParticle.cl \
     ReducedVertex.cl
 

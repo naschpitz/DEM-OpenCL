@@ -53,20 +53,18 @@ void RequestSender::newLog(QString message)
 
     else if (simulation->isStopped()) {
         state = "stopped";
-        message = "Simulation stopped";
     }
 
     else if (simulation->isPaused()) {
         state = "paused";
-        message = "Simulation paused";
     }
 
     else {
         state = "done";
-        message = "Simulation done";
     }
 
     jsonObject["state"] = state;
+    jsonObject["message"] = message;
 
     QJsonObject progressJsonObject;
     progressJsonObject["step"] = (int)simulation->getCurrentStep();

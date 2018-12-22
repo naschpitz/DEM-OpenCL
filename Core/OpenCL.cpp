@@ -67,7 +67,7 @@ void Core::addSourceFile(std::string fileName)
 
 void Core::addKernel(std::string kernelName, uint nElements)
 {
-    if (!this->programBuilt)
+    if(!this->programBuilt)
         this->buildProgram();
 
     // Alternative way to run the kernel.
@@ -79,7 +79,7 @@ void Core::addKernel(std::string kernelName, uint nElements)
 
     kernel.kernel = cl::Kernel(this->program, kernelName.c_str(), &result);
 
-    if (result != CL_SUCCESS) {
+    if(result != CL_SUCCESS) {
         std::cout << "Error creating kernel: " << result << "\n";
         exit(1);
     }
@@ -89,6 +89,8 @@ void Core::addKernel(std::string kernelName, uint nElements)
 
 void Core::buildPlatform()
 {
+    std::cout << "Building platform...";
+
     // Get all platforms (drivers).
     cl::Platform::get(&(this->platforms));
 
@@ -98,10 +100,14 @@ void Core::buildPlatform()
     }
 
     this->platform = this->platforms[0];
+
+    std::cout << " Done!\n";
 }
 
 void Core::buildDevice()
 {
+    std::cout << "Building devices...";
+
     // Get default device of the default platform.
     this->platform.getDevices(CL_DEVICE_TYPE_ALL, &(this->devices));
 
@@ -110,29 +116,41 @@ void Core::buildDevice()
         exit(1);
     }
 
-    this->device = this->devices[0];
+    std::cout << " Done!\n";
 }
 
 void Core::buildContext()
 {
+    std::cout << "Building context...";
+
     cl_int result;
 
-    this->context = cl::Context({this->device}, NULL, NULL, NULL, &result);
+    this->context = cl::Context(this->devices, NULL, NULL, NULL, &result);
 
-    if (result != CL_SUCCESS) {
+    if(result != CL_SUCCESS) {
         std::cout << "Error creating context: " << result << "\n";
         exit(1);
     }
+
+    std::cout << " Done!\n";
 }
 
 void Core::buildQueue()
 {
-    // Create queue to which we will push commands for the device.
-    this->queue = cl::CommandQueue(this->context, this->device);
+    std::cout << "Building queue...";
+
+    // Create queues to which we will push commands for the devices.
+    for(std::vector<cl::Device>::iterator it = this->devices.begin(); it != this->devices.end(); it++) {
+        this->queues.push_back(cl::CommandQueue(this->context, *it));
+    }
+
+    std::cout << " Done!\n";
 }
 
 void Core::buildProgram()
 {
+    std::cout << "Building program...";
+
     cl_int result;
 
     this->program = cl::Program(this->context, this->sources, &result);
@@ -142,12 +160,17 @@ void Core::buildProgram()
         exit(1);
     }
 
-    if(this->program.build({this->device}) != CL_SUCCESS) {
-        std::cout << "Error building: " << this->program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(this->device) << "\n";
+    if(this->program.build(this->devices, "-I ./") != CL_SUCCESS) {
+        for(std::vector<cl::Device>::iterator it = this->devices.begin(); it != this->devices.end(); it++) {
+            std::cout << "Error building: " << this->program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(*it) << "\n";
+        }
+
         exit(1);
     }
 
     this->programBuilt = true;
+
+    std::cout << " Done!\n";
 }
 
 void Core::clearKernels()
@@ -157,16 +180,23 @@ void Core::clearKernels()
 
 void Core::run()
 {
-    for(std::vector<Kernel>::iterator it = this->kernels.begin(); it != this->kernels.end(); it++) {
-        cl_int result = this->queue.enqueueNDRangeKernel(it->kernel, cl::NullRange, cl::NDRange(it->nElements), cl::NullRange);
+    for(std::vector<cl::CommandQueue>::iterator queueIt = this->queues.begin(); queueIt != this->queues.end(); queueIt++) {
+        for(std::vector<Kernel>::iterator kernelIt = this->kernels.begin(); kernelIt != this->kernels.end(); kernelIt++) {
+            uint countPerQueue = kernelIt->nElements / this->queues.size();
+            uint offset = std::distance(this->queues.begin(), queueIt) * countPerQueue;
 
-        if(result != CL_SUCCESS) {
-            std::cout << "Error enqueueing kernel: " << result << "\n";
-            exit(1);
+            cl_int result = queueIt->enqueueNDRangeKernel(kernelIt->kernel, offset, cl::NDRange(countPerQueue), cl::NullRange);
+
+            if(result != CL_SUCCESS) {
+                std::cout << "Error enqueueing kernel: " << result << "\n";
+                exit(1);
+            }
+
+            queueIt->enqueueBarrierWithWaitList();
         }
-
-        this->queue.enqueueBarrierWithWaitList();
     }
 
-    this->queue.finish();
+    for(std::vector<cl::CommandQueue>::iterator queueIt = this->queues.begin(); queueIt != this->queues.end(); queueIt++) {
+        queueIt->finish();
+    }
 }
