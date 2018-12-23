@@ -16,6 +16,7 @@
 #include <QJsonObject>
 #include <QObject>
 #include <QThread>
+#include <QHostAddress>
 
 typedef struct
 {
@@ -29,6 +30,7 @@ class Simulation : public QThread
     Q_OBJECT
 
     private:
+        QHostAddress serverAddress;
         QString id;
 
         double currentTime;
@@ -54,6 +56,9 @@ class Simulation : public QThread
         Simulation(const QJsonObject& jsonObject);
 
         SimulationCL getCL() const;
+
+        const QHostAddress& getServerAddress() const;
+        void setServerAddress(const QHostAddress& serverAddress);
 
         const QString& getId() const;
         const double& getCurrentTime() const;

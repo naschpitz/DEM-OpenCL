@@ -50,6 +50,16 @@ SimulationCL Simulation::getCL() const
     return simulationCL;
 }
 
+const QHostAddress& Simulation::getServerAddress() const
+{
+    return this->serverAddress;
+}
+
+void Simulation::setServerAddress(const QHostAddress& serverAddress)
+{
+    this->serverAddress = serverAddress;
+}
+
 const QString& Simulation::getId() const
 {
     return this->id;

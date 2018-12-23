@@ -32,6 +32,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 
         this->simulations.insert(simulation);
 
+        simulation->setServerAddress(request.getPeerAddress());
         simulation->start();
     }
 
@@ -50,6 +51,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         if (!simulation->isRunning())
             response.setStatus(412, "Simulation not running");
 
+        simulation->setServerAddress(request.getPeerAddress());
         simulation->pause();
     }
 
@@ -69,6 +71,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         if (!simulation)
             response.setStatus(412, "Simulation not paused or running");
 
+        simulation->setServerAddress(request.getPeerAddress());
         simulation->stop();
     }
 }

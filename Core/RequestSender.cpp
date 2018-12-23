@@ -2,11 +2,13 @@
 
 #include <QJsonDocument>
 #include <QFile>
+#include <iostream>
+
 #include "restclient-cpp/restclient.h"
 
 RequestSender::RequestSender()
 {
-    this->serverAddress = "127.0.0.1:3000/api";
+
 }
 
 RequestSender& RequestSender::getInstance()
@@ -30,7 +32,9 @@ void RequestSender::newFrame()
     QJsonDocument document(jsonObject);
     QByteArray data = document.toJson();
 
-    QString url = this->serverAddress + "/frames";
+    QString url = this->getServerAddress(simulation) + "/api/frames";
+    std::cout << "Sending message to: " << url.toStdString() << "\n";
+
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
 }
 
@@ -78,6 +82,30 @@ void RequestSender::newLog(QString message)
     QJsonDocument document(jsonObject);
     QByteArray data = document.toJson();
 
-    QString url = this->serverAddress + "/simulationsLogs";
+    QString url = this->getServerAddress(simulation) + "/api/simulationsLogs";
+    std::cout << "Sending message to: " << url.toStdString() << "\n";
+
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
+}
+
+QString RequestSender::getServerAddress(const Simulation *simulation) const
+{
+    QHostAddress serverAddress = simulation->getServerAddress();
+    QString url;
+
+    std::cout << serverAddress.toString().toStdString() << "\n";
+
+    if(serverAddress.isEqual(QHostAddress("127.0.0.1"))) {
+        url = "127.0.0.1:3000";
+    }
+
+    if(QHostAddress(serverAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.25.0"), 24)) {
+        url = QHostAddress(serverAddress.toIPv4Address()).toString() + ":3000";
+    }
+
+    if(serverAddress.isEqual(QHostAddress("163.172.186.232"))) {
+        url = "https://icnsim.cienciasnauticas.org.br";
+    }
+
+    return url;
 }

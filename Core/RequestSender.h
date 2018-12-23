@@ -21,6 +21,7 @@ class RequestSender : public QObject
         QString serverAddress;
 
         RequestSender(); // Constructor? (the {} brackets) are needed here.
+        QString getServerAddress(const Simulation* simulation) const;
 
         // C++ 11
         // =======
