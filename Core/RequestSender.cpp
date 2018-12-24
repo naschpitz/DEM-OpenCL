@@ -33,8 +33,6 @@ void RequestSender::newFrame()
     QByteArray data = document.toJson();
 
     QString url = this->getServerAddress(simulation) + "/api/frames";
-    std::cout << "Sending message to: " << url.toStdString() << "\n";
-
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
 }
 
@@ -83,8 +81,6 @@ void RequestSender::newLog(QString message)
     QByteArray data = document.toJson();
 
     QString url = this->getServerAddress(simulation) + "/api/simulationsLogs";
-    std::cout << "Sending message to: " << url.toStdString() << "\n";
-
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
 }
 

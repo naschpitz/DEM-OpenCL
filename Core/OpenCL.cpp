@@ -50,6 +50,8 @@ void Core::showDevices()
 
 void Core::addSourceFile(std::string fileName)
 {
+    std::cout << "Reading source file...";
+
     std::ifstream sourceFile;
     sourceFile.open(fileName); // Open the input file
 
@@ -63,6 +65,8 @@ void Core::addSourceFile(std::string fileName)
     std::string sourceCode = stream.str(); //str holds the content of the file.
 
     this->sources.push_back({sourceCode.c_str(), sourceCode.length()});
+
+    std::cout << " Done!\n";
 }
 
 void Core::addKernel(std::string kernelName, uint nElements)
@@ -77,6 +81,8 @@ void Core::addKernel(std::string kernelName, uint nElements)
 
     cl_int result;
 
+    std::cout << "Building kernel...";
+
     kernel.kernel = cl::Kernel(this->program, kernelName.c_str(), &result);
 
     if(result != CL_SUCCESS) {
@@ -85,6 +91,8 @@ void Core::addKernel(std::string kernelName, uint nElements)
     }
 
     this->kernels.push_back(kernel);
+
+    std::cout << " Done!\n";
 }
 
 void Core::buildPlatform()

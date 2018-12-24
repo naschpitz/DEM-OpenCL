@@ -34,7 +34,7 @@ Simulation::Simulation(const QJsonObject& jsonObject)
     this->scenery = Scenery(sceneryJsonObject);
 
     connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(newLog()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
@@ -231,7 +231,7 @@ void Simulation::run()
 
     double previousStep = this->currentStep;
 
-    emit this->newLog("Simulation begin");
+    emit this->newLog("Simulation began");
 
     while((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
     {        
@@ -242,6 +242,7 @@ void Simulation::run()
             this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
             this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
 
+            emit this->newLog("New frame");
             emit this->newFrame();
         }
 
@@ -254,7 +255,7 @@ void Simulation::run()
 
             previousStep = this->currentStep;
 
-            emit this->newLog();
+            emit this->newLog("New log message");
 
             time.restart();
         }
@@ -264,11 +265,15 @@ void Simulation::run()
         this->currentTime += this->timeStep;
         this->currentStep += 1;
     }
+
+    emit this->newLog("Simulation ended");
 }
 
 void Simulation::pause()
 {
     this->paused = true;
+
+    emit this->newLog("Simulation paused order issued");
 }
 
 void Simulation::stop()
@@ -277,10 +282,14 @@ void Simulation::stop()
 
     if (this->isPaused())
         emit this->newLog();
+
+    emit this->newLog("Simulation stop order issued");
 }
 
 void Simulation::selfDelete()
 {
-    if (this->isStopped())
+    if (this->isStopped()) {
+        emit this->newLog("Simulation object deleted");
         this->deleteLater();
+    }
 }
