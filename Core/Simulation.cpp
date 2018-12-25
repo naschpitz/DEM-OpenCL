@@ -152,41 +152,43 @@ void Simulation::run()
     bool hasParticles = particlesCL.size();
     bool hasFaces = facesCL.size();
 
-    if(hasParticles) {
-        openClCore.addKernel("initialize_particles", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
-        openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
+    if (!this->isPaused()) {
+        if (hasParticles) {
+            openClCore.addKernel("initialize_particles", particlesCL.size());
+            openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
+            openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
+        }
+
+        if (hasFaces) {
+            openClCore.addKernel("initialize_faces", facesCL.size());
+            openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
+            openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
+        }
+
+        emit this->newLog("Initializing objects");
+        openClCore.run();
+        openClCore.clearKernels();
+        emit this->newLog("Objects initialized");
     }
 
-    if(hasFaces) {
-        openClCore.addKernel("initialize_faces", facesCL.size());
-        openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
-        openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
-    }
-
-    emit this->newLog("Initializing objects");
-    openClCore.run();
-    openClCore.clearKernels();
-    emit this->newLog("Objects initialized");
-
-    if(hasParticles) {
+    if (hasParticles) {
         openClCore.addKernel("reset_particles_forces", particlesCL.size());
         openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
     }
 
-    if(hasFaces) {
+    if (hasFaces) {
         openClCore.addKernel("reset_faces_forces", facesCL.size());
         openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
     }
 
-    if(hasParticles) {
+    if (hasParticles) {
         openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
     }
 
-    if(hasParticles && hasFaces) {
+    if (hasParticles && hasFaces) {
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
@@ -200,25 +202,25 @@ void Simulation::run()
         openClCore.addArgument<SceneryCL>("calculate_face_to_particle", sceneriesCL);
     }
 
-    if(hasParticles) {
+    if (hasParticles) {
         openClCore.addKernel("apply_particles_gravity", particlesCL.size());
         openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
         openClCore.addArgument<SceneryCL>("apply_particles_gravity", sceneriesCL);
     }
 
-    if(hasFaces) {
+    if (hasFaces) {
         openClCore.addKernel("apply_faces_gravity", facesCL.size());
         openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
         openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
     }
 
-    if(hasParticles) {
+    if (hasParticles) {
         openClCore.addKernel("integrate_particles", particlesCL.size());
         openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
         openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
     }
 
-    if(hasFaces) {
+    if (hasFaces) {
         openClCore.addKernel("integrate_faces", facesCL.size());
         openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
         openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
@@ -233,7 +235,7 @@ void Simulation::run()
 
     emit this->newLog("Simulation began");
 
-    while((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
+    while ((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
     {        
         if (this->currentStep % frameSteps == 0) {
             openClCore.readBuffer(particlesCL);
@@ -266,30 +268,34 @@ void Simulation::run()
         this->currentStep += 1;
     }
 
+    if (this->isStopped())
+        this->newLog("Simulation stopped");
+
+    else if (this->isPaused())
+        this->newLog("Simulation paused");
+
     emit this->newLog("Simulation ended");
 }
 
 void Simulation::pause()
 {
     this->paused = true;
-
-    emit this->newLog("Simulation paused order issued");
 }
 
 void Simulation::stop()
 {
     this->stoped = true;
 
+    // TODO: Correct error when stopping a paused simulation, deadlock involved.
+    /*
     if (this->isPaused())
         emit this->newLog();
-
-    emit this->newLog("Simulation stop order issued");
+    */
 }
 
 void Simulation::selfDelete()
 {
     if (this->isStopped()) {
-        emit this->newLog("Simulation object deleted");
         this->deleteLater();
     }
 }

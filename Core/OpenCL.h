@@ -83,12 +83,12 @@ namespace OpenCL
 
         uint countPerQueue = hBuffer.size() / this->queues.size();
 
-        std::cout << "CountPerQueue: " << countPerQueue << "\n";
-
         for(std::vector<cl::CommandQueue>::iterator it = this->queues.begin(); it != this->queues.end(); it++) {
             uint offset = std::distance(this->queues.begin(), it) * countPerQueue;
 
-            std::cout << "Offset: " << offset << "\n";
+            if(std::distance(it, this->queues.end()) == 1) {
+                countPerQueue = hBuffer.size() - countPerQueue * (this->queues.size() - 1);
+            }
 
             it->enqueueReadBuffer(dBuffer, CL_TRUE, sizeof(T) * offset, sizeof(T) * countPerQueue, hBuffer.data() + offset);
         }

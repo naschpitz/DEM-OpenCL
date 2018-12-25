@@ -193,6 +193,10 @@ void Core::run()
             uint countPerQueue = kernelIt->nElements / this->queues.size();
             uint offset = std::distance(this->queues.begin(), queueIt) * countPerQueue;
 
+            if(std::distance(queueIt, this->queues.end()) == 1) {
+                countPerQueue = kernelIt->nElements - countPerQueue * (this->queues.size() - 1);
+            }
+
             cl_int result = queueIt->enqueueNDRangeKernel(kernelIt->kernel, offset, cl::NDRange(countPerQueue), cl::NullRange);
 
             if(result != CL_SUCCESS) {
