@@ -136,7 +136,10 @@ void Material::addDragCoefficient(const double& dragCoefficient)
 
 int Material::fromQStringToForceType(const QString& forceTypeString) const
 {
-    if(forceTypeString == "hooks_law")
+    if(forceTypeString == "adiabatic_compression")
+        return adiabatic_compression;
+
+    else if(forceTypeString == "hooks_law")
         return hooks_law;
 
     else if(forceTypeString == "inverse_linear")
@@ -148,8 +151,8 @@ int Material::fromQStringToForceType(const QString& forceTypeString) const
     else if(forceTypeString == "inverse_cubic")
         return inverse_cubic;
 
-    else if(forceTypeString == "adiabatic_compression")
-        return adiabatic_compression;
+    else if(forceTypeString == "lennard_jones")
+        return lennard_jones;
 
     else if(forceTypeString == "realistic_material")
         return realistic_material;

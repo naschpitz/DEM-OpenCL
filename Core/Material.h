@@ -17,11 +17,12 @@
 
 enum ForceType
 {
+    adiabatic_compression,
     hooks_law,
     inverse_linear,
     inverse_quadratic,
     inverse_cubic,
-    adiabatic_compression,
+    lennard_jones,
     realistic_material
 };
 

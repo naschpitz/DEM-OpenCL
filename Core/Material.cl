@@ -5,13 +5,15 @@
 
 enum ForceType
 {
+    adiabatic_compression,
     hooks_law,
     inverse_linear,
     inverse_quadratic,
     inverse_cubic,
-    adiabatic_compression,
+    lennard_jones,
     realistic_material
 };
+
 
 enum DragForceType
 {
@@ -40,18 +42,6 @@ double4 material_calculateForce(const Material* material, double4 distance, bool
 
     switch(material->forceType)
     {
-        case hooks_law:
-            return -(material->coefficients[0]) * distance;
-
-        case inverse_linear:
-            return (material->coefficients[0] / lengthDistance) * vector_getUnitary(distance);
-
-        case inverse_quadratic:
-            return (material->coefficients[0] / (lengthDistance * lengthDistance)) * vector_getUnitary(distance);
-
-        case inverse_cubic:
-            return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * vector_getUnitary(distance);
-
         case adiabatic_compression:
         {
             double newRadius;
@@ -70,6 +60,29 @@ double4 material_calculateForce(const Material* material, double4 distance, bool
                 return -force;
 
             return force;
+        }
+
+        case hooks_law:
+            return -(material->coefficients[0]) * distance;
+
+        case inverse_linear:
+            return (material->coefficients[0] / lengthDistance) * vector_getUnitary(distance);
+
+        case inverse_quadratic:
+            return (material->coefficients[0] / (lengthDistance * lengthDistance)) * vector_getUnitary(distance);
+
+        case inverse_cubic:
+            return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * vector_getUnitary(distance);
+
+        case lennard_jones:
+        {
+            double r6 = pown(originalLength, 6);
+            double a = 12 * material->coefficients[0] * r6;
+            double b = a * r6;
+
+            double _length = (internal ? -lengthDistance : lengthDistance) + originalLength;
+
+            return (b / pown(_length, 13) - a / pown(_length, 7)) * vector_getUnitary(distance);
         }
 
         case realistic_material:
