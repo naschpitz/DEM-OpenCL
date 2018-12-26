@@ -35,7 +35,8 @@ HEADERS += \
     Particle.h \
     Face.h \
     RequestMapper.h \
-    RequestSender.h
+    RequestSender.h \
+    ../libs/easyzlib/easyzlib.h
 
 SOURCES += \
     main.cpp \
@@ -52,7 +53,8 @@ SOURCES += \
     Vector3D.cpp \
     Face.cpp \
     RequestMapper.cpp \
-    RequestSender.cpp
+    RequestSender.cpp \
+    ../libs/easyzlib/easyzlib.c
 
 OTHER_FILES +=
 

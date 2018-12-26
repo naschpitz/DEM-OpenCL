@@ -2,11 +2,15 @@
 #define REQUESTSENDER_H
 
 #include <QJsonObject>
+#include <QMutex>
 #include <QObject>
+#include <QPair>
+#include <QThread>
+#include <QVector>
 
 #include "Simulation.h"
 
-class RequestSender : public QObject
+class RequestSender : public QThread
 {        
     Q_OBJECT
 
@@ -19,9 +23,14 @@ class RequestSender : public QObject
 
     private:
         QString serverAddress;
+        QMutex mutex;
+        QVector<QPair<QString, QByteArray> > buffer;
 
         RequestSender(); // Constructor? (the {} brackets) are needed here.
         QString getServerAddress(const Simulation* simulation) const;
+
+    protected:
+        void run();
 
         // C++ 11
         // =======

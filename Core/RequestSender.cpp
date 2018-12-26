@@ -1,14 +1,17 @@
 #include "RequestSender.h"
 
+#include <QBuffer>
+#include <QtEndian>
 #include <QJsonDocument>
 #include <QFile>
 #include <iostream>
+#include <cstring>
 
 #include "restclient-cpp/restclient.h"
+#include "../libs/easyzlib/easyzlib.h"
 
 RequestSender::RequestSender()
 {
-
 }
 
 RequestSender& RequestSender::getInstance()
@@ -33,7 +36,15 @@ void RequestSender::newFrame()
     QByteArray data = document.toJson();
 
     QString url = this->getServerAddress(simulation) + "/api/frames";
-    RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
+
+    QPair<QString, QByteArray> pair = QPair<QString, QByteArray>(url, data);
+
+    // As frames data is pretty large usually, a buffer is used to send it as soon as possible.
+    this->mutex.lock();
+    this->buffer.append(pair);
+    this->mutex.unlock();
+
+    this->start();
 }
 
 void RequestSender::newLog(QString message)
@@ -81,15 +92,60 @@ void RequestSender::newLog(QString message)
     QByteArray data = document.toJson();
 
     QString url = this->getServerAddress(simulation) + "/api/simulationsLogs";
+
+    // Log data is sent immediately.
+    std::cout << "Sending data, size: " << data.size() << "\n";
     RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
+    std::cout << "Data sent: " << r.code << " - " <<  r.body << "\n";
+
+    std::cout.flush();
+}
+
+void RequestSender::run()
+{
+    while (true) {
+        QPair<QString, QByteArray> pair;
+
+        this->mutex.lock();
+        bool isEmpty = this->buffer.isEmpty();
+        this->mutex.unlock();
+
+        if (!isEmpty) {
+            this->mutex.lock();
+            pair = this->buffer.takeFirst();
+            this->mutex.unlock();
+        }
+
+        else {
+            this->sleep(1);
+            continue;
+        }
+
+        QString& url = pair.first;
+        QByteArray& data = pair.second;
+
+
+        ezbuffer bufferData(data.size());
+        std::memcpy(bufferData.pBuf, data.data(), data.size());
+        ezbuffer bufferCompressed;
+        ezcompress(bufferCompressed, bufferData);
+
+        std::string package(reinterpret_cast<const char*>(bufferCompressed.pBuf), bufferCompressed.nLen);
+
+        std::cout << "Sending data, size: " << package.size() << "\n";
+        RestClient::Response r = RestClient::post(url.toStdString(), "application/octet-stream", package);
+        std::cout << "Data sent: " << r.code << " - " <<  r.body << "\n";
+
+        std::cout.flush();
+
+        this->sleep(1);
+    }
 }
 
 QString RequestSender::getServerAddress(const Simulation *simulation) const
 {
     QHostAddress serverAddress = simulation->getServerAddress();
     QString url;
-
-    std::cout << serverAddress.toString().toStdString() << "\n";
 
     if(serverAddress.isEqual(QHostAddress("127.0.0.1"))) {
         url = "127.0.0.1:3000";
