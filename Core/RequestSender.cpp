@@ -124,7 +124,6 @@ void RequestSender::run()
         QString& url = pair.first;
         QByteArray& data = pair.second;
 
-
         ezbuffer bufferData(data.size());
         std::memcpy(bufferData.pBuf, data.data(), data.size());
         ezbuffer bufferCompressed;

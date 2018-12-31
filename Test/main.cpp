@@ -5,6 +5,7 @@
 #include "../Core/SolidObject.cpp"
 #include "../Core/ObjectsManager.cpp"
 #include "../Core/OpenCL.cpp"
+#include "../Core/OpenCLCU.cpp"
 #include "../Core/Particle.cpp"
 #include "../Core/Scenery.cpp"
 #include "../Core/Vector3D.cpp"

@@ -27,7 +27,7 @@ Simulation::Simulation(const QJsonObject& jsonObject)
     this->timeStep    = jsonObject["timeStep"].toDouble();
     this->totalTime   = jsonObject["totalTime"].toDouble();
     this->frameTime   = jsonObject["frameTime"].toDouble();
-    this->logTime    = jsonObject["logTime"].toDouble();
+    this->logTime     = jsonObject["logTime"].toDouble();
     this->totalSteps  = this->totalTime / this->timeStep;
 
     QJsonObject sceneryJsonObject = jsonObject["scenery"].toObject();
@@ -168,6 +168,10 @@ void Simulation::run()
         emit this->newLog("Initializing objects");
         openClCore.run();
         openClCore.clearKernels();
+
+        openClCore.syncDevicesBuffers(particlesCL);
+        openClCore.syncDevicesBuffers(facesCL);
+
         emit this->newLog("Objects initialized");
     }
 
@@ -214,6 +218,7 @@ void Simulation::run()
         openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
     }
 
+
     if (hasParticles) {
         openClCore.addKernel("integrate_particles", particlesCL.size());
         openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
@@ -236,11 +241,11 @@ void Simulation::run()
     emit this->newLog("Simulation began");
 
     while ((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
-    {        
-        if (this->currentStep % frameSteps == 0) {
-            openClCore.readBuffer(particlesCL);
-            openClCore.readBuffer(facesCL);
+    {
+        openClCore.syncDevicesBuffers(particlesCL);
+        openClCore.syncDevicesBuffers(facesCL);
 
+        if (this->currentStep % frameSteps == 0) {
             this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
             this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
 
@@ -256,10 +261,9 @@ void Simulation::run()
             this->et += mSecElapsed;
 
             previousStep = this->currentStep;
+            time.restart();
 
             emit this->newLog("New log message");
-
-            time.restart();
         }
 
         openClCore.run();

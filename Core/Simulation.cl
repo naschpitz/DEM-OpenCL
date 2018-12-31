@@ -48,6 +48,9 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
         thisFace.vertexes[i].currentPosition = thisFace.vertexes[i].originalPosition;
     }
 
+    face_calculateCurrentPosition(&thisFace);
+    face_calculateCurrentVelocity(&thisFace);
+
     thisFace.currentForce = (0, 0, 0, 0);
     thisFace.oldForce     = (0, 0, 0, 0);
 
@@ -59,51 +62,11 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
 
 kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery)
 {
-    size_t idx  = get_global_id(0);
-    size_t size = get_global_size(0);
-
-    size_t offset = get_global_offset(0);
-
-    size_t lidx = get_local_id(0);
-    size_t lsize = get_local_size(0);
-
-    size_t ngroups = size / lsize;
-
-    __local ReducedParticle reducedParticlesCache[256];
+    size_t idx = get_global_id(0);
 
     Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
-
-    thisParticle.currentForce = (0, 0, 0, 0);
-    thisParticle.currentTorque = (0, 0, 0, 0);
-
-    /*
-    for(size_t i = 0; i < ngroups; i++) {
-        Particle particle = particles[i*lsize + lidx];
-        reducedParticlesCache[lidx] = reducedParticle_fromParticle(&particle);
-        barrier(CLK_LOCAL_MEM_FENCE);
-
-        for(size_t j = 0; j < lsize; j++) {
-            ReducedParticle reducedParticle = reducedParticlesCache[j];
-            Particle otherParticle = reducedParticle_toParticle(&reducedParticle);
-
-            if (thisParticle.index == otherParticle.index)
-                continue;
-
-            int thisMaterialIndex = thisParticle.materialIndex;
-            int otherMateriaIndex = otherParticle.materialIndex;
-
-            const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
-
-            particleToParticleWorker_run(&thisParticle, &otherParticle, material);
-        }
-
-        barrier(CLK_LOCAL_MEM_FENCE);
-    }
-
-    particles[idx] = thisParticle;
-*/
 
     for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];

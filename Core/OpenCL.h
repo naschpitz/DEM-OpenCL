@@ -11,45 +11,22 @@
 
 #include <CL/cl2.hpp>
 #include <iostream>
-#include <map>
+#include <unistd.h>
+
+#include "OpenCLCU.h"
 
 namespace OpenCL
 {
-    struct Kernel
-    {
-        std::string name;
-        cl_uint nElements;
-        cl::Kernel kernel;
-        uint argsCount = 0;
-    };
-
     class Core
     {
         private:
             std::vector<cl::Platform> platforms;
-            cl::Platform platform;
-
-            std::vector<cl::Device> devices;
-
-            cl::Context context;
+            std::vector<ComputeUnit> computeUnits;
 
             cl::Program::Sources sources;
 
-            bool programBuilt;
-            cl::Program program;
-
-            std::vector<cl::CommandQueue> queues;
-
-            std::vector<Kernel> kernels;
-
-            std::map<void*, cl::Buffer> bufferMap;
-
-            void buildPlatform();
-            void buildDevice();
-            void buildContext();
-            void buildQueue();
-            void buildSource(std::string fileName);
-            void buildProgram();
+            void buildPlatforms();
+            void buildComputeUnits();
 
         public:
             Core();
@@ -57,52 +34,49 @@ namespace OpenCL
             static void showDevices();
 
             void addSourceFile(std::string fileName);
-            void addKernel(std::string kernelName, uint nElements);
+            void addKernel(const std::string& kernelName, uint nElements);
             void clearKernels();
 
-            template<class T> void writeBuffer(std::vector<T> &hBuffer);
-            template<class T> void readBuffer(std::vector<T> &hBuffer);
-            template<class T> void addArgument(std::string kernelName, std::vector<T> &hBuffer);
+            template<class T> void writeBuffer(std::vector<T>& hBuffer);
+            template<class T> void readBuffer(std::vector<T>& hBuffer);
+            template<class T> void syncDevicesBuffers(std::vector<T>& hBuffer);
+            template<class T> void addArgument(std::string kernelName, std::vector<T>& hBuffer);
 
             void run();
     };
 
-    template<class T> void Core::writeBuffer(std::vector<T> &hBuffer)
+    template<class T> void Core::writeBuffer(std::vector<T>& hBuffer)
     {
-        cl::Buffer dBuffer(this->context, CL_MEM_READ_WRITE, sizeof(T) * hBuffer.size());
-        this->bufferMap[&hBuffer] = dBuffer;
+        for(std::vector<ComputeUnit>::iterator it = this->computeUnits.begin(); it != this->computeUnits.end(); it++) {
+            it->writeBuffer<T>(hBuffer);
+        }
 
-        for(std::vector<cl::CommandQueue>::iterator it = this->queues.begin(); it != this->queues.end(); it++) {
-            it->enqueueWriteBuffer(dBuffer, CL_TRUE, 0, sizeof(T) * hBuffer.size(), hBuffer.data());
+        for(std::vector<ComputeUnit>::iterator it = this->computeUnits.begin(); it != this->computeUnits.end(); it++) {
+            it->waitFinish();
         }
     }
 
-    template<class T> void Core::readBuffer(std::vector<T> &hBuffer)
+    template<class T> void Core::readBuffer(std::vector<T>& hBuffer)
     {
-        cl::Buffer dBuffer = this->bufferMap[&hBuffer];
+        for(std::vector<ComputeUnit>::iterator it = this->computeUnits.begin(); it != this->computeUnits.end(); it++) {
+            it->readBuffer<T>(hBuffer);
+        }
 
-        uint countPerQueue = hBuffer.size() / this->queues.size();
-
-        for(std::vector<cl::CommandQueue>::iterator it = this->queues.begin(); it != this->queues.end(); it++) {
-            uint offset = std::distance(this->queues.begin(), it) * countPerQueue;
-
-            if(std::distance(it, this->queues.end()) == 1) {
-                countPerQueue = hBuffer.size() - countPerQueue * (this->queues.size() - 1);
-            }
-
-            it->enqueueReadBuffer(dBuffer, CL_TRUE, sizeof(T) * offset, sizeof(T) * countPerQueue, hBuffer.data() + offset);
+        for(std::vector<ComputeUnit>::iterator it = this->computeUnits.begin(); it != this->computeUnits.end(); it++) {
+            it->waitFinish();
         }
     }
 
-    template<class T> void Core::addArgument(std::string kernelName, std::vector<T> &hBuffer)
+    template<class T> void Core::syncDevicesBuffers(std::vector<T>& hBuffer)
     {
-        cl::Buffer dBuffer = this->bufferMap[&hBuffer];
+        this->readBuffer<T>(hBuffer);
+        this->writeBuffer<T>(hBuffer);
+    }
 
-        for(std::vector<Kernel>::iterator it = this->kernels.begin(); it != this->kernels.end(); it++) {
-            if(it->name.compare(kernelName) == 0) {
-                it->kernel.setArg(it->argsCount, dBuffer);
-                it->argsCount++;
-            }
+    template<class T> void Core::addArgument(std::string kernelName, std::vector<T>& hBuffer)
+    {
+        for(std::vector<ComputeUnit>::iterator it = this->computeUnits.begin(); it != this->computeUnits.end(); it++) {
+            it->addArgument(kernelName, hBuffer);
         }
     }
 }

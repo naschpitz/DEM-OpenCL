@@ -34,7 +34,7 @@ void face_addCurrentForce(Face* face, const double4* force, const double4* point
     face->currentTorque += cross(r, (*force));
 }
 
-void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, double4* closestOnThisFace, double4* closestOnOtherParticle)
+void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, double4* closestOnThisFace, double4* closestOnOtherParticle, double4* distanceUnitary)
 {
     double4 p1 = thisFace->vertexes[0].currentPosition;
     double4 p2 = thisFace->vertexes[1].currentPosition;
@@ -84,9 +84,9 @@ void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, doub
         (*closestOnThisFace) = p1 + u * edge_getDistance(&e1) + v * edge_getDistance(&e2);
 
     double4 distance = otherParticle->vertex.currentPosition - (*closestOnThisFace);
-    double4 distanceUnitary = vector_getUnitary(distance);
 
-    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
+    (*distanceUnitary)        = vector_getUnitary(distance);
+    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - (*distanceUnitary) * otherParticle->radius;
 }
 
 void face_calculateCurrentPosition(Face* face)
@@ -115,6 +115,9 @@ void face_integrate(Face* face, double timeStep)
 
     face->oldForce = face->currentForce;
     face->oldTorque = face->currentTorque;
+
+    face_calculateCurrentPosition(face);
+    face_calculateCurrentVelocity(face);
 }
 
 #endif // FACE_CL

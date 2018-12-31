@@ -36,28 +36,20 @@ typedef struct
     double dragCoefficients[10];
 } Material;
 
-double4 material_calculateForce(const Material* material, double4 distance, bool internal, double contactArea, double originalLength, double4 oldForce)
+double4 material_calculateForce(const Material* material, double4 distance, double4 distanceUnitary, bool internal, double contactArea, double originalLength, double4 oldForce)
 {
     double lengthDistance = length(distance);
+
+    lengthDistance = (internal ? -lengthDistance : lengthDistance) + originalLength;
 
     switch(material->forceType)
     {
         case adiabatic_compression:
         {
-            double newRadius;
-
-            if(internal)
-                newRadius = material->coefficients[0] - lengthDistance / 2.;
-
-            else
-                newRadius = material->coefficients[0] + lengthDistance / 2.;
-
+            double newRadius = lengthDistance / 2.;
             double newRadius2 = newRadius * newRadius;
 
-            double4 force = (material->coefficients[1] * 12.56637061 * newRadius2 * pow(pown(material->coefficients[0], 3) / pown(newRadius, 3), material->coefficients[2])) * vector_getUnitary(distance);
-
-            if(internal)
-                return -force;
+            double4 force = (material->coefficients[0] * 12.56637061 * newRadius2 * pow(pown(originalLength / 2., 3) / pown(newRadius, 3), material->coefficients[1])) * distanceUnitary;
 
             return force;
         }
@@ -66,23 +58,22 @@ double4 material_calculateForce(const Material* material, double4 distance, bool
             return -(material->coefficients[0]) * distance;
 
         case inverse_linear:
-            return (material->coefficients[0] / lengthDistance) * vector_getUnitary(distance);
+            return (material->coefficients[0] / lengthDistance) * distanceUnitary;
 
         case inverse_quadratic:
-            return (material->coefficients[0] / (lengthDistance * lengthDistance)) * vector_getUnitary(distance);
+        {
+            return (material->coefficients[0] / (lengthDistance * lengthDistance)) * distanceUnitary;
+        }
 
         case inverse_cubic:
-            return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * vector_getUnitary(distance);
+            return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * distanceUnitary;
 
         case lennard_jones:
         {
             double r6 = pown(originalLength, 6);
             double a = 12 * material->coefficients[0] * r6;
-            double b = a * r6;
 
-            double _length = (internal ? -lengthDistance : lengthDistance) + originalLength;
-
-            return (b / pown(_length, 13) - a / pown(_length, 7)) * vector_getUnitary(distance);
+            return (a * (r6 - pown(lengthDistance, 6)) / pown(lengthDistance, 13)) * distanceUnitary;
         }
 
         case realistic_material:

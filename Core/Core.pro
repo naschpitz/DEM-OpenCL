@@ -36,7 +36,9 @@ HEADERS += \
     Face.h \
     RequestMapper.h \
     RequestSender.h \
-    ../libs/easyzlib/easyzlib.h
+    ../libs/easyzlib/easyzlib.h \
+    OpenCLCU.h \
+    OpenCLKernel.h
 
 SOURCES += \
     main.cpp \
@@ -54,7 +56,8 @@ SOURCES += \
     Face.cpp \
     RequestMapper.cpp \
     RequestSender.cpp \
-    ../libs/easyzlib/easyzlib.c
+    ../libs/easyzlib/easyzlib.c \
+    OpenCLCU.cpp
 
 OTHER_FILES +=
 

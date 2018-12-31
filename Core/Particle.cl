@@ -32,13 +32,13 @@ void particle_addCurrentForce(Particle* particle, const double4* force, const do
     particle->currentTorque += cross(r, (*force));
 }
 
-void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, double4 *closestOnThisPaticle, double4 *closestOnOtherParticle)
+void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, double4 *closestOnThisPaticle, double4 *closestOnOtherParticle, double4 *distanceUnitary)
 {
     double4 distance = otherParticle->vertex.currentPosition - thisParticle->vertex.currentPosition;
-    double4 distanceUnitary = vector_getUnitary(distance);
 
-    (*closestOnThisPaticle)   = thisParticle->vertex.currentPosition + distanceUnitary * thisParticle->radius;
-    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
+    (*distanceUnitary)        = vector_getUnitary(distance);
+    (*closestOnThisPaticle)   = thisParticle->vertex.currentPosition + (*distanceUnitary) * thisParticle->radius;
+    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - (*distanceUnitary) * otherParticle->radius;
 }
 
 double4 particle_getCurrentAcceleration(const Particle* particle)

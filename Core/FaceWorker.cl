@@ -7,12 +7,9 @@
 
 void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
 {
-    face_calculateCurrentPosition(thisFace);
-    face_calculateCurrentVelocity(thisFace);
+    double4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
 
-    double4 closestOnThisFace, closestOnOtherParticle;
-
-    face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle);
+    face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle, &distanceUnitary);
 
     double4 distance = closestOnOtherParticle - closestOnThisFace;
 
@@ -30,7 +27,7 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
     double  originalLength = otherParticle->radius;
     double4 oldForce       = otherParticle->oldForce - thisFace->oldForce;
 
-    double4 force     = material_calculateForce(material, distance, internal, minContactArea, originalLength, oldForce);
+    double4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
     double4 dragForce = material_calculateDragForce(material, velocity, distance);
 
     double4 totalForce = -(force + dragForce);
