@@ -61,19 +61,17 @@ double4 material_calculateForce(const Material* material, double4 distance, doub
             return (material->coefficients[0] / lengthDistance) * distanceUnitary;
 
         case inverse_quadratic:
-        {
             return (material->coefficients[0] / (lengthDistance * lengthDistance)) * distanceUnitary;
-        }
 
         case inverse_cubic:
             return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * distanceUnitary;
 
         case lennard_jones:
         {
-            double r6 = pown(originalLength, 6);
-            double a = 12 * material->coefficients[0] * r6;
+            double e = material->coefficients[0];
+            double n = material->coefficients[1];
 
-            return (a * (r6 - pown(lengthDistance, 6)) / pown(lengthDistance, 13)) * distanceUnitary;
+            return 2 * e * n * pown(originalLength, n) * pown(lengthDistance, (-2 * n) - 1) * (pown(originalLength, n) - pown(lengthDistance, n)) * distanceUnitary;
         }
 
         case realistic_material:

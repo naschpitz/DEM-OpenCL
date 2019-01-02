@@ -93,12 +93,14 @@ void RequestSender::newLog(QString message)
 
     QString url = this->getServerAddress(simulation) + "/api/simulationsLogs";
 
-    // Log data is sent immediately.
-    std::cout << "Sending data, size: " << data.size() << "\n";
-    RestClient::Response r = RestClient::post(url.toStdString(), "application/json", data.toStdString());
-    std::cout << "Data sent: " << r.code << " - " <<  r.body << "\n";
+    QPair<QString, QByteArray> pair = QPair<QString, QByteArray>(url, data);
 
-    std::cout.flush();
+    // As frames data is pretty large usually, a buffer is used to send it as soon as possible.
+    this->mutex.lock();
+    this->buffer.append(pair);
+    this->mutex.unlock();
+
+    this->start();
 }
 
 void RequestSender::run()
@@ -112,7 +114,7 @@ void RequestSender::run()
 
         if (!isEmpty) {
             this->mutex.lock();
-            pair = this->buffer.takeFirst();
+            pair = this->buffer.first();
             this->mutex.unlock();
         }
 
@@ -135,9 +137,14 @@ void RequestSender::run()
         RestClient::Response r = RestClient::post(url.toStdString(), "application/octet-stream", package);
         std::cout << "Data sent: " << r.code << " - " <<  r.body << "\n";
 
-        std::cout.flush();
+        // If the package was successfully sent, remove the pair that originated it from the buffer.
+        if(r.code == 200) {
+            this->mutex.lock();
+            this->buffer.removeFirst();
+            this->mutex.unlock();
+        }
 
-        this->sleep(1);
+        std::cout.flush();
     }
 }
 

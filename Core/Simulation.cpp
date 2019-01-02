@@ -124,8 +124,6 @@ bool Simulation::isStopped() const
 
 void Simulation::run()
 {
-    this->paused = this->stoped = false;
-
     const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
 
     std::vector<SimulationCL> simulationsCL = { this->getCL() };
@@ -230,6 +228,8 @@ void Simulation::run()
         openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
         openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
     }
+
+    this->paused = this->stoped = false;
 
     uint frameSteps = this->frameTime / this->timeStep;
 
