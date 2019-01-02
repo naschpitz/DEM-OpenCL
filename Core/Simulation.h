@@ -54,6 +54,7 @@ class Simulation : public QThread
     public:
         Simulation();
         Simulation(const QJsonObject& jsonObject);
+        ~Simulation();
 
         SimulationCL getCL() const;
 

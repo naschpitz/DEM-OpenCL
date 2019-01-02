@@ -39,6 +39,11 @@ Simulation::Simulation(const QJsonObject& jsonObject)
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
 
+Simulation::~Simulation()
+{
+    std::cout << "Simulation destoyed!" << "\n";
+}
+
 SimulationCL Simulation::getCL() const
 {
     SimulationCL simulationCL;
@@ -299,7 +304,7 @@ void Simulation::stop()
 
 void Simulation::selfDelete()
 {
-    if (this->isStopped()) {
+    if (this->isStopped() || !this->isPaused()) {
         this->deleteLater();
     }
 }

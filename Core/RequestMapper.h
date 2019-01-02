@@ -27,6 +27,9 @@ class RequestMapper : public HttpRequestHandler {
         ~RequestMapper();
 
         void service(HttpRequest& request, HttpResponse& response);
+
+    public slots:
+        void simulationDestroyed();
 };
 
 #endif // REQUESTMAPPER_H

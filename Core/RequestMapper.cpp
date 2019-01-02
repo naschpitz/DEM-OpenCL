@@ -30,6 +30,8 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         Simulation* simulation = this->getSimulationById(_id);
         simulation = simulation ? simulation : new Simulation(jsonObject);
 
+        connect(simulation, SIGNAL(destroyed()), this, SLOT(simulationDestroyed()));
+
         this->simulations.insert(simulation);
 
         simulation->setServerAddress(request.getPeerAddress());
@@ -47,6 +49,9 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         QString _id = jsonObject["_id"].toString();
 
         Simulation* simulation = this->getSimulationById(_id);
+
+        if (!simulation)
+            return;
 
         if (!simulation->isRunning())
             response.setStatus(412, "Simulation not running");
@@ -68,7 +73,6 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         QString _id = jsonObject["_id"].toString();
 
         Simulation* simulation = this->getSimulationById(_id);
-        this->simulations.remove(simulation);
 
         if (!simulation)
             response.setStatus(412, "Simulation not paused or running");
@@ -89,4 +93,11 @@ Simulation* RequestMapper::getSimulationById(const QString& _id)
     }
 
     return NULL;
+}
+
+void RequestMapper::simulationDestroyed()
+{
+    Simulation *simulation = (Simulation*)QObject::sender();
+
+    this->simulations.remove(simulation);
 }
