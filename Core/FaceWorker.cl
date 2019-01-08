@@ -4,9 +4,13 @@
 #include "../Face.cl"
 #include "../Particle.cl"
 #include "../Material.cl"
+#include "../TestBox.cl"
 
 void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
 {
+    if (!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
+        return;
+
     double4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
 
     face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle, &distanceUnitary);

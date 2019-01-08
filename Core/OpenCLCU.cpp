@@ -60,6 +60,7 @@ void ComputeUnit::buildProgram()
 
     if(this->program.build({this->device}, "-I ./") != CL_SUCCESS) {
         std::cout << "Error building: " << this->program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(this->device) << "\n";
+        std::cout.flush();
         exit(1);
     }
 

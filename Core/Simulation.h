@@ -9,11 +9,11 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
+#include "nlohmann/json.hpp"
 #include "Scenery.h"
 #include "Vector3D.h"
 
 #include <CL/cl2.hpp>
-#include <QJsonObject>
 #include <QObject>
 #include <QThread>
 #include <QHostAddress>
@@ -53,7 +53,7 @@ class Simulation : public QThread
 
     public:
         Simulation();
-        Simulation(const QJsonObject& jsonObject);
+        Simulation(const nlohmann::json& jsonObject);
         ~Simulation();
 
         SimulationCL getCL() const;

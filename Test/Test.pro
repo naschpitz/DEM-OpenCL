@@ -44,8 +44,8 @@ LIBS += -lOpenCL
 ## TetGen Library
 unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.0/ -ltet
 
-INCLUDEPATH += $$PWD/../libs/tetgen1.5.0
-DEPENDPATH += $$PWD/../libs/tetgen1.5.0
+INCLUDEPATH += $$PWD/../libs
+DEPENDPATH += $$PWD/../libs
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.0/libtet.a
 

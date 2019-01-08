@@ -9,9 +9,10 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include "nlohmann/json.hpp"
 #include "Vertex.h"
 
-#include <QJsonObject>
+#include <QString>
 
 typedef struct
 {
@@ -54,7 +55,6 @@ class Particle : public Vertex
         Particle();
         Particle(const double& x, const double& y, const double& z, const double& radius);
         Particle(const Vector3D& vector, const double& radius);
-        Particle(const QJsonObject& jsonObject);
 
         ParticleCL getCL(uint index, uint materialIndex) const;
         void setCL(const ParticleCL& particleCL);
@@ -79,7 +79,7 @@ class Particle : public Vertex
         double getCurrentKineticEnergyExternal() const;
         double getCurrentKineticEnergyInternal() const;
 
-        QJsonObject getJson() const;
+        nlohmann::json getJson() const;
 
         bool isInside(const Particle& otherParticle) const;
 

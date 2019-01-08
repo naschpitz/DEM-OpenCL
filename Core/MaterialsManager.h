@@ -2,6 +2,7 @@
 #define MATERIALMANAGER_H
 
 #include "Material.h"
+#include "nlohmann/json.hpp"
 
 #include <QVector>
 #include <QMap>
@@ -22,7 +23,7 @@ class MaterialsManager
 
     public:
         MaterialsManager();
-        MaterialsManager(const QJsonArray& materialsArray);
+        MaterialsManager(const nlohmann::json& materialsArray);
 
         MaterialsManagerCL getCL() const;
 

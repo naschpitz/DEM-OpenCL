@@ -10,12 +10,12 @@
 #define FACE_H
 
 #include "Vertex.h"
+#include "nlohmann/json.hpp"
 
 #include <CL/cl2.hpp>
 #include <QString>
 #include <QVector>
 #include <QMap>
-#include <QJsonValue>
 
 typedef struct
 {
@@ -82,7 +82,7 @@ class Face
         const Vector3D& getCurrentForce() const;
         const Vector3D& getCurrentTorque() const;
 
-        QJsonObject getJson() const;
+        nlohmann::json getJson() const;
 
     private:
         void calculateArea();

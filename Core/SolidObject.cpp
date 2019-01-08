@@ -3,33 +3,82 @@
 #include "Vertex.h"
 
 #include <QFile>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <tetgen.h>
+#include <tetgen1.5.0/tetgen.h>
 
 SolidObject::SolidObject()
 {
 
 }
 
-SolidObject::SolidObject(const QJsonObject& jsonObject)
+SolidObject::SolidObject(const nlohmann::json& jsonObject)
 {
-    this->id = jsonObject["_id"].toString();
-    this->material = jsonObject["material"].toString();
+    try {
+        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+    }
 
-    this->stl = jsonObject["stl"].toString();
-    this->maximumTetrahedronVol = jsonObject["maximumTetrahedronVolume"].toDouble(-1);
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing '_id' field in Solid Object");
+    }
+
+    try {
+        this->material = QString::fromStdString(jsonObject.at("material").get<std::string>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'material' field in Solid Object");
+    }
+
+    try {
+        this->stl = QString::fromStdString(jsonObject.at("stl").get<std::string>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'stl' field in Solid Object");
+    }
+
+    try {
+        this->maximumTetrahedronVol = jsonObject.at("maximumTetrahedronVolume").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        this->maximumTetrahedronVol = -1;
+    }
 
     this->loadStl();
 
-    this->fixed = jsonObject["fixed"].toBool();
-    this->mass  = jsonObject["mass"].toDouble();
+    try {
+        this->fixed = jsonObject.at("fixed").get<bool>();
+    }
 
-    QJsonArray positionArray = jsonObject["position"].toArray();
-    QJsonArray velocityArray = jsonObject["velocity"].toArray();
+    catch (const nlohmann::detail::exception& e) {
+        this->fixed = false;
+    }
 
-    this->position = Vector3D(positionArray[0].toDouble(), positionArray[1].toDouble(), positionArray[2].toDouble());
-    this->velocity = Vector3D(velocityArray[0].toDouble(), velocityArray[1].toDouble(), velocityArray[2].toDouble());
+    try {
+        this->mass = jsonObject.at("mass").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'mass' field in Solid Object");
+    }
+
+    try {
+        const nlohmann::json& positionArray = jsonObject.at("position");
+        this->position = Vector3D(positionArray.at(0).get<double>(), positionArray.at(1).get<double>(), positionArray.at(2).get<double>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'position' field in Solid Object");
+    }
+
+    try {
+        const nlohmann::json& velocityArray = jsonObject.at("velocity");
+        this->velocity = Vector3D(velocityArray.at(0).get<double>(), velocityArray.at(1).get<double>(), velocityArray.at(2).get<double>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'velocity' field in Solid Object");
+    }
 
     this->setMaterial();
     this->setFixed();
@@ -248,19 +297,19 @@ void SolidObject::setFacesCL(const QVector<FaceCL>& facesCL)
     }
 }
 
-QJsonObject SolidObject::getJson() const
+nlohmann::json SolidObject::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
-    jsonObject["_id"] = this->id;
+    jsonObject["_id"] = this->id.toStdString();
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();
 
-    QJsonArray currentPositionArray;
-    currentPositionArray.append(currentPosition.getX());
-    currentPositionArray.append(currentPosition.getY());
-    currentPositionArray.append(currentPosition.getZ());
+    nlohmann::json currentPositionArray;
+    currentPositionArray.push_back(currentPosition.getX());
+    currentPositionArray.push_back(currentPosition.getY());
+    currentPositionArray.push_back(currentPosition.getZ());
 
     jsonObject["position"] = currentPositionArray;
     //
@@ -268,10 +317,10 @@ QJsonObject SolidObject::getJson() const
     // -- currentVelocity
     Vector3D currentVelocity = this->getCurrentVelocity();
 
-    QJsonArray currentVelocityArray;
-    currentVelocityArray.append(currentVelocity.getX());
-    currentVelocityArray.append(currentVelocity.getY());
-    currentVelocityArray.append(currentVelocity.getZ());
+    nlohmann::json currentVelocityArray;
+    currentVelocityArray.push_back(currentVelocity.getX());
+    currentVelocityArray.push_back(currentVelocity.getY());
+    currentVelocityArray.push_back(currentVelocity.getZ());
 
     jsonObject["velocity"] = currentVelocityArray;
     //
@@ -279,19 +328,19 @@ QJsonObject SolidObject::getJson() const
     // -- currentForce
     Vector3D currentForce = this->getCurrentForce();
 
-    QJsonArray currentForceArray;
-    currentForceArray.append(currentForce.getX());
-    currentForceArray.append(currentForce.getY());
-    currentForceArray.append(currentForce.getZ());
+    nlohmann::json currentForceArray;
+    currentForceArray.push_back(currentForce.getX());
+    currentForceArray.push_back(currentForce.getY());
+    currentForceArray.push_back(currentForce.getZ());
 
     jsonObject["force"] = currentForceArray;
     //
 
     // -- faces
-    QJsonArray facesArray;
+    nlohmann::json facesArray;
 
     foreach(const Face& face, this->faces) {
-        facesArray.append(face.getJson());
+        facesArray.push_back(face.getJson());
     }
 
     jsonObject["faces"] = facesArray;

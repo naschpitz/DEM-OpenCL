@@ -9,25 +9,82 @@ NonSolidObject::NonSolidObject()
 
 }
 
-NonSolidObject::NonSolidObject(const QJsonObject& jsonObject)
-{
-    this->id = jsonObject["_id"].toString();
-    this->material = jsonObject["material"].toString();
+NonSolidObject::NonSolidObject(const nlohmann::json& jsonObject)
+{    
+    try {
+        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+    }
 
-    this->fixed   = jsonObject["fixed"].toBool();
-    this->density = jsonObject["density"].toDouble();
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing '_id' field in Non-Solid Object");
+    }
 
-    QJsonObject dimensions  = jsonObject["dimensions"].toObject();
-    QJsonArray  lengthArray = dimensions["length"].toArray();
+    try {
+        this->material = QString::fromStdString(jsonObject.at("material").get<std::string>());
+    }
 
-    this->length = Vector3D(lengthArray[0].toDouble(), lengthArray[1].toDouble(), lengthArray[2].toDouble());
-    this->spacing = dimensions["spacing"].toDouble();
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'material' field in Non-Solid Object");
+    }
 
-    QJsonArray positionArray = jsonObject["position"].toArray();
-    QJsonArray velocityArray = jsonObject["velocity"].toArray();
+    try {
+        this->fixed = jsonObject.at("fixed").get<bool>();
+    }
 
-    this->position = Vector3D(positionArray[0].toDouble(), positionArray[1].toDouble(), positionArray[2].toDouble());
-    this->velocity = Vector3D(velocityArray[0].toDouble(), velocityArray[1].toDouble(), velocityArray[2].toDouble());
+    catch (const nlohmann::detail::exception& e) {
+        this->fixed = false;
+    }
+
+    try {
+        this->density = jsonObject.at("density").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'density' field in Non-Solid Object");
+    }
+
+    try {
+        const nlohmann::json& dimensions = jsonObject.at("dimensions");
+
+        try {
+            this->spacing = dimensions.at("spacing").get<double>();
+        }
+
+        catch (const nlohmann::detail::exception& e) {
+            throw std::runtime_error("Missing 'spacing' field in Non-Solid Object");
+        }
+
+        try {
+            const nlohmann::json& lengthArray = dimensions.at("length");
+            this->length = Vector3D(lengthArray.at(0).get<double>(), lengthArray.at(1).get<double>(), lengthArray.at(2).get<double>());
+        }
+
+        catch (const nlohmann::detail::exception& e) {
+            throw std::runtime_error("Missing 'length' field in Non-Solid Object");
+        }
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'dimensions' field in Non-Solid Object");
+    }
+
+    try {
+        const nlohmann::json& positionArray = jsonObject.at("position");
+        this->position = Vector3D(positionArray.at(0).get<double>(), positionArray.at(1).get<double>(), positionArray.at(2).get<double>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'position' field in Non-Solid Object");
+    }
+
+    try {
+        const nlohmann::json& velocityArray = jsonObject.at("velocity");
+        this->velocity = Vector3D(velocityArray.at(0).get<double>(), velocityArray.at(1).get<double>(), velocityArray.at(2).get<double>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'velocity' field in Non-Solid Object");
+    }
 
     this->buildObject();
     this->setMaterial();
@@ -224,19 +281,19 @@ void NonSolidObject::setParticlesCL(const QVector<ParticleCL>& particlesCL)
     }
 }
 
-QJsonObject NonSolidObject::getJson() const
+nlohmann::json NonSolidObject::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
-    jsonObject["_id"] = this->id;
+    jsonObject["_id"] = this->id.toStdString();
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();
 
-    QJsonArray currentPositionArray;
-    currentPositionArray.append(currentPosition.getX());
-    currentPositionArray.append(currentPosition.getY());
-    currentPositionArray.append(currentPosition.getZ());
+    nlohmann::json currentPositionArray;
+    currentPositionArray.push_back(currentPosition.getX());
+    currentPositionArray.push_back(currentPosition.getY());
+    currentPositionArray.push_back(currentPosition.getZ());
 
     jsonObject["position"] = currentPositionArray;
     //
@@ -244,10 +301,10 @@ QJsonObject NonSolidObject::getJson() const
     // -- currentVelocity
     Vector3D currentVelocity = this->getCurrentVelocity();
 
-    QJsonArray currentVelocityArray;
-    currentVelocityArray.append(currentVelocity.getX());
-    currentVelocityArray.append(currentVelocity.getY());
-    currentVelocityArray.append(currentVelocity.getZ());
+    nlohmann::json currentVelocityArray;
+    currentVelocityArray.push_back(currentVelocity.getX());
+    currentVelocityArray.push_back(currentVelocity.getY());
+    currentVelocityArray.push_back(currentVelocity.getZ());
 
     jsonObject["velocity"] = currentVelocityArray;
     //
@@ -255,10 +312,10 @@ QJsonObject NonSolidObject::getJson() const
     // -- currentForce
     Vector3D currentForce = this->getCurrentForce();
 
-    QJsonArray currentForceArray;
-    currentForceArray.append(currentForce.getX());
-    currentForceArray.append(currentForce.getY());
-    currentForceArray.append(currentForce.getZ());
+    nlohmann::json currentForceArray;
+    currentForceArray.push_back(currentForce.getX());
+    currentForceArray.push_back(currentForce.getY());
+    currentForceArray.push_back(currentForce.getZ());
 
     jsonObject["force"] = currentForceArray;
     //
@@ -282,10 +339,10 @@ QJsonObject NonSolidObject::getJson() const
     //
 
     // -- particles
-    QJsonArray particlesArray;
+    nlohmann::json particlesArray;
 
     foreach(const Particle& particle, this->particles) {
-        particlesArray.append(particle.getJson());
+        particlesArray.push_back(particle.getJson());
     }
 
     jsonObject["particles"] = particlesArray;

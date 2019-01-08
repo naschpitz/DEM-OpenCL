@@ -28,28 +28,6 @@ Particle::Particle(const Vector3D& vector, const double& radius) : Vertex(vector
     this->mass = 0;
 }
 
-Particle::Particle(const QJsonObject& jsonObject) : Vertex(jsonObject["vertex"].toObject())
-{
-    this->materialName = jsonObject["materialName"].toString();
-
-    this->radius  = jsonObject["radius"].toDouble();
-    this->density = jsonObject["density"].toDouble();
-    this->mass    = jsonObject["mass"].toDouble();
-    this->volume  = jsonObject["volume"].toDouble();
-
-    QJsonArray currentForceArray = jsonObject["currentForce"].toArray();
-    QJsonArray oldForceArray = jsonObject["oldForce"].toArray();
-
-    this->currentForce = Vector3D(currentForceArray[0].toDouble(), currentForceArray[1].toDouble(), currentForceArray[2].toDouble());
-    this->oldForce = Vector3D(oldForceArray[0].toDouble(), oldForceArray[1].toDouble(), oldForceArray[2].toDouble());
-
-    QJsonArray currentTorqueArray = jsonObject["currentTorque"].toArray();
-    QJsonArray oldTorqueArray = jsonObject["oldTorque"].toArray();
-
-    this->currentTorque = Vector3D(currentTorqueArray[0].toDouble(), currentTorqueArray[1].toDouble(), currentTorqueArray[2].toDouble());
-    this->oldTorque = Vector3D(oldTorqueArray[0].toDouble(), oldTorqueArray[1].toDouble(), oldTorqueArray[2].toDouble());
-}
-
 ParticleCL Particle::getCL(uint index, uint materialIndex) const
 {
     ParticleCL particleCL;
@@ -154,29 +132,28 @@ double Particle::getCurrentKineticEnergyInternal() const
     return 0.0;
 }
 
-QJsonObject Particle::getJson() const
+nlohmann::json Particle::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
     jsonObject["radius"] = this->getRadius();
 
     // -- currentForce
     Vector3D currentForce = this->getCurrentForce();
 
-    QJsonArray currentForceArray;
-    currentForceArray.append(currentForce.getX());
-    currentForceArray.append(currentForce.getY());
-    currentForceArray.append(currentForce.getZ());
+    nlohmann::json currentForceArray;
+    currentForceArray.push_back(currentForce.getX());
+    currentForceArray.push_back(currentForce.getY());
+    currentForceArray.push_back(currentForce.getZ());
 
     jsonObject["currentForce"] = currentForceArray;
     //
 
     // -- vertex
-    QJsonObject vertexJsonObjects = ((Vertex*)this)->getJson();
-    QStringList keys = vertexJsonObjects.keys();
+    nlohmann::json vertexJsonObjects = ((Vertex*)this)->getJson();
 
-    for(QStringList::iterator it = keys.begin(); it != keys.end(); it++) {
-        jsonObject[(*it)] = vertexJsonObjects[(*it)];
+    for(nlohmann::json::iterator it = vertexJsonObjects.begin(); it != vertexJsonObjects.end(); it++) {
+        jsonObject[it.key()] = vertexJsonObjects[it.key()];
     }
     //
 

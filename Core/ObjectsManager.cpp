@@ -1,30 +1,35 @@
 #include "ObjectsManager.h"
 
-#include <QJsonArray>
-#include <QJsonObject>
-
 ObjectsManager::ObjectsManager()
 {
 
 }
 
-ObjectsManager::ObjectsManager(const QJsonValue& jsonValue)
+ObjectsManager::ObjectsManager(const nlohmann::json& jsonValue)
 {
-    QJsonArray nonSolidObjectsArray = jsonValue["nonSolidObjects"].toArray();
+    try {
+        const nlohmann::json& nonSolidObjectsArray = jsonValue.at("nonSolidObjects");
 
-    foreach(QJsonValue nonSolidObjectValue, nonSolidObjectsArray) {
-        NonSolidObject nonSolidObject(nonSolidObjectValue.toObject());
+        foreach(nlohmann::json nonSolidObjectValue, nonSolidObjectsArray) {
+            NonSolidObject nonSolidObject(nonSolidObjectValue);
 
-        this->nonSolidObjects.push_back(nonSolidObject);
+            this->nonSolidObjects.push_back(nonSolidObject);
+        }
     }
 
-    QJsonArray solidObjectsArray = jsonValue["solidObjects"].toArray();
+    catch (...) { }
 
-    foreach(QJsonValue solidObjectValue, solidObjectsArray) {
-        SolidObject solidObject(solidObjectValue.toObject());
+    try {
+        const nlohmann::json& solidObjectsArray = jsonValue.at("solidObjects");
 
-        this->solidObjects.push_back(solidObject);
+        foreach(nlohmann::json solidObjectValue, solidObjectsArray) {
+            SolidObject solidObject(solidObjectValue);
+
+            this->solidObjects.push_back(solidObject);
+        }
     }
+
+    catch (...) { }
 }
 
 const QVector<NonSolidObject>& ObjectsManager::getNonSolidObjects() const
@@ -115,23 +120,28 @@ void ObjectsManager::setFacesCL(const QVector<FaceCL>& facesCL)
     }
 }
 
-QJsonObject ObjectsManager::getJson() const
+nlohmann::json ObjectsManager::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
-    QJsonArray nonSolidObjectsArray;
-    QJsonArray solidObjectsArray;
+    nlohmann::json nonSolidObjectsArray;
+    nlohmann::json solidObjectsArray;
 
-    foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
-        nonSolidObjectsArray.append(nonSolidObject.getJson());
+    if (!this->nonSolidObjects.isEmpty()) {
+        foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
+            nonSolidObjectsArray.push_back(nonSolidObject.getJson());
+        }
+
+        jsonObject["nonSolidObjects"] = nonSolidObjectsArray;
     }
 
-    foreach(const SolidObject& solidObject, this->solidObjects) {
-        solidObjectsArray.append(solidObject.getJson());
-    }
+    if (!this->solidObjects.isEmpty()) {
+        foreach(const SolidObject& solidObject, this->solidObjects) {
+            solidObjectsArray.push_back(solidObject.getJson());
+        }
 
-    jsonObject["nonSolidObjects"] = nonSolidObjectsArray;
-    jsonObject["solidObjects"] = solidObjectsArray;
+        jsonObject["solidObjects"] = solidObjectsArray;
+    }
 
     return jsonObject;
 }

@@ -9,12 +9,12 @@
 #ifndef NONSOLIDOBJECT_H
 #define NONSOLIDOBJECT_H
 
+#include "nlohmann/json.hpp"
 #include "Particle.h"
 #include "Vector3D.h"
 
 #include <QVector>
 #include <QMap>
-#include <QJsonObject>
 #include <CL/cl2.hpp>
 
 class NonSolidObject
@@ -36,7 +36,7 @@ class NonSolidObject
 
     public:
         NonSolidObject();
-        NonSolidObject(const QJsonObject& jsonObject);
+        NonSolidObject(const nlohmann::json& jsonObject);
 
         const QString& getId()     const;
         const QString& getMaterial() const;
@@ -57,7 +57,7 @@ class NonSolidObject
 
         const QVector<Particle>& getParticles() const;
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
-        QJsonObject getJson() const;
+        nlohmann::json getJson() const;
 
         void reset();
 

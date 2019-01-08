@@ -8,9 +8,11 @@
 #include <QThread>
 #include <QVector>
 
+#include "FrameSender.h"
+#include "LogSender.h"
 #include "Simulation.h"
 
-class RequestSender : public QThread
+class RequestSender : public QObject
 {        
     Q_OBJECT
 
@@ -23,14 +25,12 @@ class RequestSender : public QThread
 
     private:
         QString serverAddress;
-        QMutex mutex;
-        QVector<QPair<QString, QByteArray> > buffer;
+
+        FrameSender frameSender;
+        LogSender logSender;
 
         RequestSender(); // Constructor? (the {} brackets) are needed here.
         QString getServerAddress(const Simulation* simulation) const;
-
-    protected:
-        void run();
 
         // C++ 11
         // =======

@@ -1,8 +1,5 @@
 #include "Face.h"
 
-#include <QJsonArray>
-#include <QJsonObject>
-
 Face::Face()
 {
 
@@ -140,17 +137,17 @@ const Vector3D& Face::getCurrentTorque() const
     return this->currentTorque;
 }
 
-QJsonObject Face::getJson() const
+nlohmann::json Face::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();
 
-    QJsonArray currentPositionArray;
-    currentPositionArray.append(currentPosition.getX());
-    currentPositionArray.append(currentPosition.getY());
-    currentPositionArray.append(currentPosition.getZ());
+    nlohmann::json currentPositionArray;
+    currentPositionArray.push_back(currentPosition.getX());
+    currentPositionArray.push_back(currentPosition.getY());
+    currentPositionArray.push_back(currentPosition.getZ());
 
     jsonObject["currentPosition"] = currentPositionArray;
     //
@@ -158,10 +155,10 @@ QJsonObject Face::getJson() const
     // -- currentVelocity
     Vector3D currentVelocity = this->getCurrentVelocity();
 
-    QJsonArray currentVelocityArray;
-    currentVelocityArray.append(currentVelocity.getX());
-    currentVelocityArray.append(currentVelocity.getY());
-    currentVelocityArray.append(currentVelocity.getZ());
+    nlohmann::json currentVelocityArray;
+    currentVelocityArray.push_back(currentVelocity.getX());
+    currentVelocityArray.push_back(currentVelocity.getY());
+    currentVelocityArray.push_back(currentVelocity.getZ());
 
     jsonObject["currentVelocity"] = currentVelocityArray;
     //
@@ -169,19 +166,19 @@ QJsonObject Face::getJson() const
     // -- currentForce
     Vector3D currentForce = this->getCurrentForce();
 
-    QJsonArray currentForceArray;
-    currentForceArray.append(currentForce.getX());
-    currentForceArray.append(currentForce.getY());
-    currentForceArray.append(currentForce.getZ());
+    nlohmann::json currentForceArray;
+    currentForceArray.push_back(currentForce.getX());
+    currentForceArray.push_back(currentForce.getY());
+    currentForceArray.push_back(currentForce.getZ());
 
     jsonObject["currentForce"] = currentForceArray;
     //
 
     // -- vertexes
-    QJsonArray vertexesArray;
+    nlohmann::json vertexesArray;
 
     for (int i = 0; i < 3; i++) {
-        vertexesArray.append(this->vertexes[i].getJson());
+        vertexesArray.push_back(this->vertexes[i].getJson());
     }
 
     jsonObject["vertexes"] = vertexesArray;

@@ -44,27 +44,6 @@ Vertex::Vertex(const double& x, const double& y, const double& z)
     this->fixed = false;
 }
 
-Vertex::Vertex(const QJsonObject &jsonObject)
-{
-    QJsonArray currentPositionArray = jsonObject["currentPosition"].toArray();
-    QJsonArray oldPositionArray = jsonObject["oldPosition"].toArray();
-    QJsonArray originalPositionArray = jsonObject["originalPosition"].toArray();
-
-    QJsonArray currentVelocityArray = jsonObject["currentVelocity"].toArray();
-    QJsonArray oldVelocityArray = jsonObject["oldVelocity"].toArray();
-    QJsonArray originalVelocityArray = jsonObject["originalVelocity"].toArray();
-
-    this->currentPosition = Vector3D(currentPositionArray[0].toDouble(), currentPositionArray[1].toDouble(), currentPositionArray[2].toDouble());
-    this->oldPosition = Vector3D(oldPositionArray[0].toDouble(), oldPositionArray[1].toDouble(), oldPositionArray[2].toDouble());
-    this->originalPosition = Vector3D(originalPositionArray[0].toDouble(), originalPositionArray[1].toDouble(), originalPositionArray[2].toDouble());
-
-    this->currentVelocity = Vector3D(currentVelocityArray[0].toDouble(), currentVelocityArray[1].toDouble(), currentVelocityArray[2].toDouble());
-    this->oldVelocity = Vector3D(oldVelocityArray[0].toDouble(), oldVelocityArray[1].toDouble(), oldVelocityArray[2].toDouble());
-    this->originalVelocity = Vector3D(originalVelocityArray[0].toDouble(), originalVelocityArray[1].toDouble(), originalVelocityArray[2].toDouble());
-
-    this->fixed = jsonObject["fixed"].toBool();
-}
-
 VertexCL Vertex::getCL() const
 {
     VertexCL vertexCL;
@@ -129,17 +108,17 @@ const Vector3D& Vertex::getCurrentVelocity() const
     return this->currentVelocity;
 }
 
-QJsonObject Vertex::getJson() const
+nlohmann::json Vertex::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
     // -- currentPosition
     Vector3D currentPosition = this->getCurrentPosition();
 
-    QJsonArray currentPositionArray;
-    currentPositionArray.append(currentPosition.getX());
-    currentPositionArray.append(currentPosition.getY());
-    currentPositionArray.append(currentPosition.getZ());
+    nlohmann::json currentPositionArray;
+    currentPositionArray.push_back(currentPosition.getX());
+    currentPositionArray.push_back(currentPosition.getY());
+    currentPositionArray.push_back(currentPosition.getZ());
 
     jsonObject["currentPosition"] = currentPositionArray;
     //
@@ -147,10 +126,10 @@ QJsonObject Vertex::getJson() const
     // -- currentVelocity
     Vector3D currentVelocity = this->getCurrentVelocity();
 
-    QJsonArray currentVelocityArray;
-    currentVelocityArray.append(currentVelocity.getX());
-    currentVelocityArray.append(currentVelocity.getY());
-    currentVelocityArray.append(currentVelocity.getZ());
+    nlohmann::json currentVelocityArray;
+    currentVelocityArray.push_back(currentVelocity.getX());
+    currentVelocityArray.push_back(currentVelocity.getY());
+    currentVelocityArray.push_back(currentVelocity.getZ());
 
     jsonObject["currentVelocity"] = currentVelocityArray;
     //

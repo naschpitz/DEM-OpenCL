@@ -1,17 +1,14 @@
 #include "MaterialsManager.h"
 
-#include <QJsonArray>
-#include <QJsonObject>
-
 MaterialsManager::MaterialsManager()
 {
 
 }
 
-MaterialsManager::MaterialsManager(const QJsonArray& materialsArray)
+MaterialsManager::MaterialsManager(const nlohmann::json& materialsArray)
 {
-    foreach(QJsonValue materialValue, materialsArray) {
-        Material material(materialValue.toObject());
+    foreach(nlohmann::json materialValue, materialsArray) {
+        Material material(materialValue);
 
         this->idsMap[material.getId()] = this->materials.count();
 

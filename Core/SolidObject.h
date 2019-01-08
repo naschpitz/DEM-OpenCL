@@ -1,10 +1,10 @@
 #ifndef SOLIDOBJECT_H
 #define SOLIDOBJECT_H
 
+#include "nlohmann/json.hpp"
 #include "Face.h"
 #include "Vector3D.h"
 
-#include <QJsonObject>
 #include <QString>
 #include <QVector>
 
@@ -27,7 +27,7 @@ class SolidObject
 
     public:
         SolidObject();
-        SolidObject(const QJsonObject& jsonObject);
+        SolidObject(const nlohmann::json& jsonObject);
 
         const QString& getId()     const;
         const QString& getMaterial() const;
@@ -45,7 +45,7 @@ class SolidObject
 
         const QVector<Face>& getFaces() const;
         void setFacesCL(const QVector<FaceCL>& facesCL);
-        QJsonObject getJson() const;
+        nlohmann::json getJson() const;
 
     private:
         void loadStl();

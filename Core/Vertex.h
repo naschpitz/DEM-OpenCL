@@ -9,10 +9,10 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+#include "nlohmann/json.hpp"
 #include "Vector3D.h"
 
 #include <CL/cl2.hpp>
-#include <QJsonObject>
 
 typedef struct
 {
@@ -49,7 +49,6 @@ class Vertex
         Vertex(const Vertex& other);
         Vertex(const Vector3D& vector);
         Vertex(const double& x, const double& y, const double& z);
-        Vertex(const QJsonObject& jsonObject);
 
         VertexCL getCL() const;
         void setCL(const VertexCL& vertexCL);
@@ -63,7 +62,7 @@ class Vertex
         virtual const Vector3D& getCurrentPosition() const;
         virtual const Vector3D& getCurrentVelocity() const;
 
-        QJsonObject getJson() const;
+        nlohmann::json getJson() const;
 };
 
 #endif // VERTEX_H

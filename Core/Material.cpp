@@ -1,9 +1,5 @@
 #include <Material.h>
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-
 #include <cstring>
 
 Material::Material()
@@ -11,38 +7,67 @@ Material::Material()
 
 }
 
-Material::Material(const QJsonObject& jsonObject)
+Material::Material(const nlohmann::json& jsonObject)
 {
-    QString id = jsonObject["_id"].toString();
+    try {
+        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+    }
 
-    QString material1 = jsonObject["material1"].toString();
-    QString material2 = jsonObject["material2"].toString();
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing '_id' field in Material");
+    }
 
-    double distanceThreshold = jsonObject["distanceThreshold"].toDouble();
+    try {
+        this->material1 = QString::fromStdString(jsonObject.at("material1").get<std::string>());
+        this->material2 = QString::fromStdString(jsonObject.at("material2").get<std::string>());
+    }
 
-    QString forceType     = jsonObject["forceType"].toString();
-    QString dragForceType = jsonObject["dragForceType"].toString();
+    catch (...) { }
 
-    this->setId(id);
-    this->setParents(material1, material2);
-    this->setDistanceThreshold(distanceThreshold);
-    this->setForceType(forceType);
-    this->setDragForceType(dragForceType);
+    try {
+        this->distanceThreshold = jsonObject.at("distanceThreshold").get<double>();
+    }
 
-    QJsonValue coefficients = jsonObject["coefficients"];
-    foreach(QJsonValue value, coefficients.toArray())
-        this->addCoefficient(value.toDouble());
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'distanceThreshold' field in Material");
+    }
 
-    QJsonValue dragCoefficients = jsonObject["dragCoefficients"];
-    foreach(QJsonValue value, dragCoefficients.toArray())
-        this->addDragCoefficient(value.toDouble());
+    try {
+        this->forceType = QString::fromStdString(jsonObject.at("forceType").get<std::string>());
+    }
+
+    catch (...) { }
+
+    try {
+        this->dragForceType = QString::fromStdString(jsonObject.at("dragForceType").get<std::string>());
+    }
+
+    catch (...) { }
+
+    try {
+        const nlohmann::json& coefficients = jsonObject.at("coefficients");
+
+        foreach(nlohmann::json value, coefficients)
+            this->addCoefficient(value.get<double>());
+    }
+
+    catch (...) { }
+
+    try {
+        const nlohmann::json& dragCoefficients = jsonObject.at("dragCoefficients");
+
+        foreach(nlohmann::json value, dragCoefficients)
+            this->addDragCoefficient(value.get<double>());
+    }
+
+    catch (...) { }
 }
 
-MaterialCL Material::getCL(const QMap<QString, int>& namesMap) const
+MaterialCL Material::getCL(const QMap<QString, int>& idsMap) const
 {
     MaterialCL materialCL;
-    materialCL.materialIndex1 = namesMap.contains(this->material1) ? namesMap[this->material1] : -1;
-    materialCL.materialIndex2 = namesMap.contains(this->material2) ? namesMap[this->material2] : -1;
+    materialCL.materialIndex1 = idsMap.contains(this->material1) ? idsMap[this->material1] : -1;
+    materialCL.materialIndex2 = idsMap.contains(this->material2) ? idsMap[this->material2] : -1;
     materialCL.distanceThreshold = this->distanceThreshold;
     materialCL.forceType = this->fromQStringToForceType(this->forceType);
     materialCL.dragForceType = this->fromQStringToDragForceType(this->dragForceType);
@@ -96,32 +121,6 @@ const QVector<double>& Material::getCoefficients() const
 const QVector<double>& Material::getDragCoefficients() const
 {
     return this->dragCoefficients;
-}
-
-void Material::setId(const QString& id)
-{
-    this->id = id;
-}
-
-void Material::setParents(const QString& material1, const QString& material2)
-{
-    this->material1 = material1;
-    this->material2 = material2;
-}
-
-void Material::setDistanceThreshold(const double& distanceThreshold)
-{
-    this->distanceThreshold = distanceThreshold;
-}
-
-void Material::setForceType(const QString& forceType)
-{
-    this->forceType = forceType;
-}
-
-void Material::setDragForceType(const QString& dragForceType)
-{
-    this->dragForceType = dragForceType;
 }
 
 void Material::addCoefficient(const double& coefficient)

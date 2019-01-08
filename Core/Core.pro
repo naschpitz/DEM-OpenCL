@@ -36,9 +36,11 @@ HEADERS += \
     Face.h \
     RequestMapper.h \
     RequestSender.h \
-    ../libs/easyzlib/easyzlib.h \
     OpenCLCU.h \
-    OpenCLKernel.h
+    OpenCLKernel.h \
+    LogSender.h \
+    FrameSender.h \
+    EasyZLib.h
 
 SOURCES += \
     main.cpp \
@@ -56,8 +58,10 @@ SOURCES += \
     Face.cpp \
     RequestMapper.cpp \
     RequestSender.cpp \
-    ../libs/easyzlib/easyzlib.c \
-    OpenCLCU.cpp
+    OpenCLCU.cpp \
+    LogSender.cpp \
+    FrameSender.cpp \
+    EasyZLib.cpp
 
 OTHER_FILES +=
 
@@ -74,17 +78,27 @@ DISTFILES += \
     Edge.cl \
     Scenery.cl \
     ReducedParticle.cl \
-    ReducedVertex.cl
+    ReducedVertex.cl \
+    TestBox.cl
 
 LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
 
 ## TetGen Library
 unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.0/ -ltet
 
-INCLUDEPATH += $$PWD/../libs/tetgen1.5.0
-DEPENDPATH += $$PWD/../libs/tetgen1.5.0
+INCLUDEPATH += $$PWD/../libs
+DEPENDPATH += $$PWD/../libs
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.0/libtet.a
+
+
+## EasyZLib Library
+unix:!macx: LIBS += -L$$PWD/../libs/easyzlib/ -leasyzlib
+
+INCLUDEPATH += $$PWD/../libs
+DEPENDPATH += $$PWD/../libs
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/easyzlib/libeasyzlib.a
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

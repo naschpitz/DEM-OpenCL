@@ -1,9 +1,6 @@
 #include "Simulation.h"
 
 #include <QFile>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 #include <QTextStream>
 #include <QTime>
 #include <iostream>
@@ -17,21 +14,62 @@ Simulation::Simulation()
 
 }
 
-Simulation::Simulation(const QJsonObject& jsonObject)
+Simulation::Simulation(const nlohmann::json& jsonObject)
 {
-    this->id = jsonObject["_id"].toString();
+    try {
+        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing '_id' field in Simulation");
+    }
 
     this->currentTime = 0;
     this->currentStep = 0;
     this->et          = 0;
-    this->timeStep    = jsonObject["timeStep"].toDouble();
-    this->totalTime   = jsonObject["totalTime"].toDouble();
-    this->frameTime   = jsonObject["frameTime"].toDouble();
-    this->logTime     = jsonObject["logTime"].toDouble();
-    this->totalSteps  = this->totalTime / this->timeStep;
 
-    QJsonObject sceneryJsonObject = jsonObject["scenery"].toObject();
-    this->scenery = Scenery(sceneryJsonObject);
+    try {
+        this->timeStep = jsonObject.at("timeStep").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'timeStep' field in Simulation");
+    }
+
+    try {
+        this->totalTime = jsonObject.at("totalTime").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'totalTime' field in Simulation");
+    }
+
+    try {
+        this->frameTime = jsonObject.at("frameTime").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'frameTime' field in Simulation");
+    }
+
+    try {
+        this->logTime = jsonObject.at("logTime").get<double>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'logTime' field in Simulation");
+    }
+
+    this->totalSteps = qRound(this->totalTime / this->timeStep);
+
+    try {
+        const nlohmann::json& sceneryJsonObject = jsonObject.at("scenery");
+        this->scenery = Scenery(sceneryJsonObject);
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'scenery' field in Simulation");
+    }
 
     connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
@@ -245,8 +283,10 @@ void Simulation::run()
 
     emit this->newLog("Simulation began");
 
-    while ((this->currentTime < this->totalTime) && !this->paused && !this->stoped)
+    while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stoped)
     {
+        this->currentTime = this->timeStep * this->currentStep;
+
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
 
@@ -273,9 +313,11 @@ void Simulation::run()
 
         openClCore.run();
 
-        this->currentTime += this->timeStep;
-        this->currentStep += 1;
+        this->currentStep++;
     }
+
+    // Decrement because the last loop dosen't happen.
+    this->currentStep--;
 
     if (this->isStopped())
         this->newLog("Simulation stopped");

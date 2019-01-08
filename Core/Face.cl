@@ -34,6 +34,38 @@ void face_addCurrentForce(Face* face, const double4* force, const double4* point
     face->currentTorque += cross(r, (*force));
 }
 
+void face_getBox(const Face* face, double4* min, double4* max)
+{
+    double minX, maxX;
+    double minY, maxY;
+    double minZ, maxZ;
+
+    minX = maxX = face->vertexes[0].currentPosition.x;
+    minY = maxY = face->vertexes[0].currentPosition.y;
+    minZ = maxZ = face->vertexes[0].currentPosition.z;
+
+    for(int i = 0; i < 3; i++) {
+        const double4 *position = &(face->vertexes[i].currentPosition);
+
+        if(position->x < minX) minX = position->x;
+        if(position->x > maxX) maxX = position->x;
+
+        if(position->y < minY) minY = position->y;
+        if(position->y > maxY) maxY = position->y;
+
+        if(position->z < minZ) minZ = position->z;
+        if(position->z > maxZ) maxZ = position->z;
+    }
+
+    min->x = minX;
+    min->y = minY;
+    min->z = minZ;
+
+    max->x = maxX;
+    max->y = maxY;
+    max->z = maxZ;
+}
+
 void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, double4* closestOnThisFace, double4* closestOnOtherParticle, double4* distanceUnitary)
 {
     double4 p1 = thisFace->vertexes[0].currentPosition;

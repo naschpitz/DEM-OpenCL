@@ -29,7 +29,7 @@ class RequestMapper : public HttpRequestHandler {
         void service(HttpRequest& request, HttpResponse& response);
 
     public slots:
-        void simulationDestroyed();
+        void simulationDestroyed(QObject*);
 };
 
 #endif // REQUESTMAPPER_H

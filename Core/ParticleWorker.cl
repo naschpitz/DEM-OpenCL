@@ -7,6 +7,9 @@
 
 void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material)
 {
+    if (!testBox_particleToParticle(thisParticle, otherParticle, material->distanceThreshold))
+        return;
+
     double4 closestOnThisParticle, closestOnOtherParticle, distanceUnitary;
 
     particle_getClosestTo(thisParticle, otherParticle, &closestOnThisParticle, &closestOnOtherParticle, &distanceUnitary);

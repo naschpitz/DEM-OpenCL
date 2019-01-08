@@ -1,17 +1,15 @@
 #include "RequestSender.h"
 
-#include <QBuffer>
-#include <QtEndian>
-#include <QJsonDocument>
 #include <QFile>
+#include <QUuid>
 #include <iostream>
 #include <cstring>
 
-#include "restclient-cpp/restclient.h"
-#include "../libs/easyzlib/easyzlib.h"
+#include "nlohmann/json.hpp"
 
 RequestSender::RequestSender()
 {
+    this->frameSender.setFramesDir("./framesData/");
 }
 
 RequestSender& RequestSender::getInstance()
@@ -25,42 +23,38 @@ void RequestSender::newFrame()
 {    
     Simulation *simulation = (Simulation*)QObject::sender();
 
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
-    jsonObject["owner"]   = simulation->getId();
+    jsonObject["owner"]   = simulation->getId().toStdString();
     jsonObject["step"]    = (int)simulation->getCurrentStep();
     jsonObject["time"]    = simulation->getCurrentTime();
     jsonObject["scenery"] = simulation->getScenery().getJson();
 
-    QJsonDocument document(jsonObject);
-    QByteArray data = document.toJson();
+    QByteArray data = QByteArray::fromStdString(jsonObject.dump());
+
+    QString filename = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    const QString& framesDir = this->frameSender.getFramesDir();
+
+    QFile file = QFile(framesDir + filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(data);
+    file.flush();
 
     QString url = this->getServerAddress(simulation) + "/api/frames";
 
-    QPair<QString, QByteArray> pair = QPair<QString, QByteArray>(url, data);
-
-    // As frames data is pretty large usually, a buffer is used to send it as soon as possible.
-    this->mutex.lock();
-    this->buffer.append(pair);
-    this->mutex.unlock();
-
-    this->start();
+    this->frameSender.send(url, filename);
 }
 
 void RequestSender::newLog(QString message)
 {
     Simulation *simulation = (Simulation*)QObject::sender();
 
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
-    jsonObject["owner"] = simulation->getId();
+    jsonObject["owner"] = simulation->getId().toStdString();
 
     QString state;
-    if (simulation->isRunning() && simulation->getCurrentStep() == 0) {
-        state = "new";
-    }
-
-    else if (simulation->isRunning()) {
+    if (simulation->isRunning()) {
         state = "running";
     }
 
@@ -76,10 +70,10 @@ void RequestSender::newLog(QString message)
         state = "done";
     }
 
-    jsonObject["state"] = state;
-    jsonObject["message"] = message;
+    jsonObject["state"] = state.toStdString();
+    jsonObject["message"] = message.toStdString();
 
-    QJsonObject progressJsonObject;
+    nlohmann::json progressJsonObject;
     progressJsonObject["step"] = (int)simulation->getCurrentStep();
     progressJsonObject["time"] = simulation->getCurrentTime();
     progressJsonObject["stepsPerSecond"] = simulation->getStepsPerSecond();
@@ -88,64 +82,10 @@ void RequestSender::newLog(QString message)
 
     jsonObject["progress"] = progressJsonObject;
 
-    QJsonDocument document(jsonObject);
-    QByteArray data = document.toJson();
-
     QString url = this->getServerAddress(simulation) + "/api/simulationsLogs";
+    QByteArray data = QByteArray::fromStdString(jsonObject.dump());
 
-    QPair<QString, QByteArray> pair = QPair<QString, QByteArray>(url, data);
-
-    // As frames data is pretty large usually, a buffer is used to send it as soon as possible.
-    this->mutex.lock();
-    this->buffer.append(pair);
-    this->mutex.unlock();
-
-    this->start();
-}
-
-void RequestSender::run()
-{
-    while (true) {
-        QPair<QString, QByteArray> pair;
-
-        this->mutex.lock();
-        bool isEmpty = this->buffer.isEmpty();
-        this->mutex.unlock();
-
-        if (!isEmpty) {
-            this->mutex.lock();
-            pair = this->buffer.first();
-            this->mutex.unlock();
-        }
-
-        else {
-            this->sleep(1);
-            continue;
-        }
-
-        QString& url = pair.first;
-        QByteArray& data = pair.second;
-
-        ezbuffer bufferData(data.size());
-        std::memcpy(bufferData.pBuf, data.data(), data.size());
-        ezbuffer bufferCompressed;
-        ezcompress(bufferCompressed, bufferData);
-
-        std::string package(reinterpret_cast<const char*>(bufferCompressed.pBuf), bufferCompressed.nLen);
-
-        std::cout << "Sending data, size: " << package.size() << "\n";
-        RestClient::Response r = RestClient::post(url.toStdString(), "application/octet-stream", package);
-        std::cout << "Data sent: " << r.code << " - " <<  r.body << "\n";
-
-        // If the package was successfully sent, remove the pair that originated it from the buffer.
-        if(r.code == 200) {
-            this->mutex.lock();
-            this->buffer.removeFirst();
-            this->mutex.unlock();
-        }
-
-        std::cout.flush();
-    }
+    this->logSender.send(url, data);
 }
 
 QString RequestSender::getServerAddress(const Simulation *simulation) const

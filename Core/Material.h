@@ -9,11 +9,12 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "nlohmann/json.hpp"
+
 #include <CL/cl2.hpp>
 #include <QString>
 #include <QVector>
 #include <QMap>
-#include <QJsonValue>
 
 enum ForceType
 {
@@ -65,7 +66,7 @@ class Material
 
     public:
         Material();
-        Material(const QJsonObject& jsonObject);
+        Material(const nlohmann::json& jsonObject);
 
         MaterialCL getCL(const QMap<QString, int>& idsMap) const;
 
@@ -84,15 +85,6 @@ class Material
         virtual bool operator==(const Material &other) const;
 
     private:
-        void setId(const QString& id);
-        void setParents(const QString& material1, const QString& material2);
-
-        void setDensity(const double& density);
-        void setDistanceThreshold(const double& distanceThreshold);
-
-        void setForceType(const QString& forceType);
-        void setDragForceType(const QString& dragForceType);
-
         void addCoefficient(const double& coefficient);
         void addDragCoefficient(const double& dragCoefficient);
 

@@ -1,26 +1,46 @@
 #include "Scenery.h"
 
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-
 Scenery::Scenery()
 {
 
 }
 
-Scenery::Scenery(const QJsonObject& jsonObject)
+Scenery::Scenery(const nlohmann::json& jsonObject)
 {
-    this->id = jsonObject["_id"].toString();
+    try {
+        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+    }
 
-    QJsonArray gravityArray = jsonObject["gravity"].toArray();
-    this->gravity = Vector3D(gravityArray[0].toDouble(), gravityArray[1].toDouble(), gravityArray[2].toDouble());
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing '_id' field in Scenery");
+    }
 
-    QJsonArray materialsManager = jsonObject["materials"].toArray();
-    this->materialsManager = MaterialsManager(materialsManager);
+    try {
+        const nlohmann::json& gravityArray = jsonObject.at("gravity");
+        this->gravity = Vector3D(gravityArray.at(0).get<double>(), gravityArray.at(1).get<double>(), gravityArray.at(2).get<double>());
+    }
 
-    QJsonObject objectsManager = jsonObject["objects"].toObject();
-    this->objectsManager = ObjectsManager(objectsManager);
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'gravity' field in Scenery");
+    }
+
+    try {
+        const nlohmann::json& materialsManager = jsonObject.at("materials");
+        this->materialsManager = MaterialsManager(materialsManager);
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'materials' field in Scenery");
+    }
+
+    try {
+        const nlohmann::json& objectsManager = jsonObject.at("objects");
+        this->objectsManager = ObjectsManager(objectsManager);
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'objects' field in Scenery");
+    }
 }
 
 SceneryCL Scenery::getCL() const
@@ -45,11 +65,11 @@ const MaterialsManager& Scenery::getMaterialsManager() const
     return this->materialsManager;
 }
 
-const QJsonObject Scenery::getJson() const
+const nlohmann::json Scenery::getJson() const
 {
-    QJsonObject jsonObject;
+    nlohmann::json jsonObject;
 
-    jsonObject["_id"] = this->id;
+    jsonObject["_id"] = this->id.toStdString();
     jsonObject["objects"] = this->objectsManager.getJson();
 
     return jsonObject;

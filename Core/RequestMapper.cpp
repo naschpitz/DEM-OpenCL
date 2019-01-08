@@ -1,8 +1,10 @@
 #include "RequestMapper.h"
 #include "RequestSender.h"
 
+#include "nlohmann/json.hpp"
+
 #include <QCoreApplication>
-#include <QJsonDocument>
+#include <iostream>
 
 RequestMapper::RequestMapper(QObject* parent) : HttpRequestHandler(parent)
 {
@@ -20,66 +22,92 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
     if (path.startsWith("/simulations/start")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
-        QJsonDocument jsonDocument;
-        jsonDocument = QJsonDocument::fromJson(request.getBody());
+        nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
 
-        QJsonObject jsonObject = jsonDocument.object();
+        try {
+            QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
 
-        QString _id = jsonObject["_id"].toString();
+            Simulation* simulation = this->getSimulationById(_id);
 
-        Simulation* simulation = this->getSimulationById(_id);
-        simulation = simulation ? simulation : new Simulation(jsonObject);
+            try {
+                simulation = simulation ? simulation : new Simulation(jsonObject);
 
-        connect(simulation, SIGNAL(destroyed()), this, SLOT(simulationDestroyed()));
+                connect(simulation, SIGNAL(destroyed(QObject*)), this, SLOT(simulationDestroyed(QObject*)));
 
-        this->simulations.insert(simulation);
+                this->simulations.insert(simulation);
 
-        simulation->setServerAddress(request.getPeerAddress());
-        simulation->start();
+                simulation->setServerAddress(request.getPeerAddress());
+                simulation->start();
+            }
+
+            catch (const std::runtime_error& e) {
+                std::cout << e.what() << "\n";
+                std::cout.flush();
+                response.setStatus(402);
+                response.write(e.what());
+            }
+        }
+
+        catch (const nlohmann::detail::exception& e) {
+            response.setStatus(402);
+            response.write("Simulation '_id' field missing");
+        }
     }
 
     if (path.startsWith("/simulations/pause")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
-        QJsonDocument jsonDocument;
-        jsonDocument = QJsonDocument::fromJson(request.getBody());
+        nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
 
-        QJsonObject jsonObject = jsonDocument.object();
+        try {
+            QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
 
-        QString _id = jsonObject["_id"].toString();
+            Simulation* simulation = this->getSimulationById(_id);
 
-        Simulation* simulation = this->getSimulationById(_id);
+            if (!simulation)
+                return;
 
-        if (!simulation)
-            return;
+            if (!simulation->isRunning()) {
+                response.setStatus(412);
+                response.write("Simulation not running");
+            }
 
-        if (!simulation->isRunning())
-            response.setStatus(412, "Simulation not running");
+            else {
+                simulation->setServerAddress(request.getPeerAddress());
+                simulation->pause();
+            }
+        }
 
-        else {
-            simulation->setServerAddress(request.getPeerAddress());
-            simulation->pause();
+        catch (const nlohmann::detail::exception& e) {
+            response.setStatus(402);
+            response.write("Simulation '_id' field missing");
         }
     }
 
     if (path.startsWith("/simulations/stop")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
-        QJsonDocument jsonDocument;
-        jsonDocument = QJsonDocument::fromJson(request.getBody());
+        nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
 
-        QJsonObject jsonObject = jsonDocument.object();
+        try {
+            QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
 
-        QString _id = jsonObject["_id"].toString();
+            Simulation* simulation = this->getSimulationById(_id);
 
-        Simulation* simulation = this->getSimulationById(_id);
+            if (!simulation) {
+                response.setStatus(412);
+                response.write("Simulation not paused or running");
+            }
 
-        if (!simulation)
-            response.setStatus(412, "Simulation not paused or running");
+            else {
+                simulation->setServerAddress(request.getPeerAddress());
+                simulation->stop();
+            }
+        }
 
-        else {
-            simulation->setServerAddress(request.getPeerAddress());
-            simulation->stop();
+        catch (const nlohmann::detail::exception& e) {
+            response.setStatus(402);
+            response.write("Simulation '_id' field missing");
         }
     }
 }
@@ -95,9 +123,9 @@ Simulation* RequestMapper::getSimulationById(const QString& _id)
     return NULL;
 }
 
-void RequestMapper::simulationDestroyed()
+void RequestMapper::simulationDestroyed(QObject* obj)
 {
-    Simulation *simulation = (Simulation*)QObject::sender();
+    Simulation *simulation = (Simulation*)obj;
 
     this->simulations.remove(simulation);
 }

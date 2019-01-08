@@ -9,12 +9,11 @@
 #ifndef SCENERY_H
 #define SCENERY_H
 
+#include "nlohmann/json.hpp"
 #include "NonSolidObject.h"
 #include "MaterialsManager.h"
 #include "ObjectsManager.h"
 #include "Vector3D.h"
-
-#include <QJsonObject>
 
 #include <CL/cl2.hpp>
 
@@ -38,13 +37,13 @@ class Scenery
 
     public:
         Scenery();
-        Scenery(const QJsonObject& jsonObject);
+        Scenery(const nlohmann::json& jsonObject);
 
         SceneryCL getCL() const;
 
         const ObjectsManager& getObjectsManager() const;
         const MaterialsManager& getMaterialsManager() const;
-        const QJsonObject getJson() const;
+        const nlohmann::json getJson() const;
 
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
         void setFacesCL(const QVector<FaceCL>& facesCL);

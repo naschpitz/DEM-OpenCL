@@ -1,8 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    Core \
-    Test
+    Core
 
 # build must be last:
 CONFIG += ordered
