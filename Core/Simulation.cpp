@@ -279,12 +279,14 @@ void Simulation::run()
     QTime time;
     time.start();
 
+    bool ran = false;
     double previousStep = this->currentStep;
 
     emit this->newLog("Simulation began");
 
     while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stoped)
     {
+        ran = true;
         this->currentTime = this->timeStep * this->currentStep;
 
         openClCore.syncDevicesBuffers(particlesCL);
@@ -317,13 +319,21 @@ void Simulation::run()
     }
 
     // Decrement because the last loop dosen't happen.
-    this->currentStep--;
+    if (ran && !this->isPaused())
+        this->currentStep--;
+
+    if (this->isPaused()) {
+        openClCore.syncDevicesBuffers(particlesCL);
+        openClCore.syncDevicesBuffers(facesCL);
+
+        this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
+        this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
+
+        this->newLog("Simulation paused");
+    }
 
     if (this->isStopped())
         this->newLog("Simulation stopped");
-
-    else if (this->isPaused())
-        this->newLog("Simulation paused");
 
     emit this->newLog("Simulation ended");
 }
