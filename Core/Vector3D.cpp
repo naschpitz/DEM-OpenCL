@@ -8,14 +8,14 @@ Vector3D::Vector3D()
     this->x = this->y = this->z = 0;
 }
 
-Vector3D::Vector3D(const double &x, const double &y, const double &z)
+Vector3D::Vector3D(const float &x, const float &y, const float &z)
 {
     this->x = x;
     this->y = y;
     this->z = z;
 }
 
-double Vector3D::dotProduct(const Vector3D &v1, const Vector3D &v2)
+float Vector3D::dotProduct(const Vector3D &v1, const Vector3D &v2)
 {
     return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
@@ -43,7 +43,7 @@ Vector3D& Vector3D::operator=(const Vector3D &other)
     return *this;
 }
 
-Vector3D& Vector3D::operator=(const double &other)
+Vector3D& Vector3D::operator=(const float &other)
 {
     this->x = other;
     this->y = other;
@@ -61,7 +61,7 @@ Vector3D& Vector3D::operator+=(const Vector3D &other)
     return *this;
 }
 
-Vector3D& Vector3D::operator+=(const double &other)
+Vector3D& Vector3D::operator+=(const float &other)
 {
     this->x += other;
     this->y += other;
@@ -79,7 +79,7 @@ Vector3D& Vector3D::operator-=(const Vector3D &other)
     return *this;
 }
 
-Vector3D& Vector3D::operator-=(const double &other)
+Vector3D& Vector3D::operator-=(const float &other)
 {
     this->x -= other;
     this->y -= other;
@@ -88,7 +88,7 @@ Vector3D& Vector3D::operator-=(const double &other)
     return *this;
 }
 
-Vector3D& Vector3D::operator*=(const double &other)
+Vector3D& Vector3D::operator*=(const float &other)
 {
     this->x *= other;
     this->y *= other;
@@ -97,7 +97,7 @@ Vector3D& Vector3D::operator*=(const double &other)
     return *this;
 }
 
-Vector3D& Vector3D::operator/=(const double &other)
+Vector3D& Vector3D::operator/=(const float &other)
 {
     this->x /= other;
     this->y /= other;
@@ -106,7 +106,7 @@ Vector3D& Vector3D::operator/=(const double &other)
     return *this;
 }
 
-const Vector3D Vector3D::operator*(const double &other) const
+const Vector3D Vector3D::operator*(const float &other) const
 {
     Vector3D result = *this;
 
@@ -117,7 +117,7 @@ const Vector3D Vector3D::operator*(const double &other) const
     return result;
 }
 
-const Vector3D Vector3D::operator/(const double &other) const
+const Vector3D Vector3D::operator/(const float &other) const
 {
     Vector3D result = *this;
 
@@ -139,7 +139,7 @@ const Vector3D Vector3D::operator+(const Vector3D &other) const
     return result;
 }
 
-const Vector3D Vector3D::operator+(const double &other) const
+const Vector3D Vector3D::operator+(const float &other) const
 {
     Vector3D result = *this;
 
@@ -161,7 +161,7 @@ const Vector3D Vector3D::operator-(const Vector3D &other) const
     return result;
 }
 
-const Vector3D Vector3D::operator-(const double &other) const
+const Vector3D Vector3D::operator-(const float &other) const
 {
     Vector3D result = *this;
 
@@ -181,25 +181,22 @@ bool Vector3D::operator==(const Vector3D &other) const
     return value;
 }
 
-double Vector3D::getModuleSquared() const
+float Vector3D::getModuleSquared() const
 {
     return this->x * this->x + this->y * this->y + this->z * this->z;
 }
 
-double Vector3D::getModule() const
+float Vector3D::getModule() const
 {
     return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
 Vector3D Vector3D::getUnitary() const
 {
-    double module;
+    float module;
     Vector3D unitary;
 
     module = this->getModule();
-
-    if(qFuzzyCompare(module + 1, 1.0))
-        return Vector3D();
 
     unitary.x = this->x / module;
     unitary.y = this->y / module;
@@ -208,7 +205,7 @@ Vector3D Vector3D::getUnitary() const
     return unitary;
 }
 
-const Vector3D operator*(const double &num, const Vector3D &other)
+const Vector3D operator*(const float &num, const Vector3D &other)
 {
     Vector3D result;
 
@@ -219,7 +216,7 @@ const Vector3D operator*(const double &num, const Vector3D &other)
     return result;
 }
 
-const Vector3D operator+(const double &num, const Vector3D &other)
+const Vector3D operator+(const float &num, const Vector3D &other)
 {
     Vector3D result;
 
@@ -230,7 +227,7 @@ const Vector3D operator+(const double &num, const Vector3D &other)
     return result;
 }
 
-const Vector3D operator-(const double &num, const Vector3D &other)
+const Vector3D operator-(const float &num, const Vector3D &other)
 {
     Vector3D result;
 

@@ -30,15 +30,15 @@ typedef struct
     int forceType;
     int dragForceType;
 
-    double distanceThreshold;
+    float distanceThreshold;
 
-    double coefficients[10];
-    double dragCoefficients[10];
+    float coefficients[10];
+    float dragCoefficients[10];
 } Material;
 
-double4 material_calculateForce(const Material* material, double4 distance, double4 distanceUnitary, bool internal, double contactArea, double originalLength, double4 oldForce)
+float4 material_calculateForce(const Material* material, float4 distance, float4 distanceUnitary, bool internal, float contactArea, float originalLength, float4 oldForce)
 {
-    double lengthDistance = length(distance);
+    float lengthDistance = length(distance);
 
     lengthDistance = (internal ? -lengthDistance : lengthDistance) + originalLength;
 
@@ -46,10 +46,10 @@ double4 material_calculateForce(const Material* material, double4 distance, doub
     {
         case adiabatic_compression:
         {
-            double newRadius = lengthDistance / 2.;
-            double newRadius2 = newRadius * newRadius;
+            float newRadius = lengthDistance / 2.;
+            float newRadius2 = newRadius * newRadius;
 
-            double4 force = (material->coefficients[0] * 12.56637061 * newRadius2 * pow(pown(originalLength / 2., 3) / pown(newRadius, 3), material->coefficients[1])) * distanceUnitary;
+            float4 force = ((float)(material->coefficients[0] * 12.56637061 * newRadius2) * pow(pown((float)(originalLength / 2.), 3) / pown(newRadius, 3), material->coefficients[1])) * distanceUnitary;
 
             return force;
         }
@@ -68,8 +68,8 @@ double4 material_calculateForce(const Material* material, double4 distance, doub
 
         case lennard_jones:
         {
-            double e = material->coefficients[0];
-            double n = material->coefficients[1];
+            float e = material->coefficients[0];
+            float n = material->coefficients[1];
 
             return 2 * e * n * pown(originalLength, n) * pown(lengthDistance, (-2 * n) - 1) * (pown(originalLength, n) - pown(lengthDistance, n)) * distanceUnitary;
         }
@@ -77,28 +77,28 @@ double4 material_calculateForce(const Material* material, double4 distance, doub
         case realistic_material:
         {
             // Rupture regime:
-            double ruptureDistance = originalLength * material->coefficients[3];
+            float ruptureDistance = originalLength * material->coefficients[3];
 
             if(length(distance) > ruptureDistance && !internal) // First test, easyest calculation to return value, probably most of the cases.
-                return (double4)0;
+                return (float4)0;
 
             // Elastic regime distance limit:
-            double elasticLimitDistance = originalLength * material->coefficients[1];
+            float elasticLimitDistance = originalLength * material->coefficients[1];
 
             if(length(distance) < elasticLimitDistance || internal) {
                 // Elastic regime: F = -k*x
-                double ea = material->coefficients[0] * contactArea;
-                double k = ea / originalLength;
+                float ea = material->coefficients[0] * contactArea;
+                float k = ea / originalLength;
 
                 return -k * distance;
             }
 
             else {
-                double4 distanceUnitary = vector_getUnitary(distance);
-                double4 oldForceProjection = dot(oldForce, distanceUnitary) * distanceUnitary;
+                float4 distanceUnitary = vector_getUnitary(distance);
+                float4 oldForceProjection = dot(oldForce, distanceUnitary) * distanceUnitary;
 
                 // Plastic regime: F = min(plasticMax, oldForce)
-                double plasticMaximumForce = material->coefficients[2] * contactArea;
+                float plasticMaximumForce = material->coefficients[2] * contactArea;
 
                 if(length(oldForceProjection) > plasticMaximumForce)
                     return plasticMaximumForce * vector_getUnitary(oldForceProjection);
@@ -109,10 +109,10 @@ double4 material_calculateForce(const Material* material, double4 distance, doub
         }
     }
 
-    return (double4)0;
+    return (float4)0;
 }
 
-double4 material_calculateDragForce(const Material* material, double4 velocity, double4 distance)
+float4 material_calculateDragForce(const Material* material, float4 velocity, float4 distance)
 {
     switch(material->dragForceType)
     {
@@ -126,7 +126,7 @@ double4 material_calculateDragForce(const Material* material, double4 velocity, 
             return -(material->dragCoefficients[0]) * pown(length(velocity), 3) * vector_getUnitary(velocity);
     }
 
-    return (double4)0;
+    return (float4)0;
 }
 
 #endif // MATERIAL_CL

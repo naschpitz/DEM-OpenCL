@@ -3,7 +3,7 @@
 #include "Vertex.h"
 
 #include <QFile>
-#include <tetgen1.5.0/tetgen.h>
+#include <tetgen1.5.1/tetgen.h>
 
 SolidObject::SolidObject()
 {

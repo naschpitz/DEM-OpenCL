@@ -9,46 +9,46 @@ typedef struct
     uint index;
     uint materialIndex;
 
-    double radius;
-    double density;
-    double mass;
-    double area;
-    double volume;
+    float radius;
+    float density;
+    float mass;
+    float area;
+    float volume;
 
-    double4 currentForce;
-    double4 oldForce;
+    float4 currentForce;
+    float4 oldForce;
 
-    double4 currentTorque;
-    double4 oldTorque;
+    float4 currentTorque;
+    float4 oldTorque;
 
     Vertex vertex;
 } Particle;
 
-void particle_addCurrentForce(Particle* particle, const double4* force, const double4* pointOfForce)
+void particle_addCurrentForce(Particle* particle, const float4* force, const float4* pointOfForce)
 {
     particle->currentForce += (*force);
 
-    double4 r = (*pointOfForce) - particle->vertex.currentPosition;
+    float4 r = (*pointOfForce) - particle->vertex.currentPosition;
     particle->currentTorque += cross(r, (*force));
 }
 
-void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, double4 *closestOnThisPaticle, double4 *closestOnOtherParticle, double4 *distanceUnitary)
+void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, float4 *closestOnThisPaticle, float4 *closestOnOtherParticle, float4 *distanceUnitary)
 {
-    double4 distance = otherParticle->vertex.currentPosition - thisParticle->vertex.currentPosition;
+    float4 distance = otherParticle->vertex.currentPosition - thisParticle->vertex.currentPosition;
 
     (*distanceUnitary)        = vector_getUnitary(distance);
     (*closestOnThisPaticle)   = thisParticle->vertex.currentPosition + (*distanceUnitary) * thisParticle->radius;
     (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - (*distanceUnitary) * otherParticle->radius;
 }
 
-double4 particle_getCurrentAcceleration(const Particle* particle)
+float4 particle_getCurrentAcceleration(const Particle* particle)
 {
     return particle->currentForce / particle->mass;
 }
 
-bool particle_isInternal(const Particle* particle, const double4 vector)
+bool particle_isInternal(const Particle* particle, const float4 vector)
 {
-    double4 distance = particle->vertex.currentPosition - vector;
+    float4 distance = particle->vertex.currentPosition - vector;
 
     if(length(distance) < particle->radius)
         return true;
@@ -56,9 +56,9 @@ bool particle_isInternal(const Particle* particle, const double4 vector)
     return false;
 }
 
-void particle_integrate(Particle* particle, double timeStep)
+void particle_integrate(Particle* particle, float timeStep)
 {
-    double4 currentAcceleration = particle_getCurrentAcceleration(particle);
+    float4 currentAcceleration = particle_getCurrentAcceleration(particle);
 
     particle->vertex.acceleration = currentAcceleration;
 

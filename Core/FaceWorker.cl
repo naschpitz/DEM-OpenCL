@@ -11,30 +11,30 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
     if (!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
         return;
 
-    double4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
+    float4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
 
     face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle, &distanceUnitary);
 
-    double4 distance = closestOnOtherParticle - closestOnThisFace;
+    float4 distance = closestOnOtherParticle - closestOnThisFace;
 
     bool internal = particle_isInternal(otherParticle, closestOnThisFace);
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return;
 
-    double4 velocity = otherParticle->vertex.currentVelocity - thisFace->currentVelocity;
+    float4 velocity = otherParticle->vertex.currentVelocity - thisFace->currentVelocity;
 
-    double minAreaThis  = thisFace->area;
-    double minAreaOther = otherParticle->area / 2.0;
+    float minAreaThis  = thisFace->area;
+    float minAreaOther = otherParticle->area / 2.0;
 
-    double  minContactArea = min(minAreaThis, minAreaOther);
-    double  originalLength = otherParticle->radius;
-    double4 oldForce       = otherParticle->oldForce - thisFace->oldForce;
+    float  minContactArea = min(minAreaThis, minAreaOther);
+    float  originalLength = otherParticle->radius;
+    float4 oldForce       = otherParticle->oldForce - thisFace->oldForce;
 
-    double4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
-    double4 dragForce = material_calculateDragForce(material, velocity, distance);
+    float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
+    float4 dragForce = material_calculateDragForce(material, velocity, distance);
 
-    double4 totalForce = -(force + dragForce);
+    float4 totalForce = -(force + dragForce);
 
     face_addCurrentForce(thisFace, &totalForce, &closestOnThisFace);
 }

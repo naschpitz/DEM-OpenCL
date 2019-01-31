@@ -20,9 +20,9 @@
 
 typedef struct
 {
-    cl_double currentTime;
-    cl_double timeStep;
-    cl_double totalTime;
+    cl_float currentTime;
+    cl_float timeStep;
+    cl_float totalTime;
 } SimulationCL;
 
 class Simulation : public QThread

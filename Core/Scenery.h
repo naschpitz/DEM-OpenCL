@@ -22,7 +22,7 @@ typedef struct
     cl_ulong numParticles;
     cl_ulong numFaces;
 
-    cl_double4 gravity;
+    cl_float4 gravity;
 } SceneryCL;
 
 class Scenery

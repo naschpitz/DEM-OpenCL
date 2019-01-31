@@ -10,8 +10,8 @@ typedef struct
     uint index;
     uint materialIndex;
 
-    double radius;
-    double area;
+    float radius;
+    float area;
 
     ReducedVertex vertex;
 } ReducedParticle;

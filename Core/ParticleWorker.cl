@@ -10,61 +10,61 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
     if (!testBox_particleToParticle(thisParticle, otherParticle, material->distanceThreshold))
         return;
 
-    double4 closestOnThisParticle, closestOnOtherParticle, distanceUnitary;
+    float4 closestOnThisParticle, closestOnOtherParticle, distanceUnitary;
 
     particle_getClosestTo(thisParticle, otherParticle, &closestOnThisParticle, &closestOnOtherParticle, &distanceUnitary);
 
-    double4 distance = closestOnOtherParticle - closestOnThisParticle;
+    float4 distance = closestOnOtherParticle - closestOnThisParticle;
 
     bool internal = particle_isInternal(thisParticle, closestOnOtherParticle);
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return;
 
-    double4 velocity = otherParticle->vertex.currentVelocity - thisParticle->vertex.currentVelocity;
+    float4 velocity = otherParticle->vertex.currentVelocity - thisParticle->vertex.currentVelocity;
 
-    double minAreaThis  = thisParticle->area  / 2.0;
-    double minAreaOther = otherParticle->area / 2.0;
+    float minAreaThis  = thisParticle->area  / 2.0;
+    float minAreaOther = otherParticle->area / 2.0;
 
-    double  minContactArea = min(minAreaThis, minAreaOther);
-    double  originalLength = thisParticle->radius + otherParticle->radius;
-    double4 oldForce       = otherParticle->oldForce - thisParticle->oldForce;
+    float  minContactArea = min(minAreaThis, minAreaOther);
+    float  originalLength = thisParticle->radius + otherParticle->radius;
+    float4 oldForce       = otherParticle->oldForce - thisParticle->oldForce;
 
-    double4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
-    double4 dragForce = material_calculateDragForce(material, velocity, distance);
+    float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
+    float4 dragForce = material_calculateDragForce(material, velocity, distance);
 
-    double4 totalForce = -(force + dragForce);
+    float4 totalForce = -(force + dragForce);
 
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 }
 
 void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
 {
-    double4 closestOnThisParticle, closestOnOtherFace, distanceUnitary;
+    float4 closestOnThisParticle, closestOnOtherFace, distanceUnitary;
 
     face_getClosestTo(otherFace, thisParticle, &closestOnOtherFace, &closestOnThisParticle, &distanceUnitary);
     distanceUnitary = -distanceUnitary;
 
-    double4 distance = closestOnOtherFace - closestOnThisParticle;
+    float4 distance = closestOnOtherFace - closestOnThisParticle;
 
     bool internal = particle_isInternal(thisParticle, closestOnOtherFace);
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return;
 
-    double4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
+    float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 
-    double minAreaThis  = thisParticle->area / 2.0;
-    double minAreaOther = otherFace->area;
+    float minAreaThis  = thisParticle->area / 2.0;
+    float minAreaOther = otherFace->area;
 
-    double  minContactArea = min(minAreaThis, minAreaOther);
-    double  originalLength = thisParticle->radius;
-    double4 oldForce       = otherFace->oldForce - thisParticle->oldForce;
+    float  minContactArea = min(minAreaThis, minAreaOther);
+    float  originalLength = thisParticle->radius;
+    float4 oldForce       = otherFace->oldForce - thisParticle->oldForce;
 
-    double4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
-    double4 dragForce = material_calculateDragForce(material, velocity, distance);
+    float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
+    float4 dragForce = material_calculateDragForce(material, velocity, distance);
 
-    double4 totalForce = -(force + dragForce);
+    float4 totalForce = -(force + dragForce);
 
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 }

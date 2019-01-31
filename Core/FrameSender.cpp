@@ -1,5 +1,6 @@
 #include "EasyZLib.h"
 #include "FrameSender.h"
+#include "Sender.h"
 
 #include <QFile>
 #include <iostream>
@@ -62,24 +63,31 @@ void FrameSender::run()
         QFile file(this->framesDir + filename);
         this->mutex.unlock();
 
-        file.open(QIODevice::ReadOnly);
-        QByteArray data = file.readAll();
+        bool result = file.open(QIODevice::ReadOnly);
 
-        std::string package = EasyZLib::deflate(data);
+        if (result) {
+            QByteArray data = file.readAll();
+            file.close();
 
-        std::cout << "Sending frame, size: " << package.size() << "\n";
-        RestClient::Response r = RestClient::post(url.toStdString(), "application/octet-stream", package);
-        std::cout << "Frame sent: " << r.code << " - " <<  r.body << "\n";
+            std::string package = EasyZLib::deflate(data);
 
-        // If the package was successfully sent, remove the pair that originated it from the buffer.
-        if(r.code == 200) {
-            this->mutex.lock();
-            this->buffer.removeFirst();
-            this->mutex.unlock();
+            std::cout << "Sending frame, size: " << package.size() << "\n";
+            RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/octet-stream", package);
+            std::cout << "Frame sent: " << r.code << " - " <<  r.body << "\n";
+            std::cout.flush();
 
-            file.remove();
+            // If the package was successfully sent, remove the pair that originated it from the buffer.
+            if(r.code == 200) {
+                this->mutex.lock();
+                this->buffer.removeFirst();
+                this->mutex.unlock();
+
+                file.remove();
+            }
+
+            else {
+                this->sleep(5);
+            }
         }
-
-        std::cout.flush();
     }
 }

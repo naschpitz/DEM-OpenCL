@@ -11,41 +11,41 @@ typedef struct
     uint index;
     uint materialIndex;
 
-    double area;
-    double mass;
+    float area;
+    float mass;
 
-    double4 currentPosition;
-    double4 currentVelocity;
+    float4 currentPosition;
+    float4 currentVelocity;
 
-    double4 currentForce;
-    double4 oldForce;
+    float4 currentForce;
+    float4 oldForce;
 
-    double4 currentTorque;
-    double4 oldTorque;
+    float4 currentTorque;
+    float4 oldTorque;
 
     Vertex vertexes[3];
 } Face;
 
-void face_addCurrentForce(Face* face, const double4* force, const double4* pointOfForce)
+void face_addCurrentForce(Face* face, const float4* force, const float4* pointOfForce)
 {
     face->currentForce += (*force);
 
-    double4 r = (*pointOfForce) - face->currentPosition;
+    float4 r = (*pointOfForce) - face->currentPosition;
     face->currentTorque += cross(r, (*force));
 }
 
-void face_getBox(const Face* face, double4* min, double4* max)
+void face_getBox(const Face* face, float4* min, float4* max)
 {
-    double minX, maxX;
-    double minY, maxY;
-    double minZ, maxZ;
+    float minX, maxX;
+    float minY, maxY;
+    float minZ, maxZ;
 
     minX = maxX = face->vertexes[0].currentPosition.x;
     minY = maxY = face->vertexes[0].currentPosition.y;
     minZ = maxZ = face->vertexes[0].currentPosition.z;
 
     for(int i = 0; i < 3; i++) {
-        const double4 *position = &(face->vertexes[i].currentPosition);
+        const float4 *position = &(face->vertexes[i].currentPosition);
 
         if(position->x < minX) minX = position->x;
         if(position->x > maxX) maxX = position->x;
@@ -66,30 +66,30 @@ void face_getBox(const Face* face, double4* min, double4* max)
     max->z = maxZ;
 }
 
-void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, double4* closestOnThisFace, double4* closestOnOtherParticle, double4* distanceUnitary)
+void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace, float4* closestOnOtherParticle, float4* distanceUnitary)
 {
-    double4 p1 = thisFace->vertexes[0].currentPosition;
-    double4 p2 = thisFace->vertexes[1].currentPosition;
-    double4 p3 = thisFace->vertexes[2].currentPosition;
+    float4 p1 = thisFace->vertexes[0].currentPosition;
+    float4 p2 = thisFace->vertexes[1].currentPosition;
+    float4 p3 = thisFace->vertexes[2].currentPosition;
 
-    double4 q = otherParticle->vertex.currentPosition;
+    float4 q = otherParticle->vertex.currentPosition;
 
-    double4 a =  q - p1;
-    double4 b = p2 - p1;
-    double4 c = p3 - p1;
+    float4 a =  q - p1;
+    float4 b = p2 - p1;
+    float4 c = p3 - p1;
 
-    double ab = dot(a, b);
-    double ac = dot(a, c);
-    double bb = dot(b, b);
-    double bc = dot(b, c);
-    double cc = dot(c, c);
+    float ab = dot(a, b);
+    float ac = dot(a, c);
+    float bb = dot(b, b);
+    float bc = dot(b, c);
+    float cc = dot(c, c);
 
-    double  den = bb * cc - bc * bc;
-    double numU = ab * cc - ac * bc;
-    double numV = ac * bb - ab * bc;
+    float  den = bb * cc - bc * bc;
+    float numU = ab * cc - ac * bc;
+    float numV = ac * bb - ab * bc;
 
-    double u = numU / den;
-    double v = numV / den;
+    float u = numU / den;
+    float v = numV / den;
 
     Edge e1;
     e1.v1 = thisFace->vertexes[0];
@@ -115,7 +115,7 @@ void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, doub
     else // Inside the triangle.
         (*closestOnThisFace) = p1 + u * edge_getDistance(&e1) + v * edge_getDistance(&e2);
 
-    double4 distance = otherParticle->vertex.currentPosition - (*closestOnThisFace);
+    float4 distance = otherParticle->vertex.currentPosition - (*closestOnThisFace);
 
     (*distanceUnitary)        = vector_getUnitary(distance);
     (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - (*distanceUnitary) * otherParticle->radius;
@@ -131,14 +131,14 @@ void face_calculateCurrentVelocity(Face* face)
     face->currentVelocity = (face->vertexes[0].currentVelocity + face->vertexes[1].currentVelocity + face->vertexes[2].currentVelocity) / 3;
 }
 
-double4 face_getCurrentAcceleration(Face* face)
+float4 face_getCurrentAcceleration(Face* face)
 {
     return face->currentForce / face->mass;
 }
 
-void face_integrate(Face* face, double timeStep)
+void face_integrate(Face* face, float timeStep)
 {
-    double4 currentAcceleration = face_getCurrentAcceleration(face);
+    float4 currentAcceleration = face_getCurrentAcceleration(face);
 
     for(int i = 0; i < 3; i++) {
         face->vertexes[i].acceleration = currentAcceleration;

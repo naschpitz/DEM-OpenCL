@@ -22,17 +22,17 @@ typedef struct
     cl_uint index;
     cl_uint materialIndex;
 
-    cl_double area;
-    cl_double mass;
+    cl_float area;
+    cl_float mass;
 
-    cl_double4 currentPosition;
-    cl_double4 currentVelocity;
+    cl_float4 currentPosition;
+    cl_float4 currentVelocity;
 
-    cl_double4 currentForce;
-    cl_double4 oldForce;
+    cl_float4 currentForce;
+    cl_float4 oldForce;
 
-    cl_double4 currentTorque;
-    cl_double4 oldTorque;
+    cl_float4 currentTorque;
+    cl_float4 oldTorque;
 
     VertexCL vertexes[3];
 } FaceCL;

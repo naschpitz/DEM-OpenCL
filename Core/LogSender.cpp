@@ -1,5 +1,6 @@
 #include "EasyZLib.h"
 #include "LogSender.h"
+#include "Sender.h"
 
 #include <iostream>
 #include <cstring>
@@ -48,8 +49,9 @@ void LogSender::run()
         std::string package = EasyZLib::deflate(data);
 
         std::cout << "Sending log, size: " << package.size() << "\n";
-        RestClient::Response r = RestClient::post(url.toStdString(), "application/octet-stream", package);
+        RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/octet-stream", package);
         std::cout << "Log sent: " << r.code << " - " <<  r.body << "\n";
+        std::cout.flush();
 
         // If the package was successfully sent, remove the pair that originated it from the buffer.
         if(r.code == 200) {
@@ -58,6 +60,8 @@ void LogSender::run()
             this->mutex.unlock();
         }
 
-        std::cout.flush();
+        else {
+            this->sleep(5);
+        }
     }
 }

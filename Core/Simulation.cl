@@ -12,9 +12,9 @@
 
 typedef struct
 {
-    double currentTime;
-    double timeStep;
-    double totalTime;
+    float currentTime;
+    float timeStep;
+    float totalTime;
 } Simulation;
 
 kernel void initialize_particles(global Particle* particles, constant Simulation* ptrSimulation)

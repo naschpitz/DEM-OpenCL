@@ -4,9 +4,9 @@
 #include "../Face.cl"
 #include "../Particle.cl"
 
-bool testBoxCommon1(const double4* minThis, const double4* maxThis, const double4* minOther, const double4* maxOther, double distanceThreshold)
+bool testBoxCommon1(const float4* minThis, const float4* maxThis, const float4* minOther, const float4* maxOther, float distanceThreshold)
 {
-    double distance;
+    float distance;
 
     // X axis.
     distance = minOther->x - maxThis->x;
@@ -26,9 +26,9 @@ bool testBoxCommon1(const double4* minThis, const double4* maxThis, const double
     return true;
 }
 
-bool testBoxCommon2(const double4* positionThis, const double4* minOther, const double4* maxOther, double distanceThreshold)
+bool testBoxCommon2(const float4* positionThis, const float4* minOther, const float4* maxOther, float distanceThreshold)
 {
-    double distance;
+    float distance;
 
     // X axis.
     distance = minOther->x - positionThis->x;
@@ -48,9 +48,9 @@ bool testBoxCommon2(const double4* positionThis, const double4* minOther, const 
     return true;
 }
 
-bool testBoxCommon3(const double4* positionThis, const double4* positionOther, double distanceThreshold)
+bool testBoxCommon3(const float4* positionThis, const float4* positionOther, float distanceThreshold)
 {
-    double distance;
+    float distance;
 
     // X axis.
     distance = fabs(positionOther->x - positionThis->x);
@@ -67,19 +67,19 @@ bool testBoxCommon3(const double4* positionThis, const double4* positionOther, d
     return true;
 }
 
-bool testBox_particleToParticle(const Particle* particleThis, const Particle* particleOther, double distanceThreshold)
+bool testBox_particleToParticle(const Particle* particleThis, const Particle* particleOther, float distanceThreshold)
 {
-    const double4* positionThis = &(particleThis->vertex.currentPosition);
-    const double4* positionOther = &(particleOther->vertex.currentPosition);
+    const float4* positionThis = &(particleThis->vertex.currentPosition);
+    const float4* positionOther = &(particleOther->vertex.currentPosition);
 
     return testBoxCommon3(positionThis, positionOther, distanceThreshold + particleThis->radius + particleOther->radius);
 }
 
-bool testBox_particleToFace(const Particle* particleThis, const Face* faceOther, double distanceThreshold)
+bool testBox_particleToFace(const Particle* particleThis, const Face* faceOther, float distanceThreshold)
 {
-    const double4* positionThis = &(particleThis->vertex.currentPosition);
+    const float4* positionThis = &(particleThis->vertex.currentPosition);
 
-    double4 minOther, maxOther;
+    float4 minOther, maxOther;
     face_getBox(faceOther, &minOther, &maxOther);
 
     return testBoxCommon2(positionThis, &minOther, &maxOther, distanceThreshold + particleThis->radius);

@@ -7,8 +7,8 @@ typedef struct
 {
     bool fixed;
 
-    double4 currentPosition;
-    double4 currentVelocity;
+    float4 currentPosition;
+    float4 currentVelocity;
 } ReducedVertex;
 
 ReducedVertex reducedVertex_fromVertex(const Vertex* vertex)

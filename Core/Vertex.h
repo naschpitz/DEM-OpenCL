@@ -18,15 +18,15 @@ typedef struct
 {
     cl_bool fixed;
 
-    cl_double4 originalPosition;
-    cl_double4 originalVelocity;
-    cl_double4 acceleration;
+    cl_float4 originalPosition;
+    cl_float4 originalVelocity;
+    cl_float4 acceleration;
 
-    cl_double4 currentPosition;
-    cl_double4 oldPosition;
+    cl_float4 currentPosition;
+    cl_float4 oldPosition;
 
-    cl_double4 currentVelocity;
-    cl_double4 oldVelocity;
+    cl_float4 currentVelocity;
+    cl_float4 oldVelocity;
 } VertexCL;
 
 class Vertex

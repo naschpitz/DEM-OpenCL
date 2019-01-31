@@ -19,17 +19,17 @@ typedef struct
     cl_uint index;
     cl_uint materialIndex;
 
-    cl_double radius;
-    cl_double density;
-    cl_double mass;
-    cl_double area;
-    cl_double volume;
+    cl_float radius;
+    cl_float density;
+    cl_float mass;
+    cl_float area;
+    cl_float volume;
 
-    cl_double4 currentForce;
-    cl_double4 oldForce;
+    cl_float4 currentForce;
+    cl_float4 oldForce;
 
-    cl_double4 currentTorque;
-    cl_double4 oldTorque;
+    cl_float4 currentTorque;
+    cl_float4 oldTorque;
 
     VertexCL vertex;
 } ParticleCL;

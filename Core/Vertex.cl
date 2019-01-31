@@ -5,21 +5,21 @@ typedef struct
 {
     bool fixed;
 
-    double4 originalPosition;
-    double4 originalVelocity;
-    double4 acceleration;
+    float4 originalPosition;
+    float4 originalVelocity;
+    float4 acceleration;
 
-    double4 currentPosition;
-    double4 oldPosition;
+    float4 currentPosition;
+    float4 oldPosition;
 
-    double4 currentVelocity;
-    double4 oldVelocity;
+    float4 currentVelocity;
+    float4 oldVelocity;
 } Vertex;
 
 
-void vertex_integrate(Vertex* vertex, double timeStep)
+void vertex_integrate(Vertex* vertex, float timeStep)
 {
-    double4 tempPosition;
+    float4 tempPosition;
 
     // Stores the current position.
     tempPosition = vertex->currentPosition;

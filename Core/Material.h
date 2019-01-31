@@ -42,10 +42,10 @@ typedef struct
     cl_int forceType;
     cl_int dragForceType;
 
-    cl_double distanceThreshold;
+    cl_float distanceThreshold;
 
-    cl_double coefficients[10];
-    cl_double dragCoefficients[10];
+    cl_float coefficients[10];
+    cl_float dragCoefficients[10];
 } MaterialCL;
 
 class Material

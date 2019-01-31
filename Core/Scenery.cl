@@ -6,7 +6,7 @@ typedef struct
     ulong numParticles;
     ulong numFaces;
 
-    double4 gravity;
+    float4 gravity;
 } Scenery;
 
 #endif // SCENERY_CL

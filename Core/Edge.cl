@@ -8,22 +8,22 @@ typedef struct
     Vertex v1, v2;
 } Edge;
 
-double4 edge_getDistance(const Edge* edge)
+float4 edge_getDistance(const Edge* edge)
 {
     return edge->v2.currentPosition - edge->v1.currentPosition;
 }
 
-void edge_getClosestTo(const Edge* thisEdge, const double4* otherVector, double4* closestOnThisEdge)
+void edge_getClosestTo(const Edge* thisEdge, const float4* otherVector, float4* closestOnThisEdge)
 {
-    const double4 p1 = thisEdge->v1.currentPosition;
-    const double4 p2 = thisEdge->v2.currentPosition;
+    const float4 p1 = thisEdge->v1.currentPosition;
+    const float4 p2 = thisEdge->v2.currentPosition;
 
-    const double4 q = (*otherVector);
+    const float4 q = (*otherVector);
 
-    double4 a = q - p1;
-    double4 b = edge_getDistance(thisEdge);
+    float4 a = q - p1;
+    float4 b = edge_getDistance(thisEdge);
 
-    double u = dot(a, b) / dot(b, b);
+    float u = dot(a, b) / dot(b, b);
 
     if(u <= 0)
         (*closestOnThisEdge) = p1;

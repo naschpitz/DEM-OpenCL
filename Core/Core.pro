@@ -40,7 +40,8 @@ HEADERS += \
     OpenCLKernel.h \
     LogSender.h \
     FrameSender.h \
-    EasyZLib.h
+    EasyZLib.h \
+    Sender.h
 
 SOURCES += \
     main.cpp \
@@ -61,7 +62,8 @@ SOURCES += \
     OpenCLCU.cpp \
     LogSender.cpp \
     FrameSender.cpp \
-    EasyZLib.cpp
+    EasyZLib.cpp \
+    Sender.cpp
 
 OTHER_FILES +=
 
@@ -84,12 +86,12 @@ DISTFILES += \
 LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
 
 ## TetGen Library
-unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.0/ -ltet
+unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.1/ -ltet
 
 INCLUDEPATH += $$PWD/../libs
 DEPENDPATH += $$PWD/../libs
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.0/libtet.a
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.1/libtet.a
 
 
 ## EasyZLib Library
