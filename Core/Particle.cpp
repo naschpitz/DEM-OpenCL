@@ -16,6 +16,7 @@ Particle::Particle(const double& x, const double& y, const double& z, const doub
     this->calculateVolume();
 
     this->mass = 0;
+    this->inertiaMomentum = 0;
 }
 
 Particle::Particle(const Vector3D& vector, const double& radius) : Vertex(vector)
@@ -26,6 +27,7 @@ Particle::Particle(const Vector3D& vector, const double& radius) : Vertex(vector
     this->calculateVolume();
 
     this->mass = 0;
+    this->inertiaMomentum = 0;
 }
 
 ParticleCL Particle::getCL(uint index, uint materialIndex) const
@@ -40,6 +42,7 @@ ParticleCL Particle::getCL(uint index, uint materialIndex) const
     particleCL.mass = this->mass;
     particleCL.area = this->area;
     particleCL.volume = this->volume;
+    particleCL.inertiaMomentum = this->inertiaMomentum;
 
     particleCL.currentForce = {this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0};
     particleCL.oldForce     = {this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0};
@@ -73,6 +76,7 @@ void Particle::setDensity(const double& density)
 {
     this->density = density;
     this->mass = density * this->volume;
+    this->inertiaMomentum = 2.0/5.0 * this->mass * this->radius * this->radius;
 }
 
 const double& Particle::getRadius() const
@@ -110,10 +114,9 @@ Vector3D Particle::getCurrentMomentum() const
     return this->mass * this->currentVelocity;
 }
 
-// Still incomplete.
 Vector3D Particle::getCurrentAngularMomentum() const
 {
-    return Vector3D();
+    return this->inertiaMomentum * this->currentAngularVelocity;
 }
 
 double Particle::getCurrentKineticEnergyTotal() const
@@ -126,10 +129,9 @@ double Particle::getCurrentKineticEnergyExternal() const
     return this->mass * this->currentVelocity.getModuleSquared() / 2.0;
 }
 
-// Still incomplete.
 double Particle::getCurrentKineticEnergyInternal() const
 {
-    return 0.0;
+    return this->inertiaMomentum * this->currentAngularVelocity.getModuleSquared() / 2.0;
 }
 
 nlohmann::json Particle::getJson() const

@@ -21,6 +21,9 @@ Vertex::Vertex(const Vertex& other)
     this->oldVelocity      = other.oldVelocity;
     this->originalVelocity = other.originalVelocity;
 
+    this->currentAngularVelocity = other.currentAngularVelocity;
+    this->oldAngularVelocity     = other.oldAngularVelocity;
+
     this->fixed = other.fixed;
 }
 
@@ -56,6 +59,9 @@ VertexCL Vertex::getCL() const
     vertexCL.oldVelocity = {this->oldVelocity.getX(), this->oldVelocity.getY(), this->oldVelocity.getZ(), 0};
     vertexCL.originalVelocity = {this->originalVelocity.getX(), this->originalVelocity.getY(), this->originalVelocity.getZ(), 0};
 
+    vertexCL.currentAngularVelocity = {this->currentAngularVelocity.getX(), this->currentAngularVelocity.getY(), this->currentAngularVelocity.getZ(), 0};
+    vertexCL.oldAngularVelocity = {this->oldAngularVelocity.getX(), this->oldAngularVelocity.getY(), this->oldAngularVelocity.getZ(), 0};
+
     vertexCL.fixed = this->fixed;
 
     return vertexCL;
@@ -70,6 +76,9 @@ void Vertex::setCL(const VertexCL& vertexCL)
     this->currentVelocity  = Vector3D(vertexCL.currentVelocity.x, vertexCL.currentVelocity.y, vertexCL.currentVelocity.z);
     this->oldVelocity      = Vector3D(vertexCL.oldVelocity.x, vertexCL.oldVelocity.y, vertexCL.oldVelocity.z);
     this->originalVelocity = Vector3D(vertexCL.originalVelocity.x, vertexCL.originalVelocity.y, vertexCL.originalVelocity.z);
+
+    this->currentAngularVelocity = Vector3D(vertexCL.currentAngularVelocity.x, vertexCL.currentAngularVelocity.y, vertexCL.currentAngularVelocity.z);
+    this->oldAngularVelocity     = Vector3D(vertexCL.oldAngularVelocity.x, vertexCL.oldAngularVelocity.y, vertexCL.oldAngularVelocity.z);
 }
 
 void Vertex::setFixed(bool fixed)

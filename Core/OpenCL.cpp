@@ -29,7 +29,7 @@ void Core::showDevices()
 
         std::vector<cl::Device> devices;
 
-        platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &(devices));
+        platforms[i].getDevices(CL_DEVICE_TYPE_GPU, &(devices));
 
         if(devices.size() == 0) {
             std::cout << "      No devices found. Check OpenCL installation!\n";
@@ -68,7 +68,7 @@ void Core::buildComputeUnits()
     for(std::vector<cl::Platform>::iterator it = this->platforms.begin(); it != this->platforms.end(); it++) {
         std::vector<cl::Device> devices;
 
-        it->getDevices(CL_DEVICE_TYPE_ALL, &(devices));
+        it->getDevices(CL_DEVICE_TYPE_GPU, &(devices));
 
         if(devices.size() == 0) {
             std::cout << "No devices found. Check OpenCL installation!\n";

@@ -14,6 +14,7 @@ typedef struct
     float mass;
     float area;
     float volume;
+    float inertiaMomentum;
 
     float4 currentForce;
     float4 oldForce;
@@ -46,6 +47,11 @@ float4 particle_getCurrentAcceleration(const Particle* particle)
     return particle->currentForce / particle->mass;
 }
 
+float4 particle_getCurrentAngularAcceleration(const Particle* particle)
+{
+    return particle->currentTorque / particle->inertiaMomentum;
+}
+
 bool particle_isInternal(const Particle* particle, const float4 vector)
 {
     float4 distance = particle->vertex.currentPosition - vector;
@@ -58,9 +64,8 @@ bool particle_isInternal(const Particle* particle, const float4 vector)
 
 void particle_integrate(Particle* particle, float timeStep)
 {
-    float4 currentAcceleration = particle_getCurrentAcceleration(particle);
-
-    particle->vertex.acceleration = currentAcceleration;
+    particle->vertex.acceleration = particle_getCurrentAcceleration(particle);
+    particle->vertex.angularAcceleration = particle_getCurrentAngularAcceleration(particle);
 
     vertex_integrate(&(particle->vertex), timeStep);
 

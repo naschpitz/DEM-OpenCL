@@ -6,8 +6,6 @@
 #include "../MaterialsManager.cl"
 #include "../Particle.cl"
 #include "../ParticleWorker.cl"
-#include "../ReducedParticle.cl"
-#include "../ReducedVertex.cl"
 #include "../Scenery.cl"
 
 typedef struct

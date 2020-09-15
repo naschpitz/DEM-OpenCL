@@ -24,6 +24,7 @@ typedef struct
     cl_float mass;
     cl_float area;
     cl_float volume;
+    cl_float inertiaMomentum;
 
     cl_float4 currentForce;
     cl_float4 oldForce;
@@ -44,6 +45,7 @@ class Particle : public Vertex
         double mass;
         double area;
         double volume;
+        double inertiaMomentum;
 
         Vector3D currentForce;
         Vector3D oldForce;

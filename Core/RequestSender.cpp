@@ -1,6 +1,8 @@
 #include "RequestSender.h"
 
+#include <QDir>
 #include <QFile>
+#include <QHostAddress>
 #include <QUuid>
 #include <iostream>
 #include <cstring>
@@ -9,7 +11,14 @@
 
 RequestSender::RequestSender()
 {
-    this->frameSender.setFramesDir("./framesData/");
+    QString dirPath = "./framesData/";
+
+    QDir framesDataDir(dirPath);
+
+    if (!framesDataDir.exists())
+       QDir().mkdir(dirPath);
+
+    this->frameSender.setFramesDir(dirPath);
 }
 
 RequestSender& RequestSender::getInstance()
@@ -94,15 +103,15 @@ QString RequestSender::getServerAddress(const Simulation *simulation) const
     QString url;
 
     if(serverAddress.isEqual(QHostAddress("127.0.0.1"))) {
-        url = "127.0.0.1:3000";
+        url = "localhost:3000";
     }
 
-    if(QHostAddress(serverAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.25.0"), 24)) {
+    else if(QHostAddress(serverAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
         url = QHostAddress(serverAddress.toIPv4Address()).toString() + ":3000";
     }
 
-    if(serverAddress.isEqual(QHostAddress("163.172.186.232"))) {
-        url = "https://icnsim.cienciasnauticas.org.br";
+    else {
+        url = simulation->getServerUrl();
     }
 
     return url;

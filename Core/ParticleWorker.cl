@@ -23,6 +23,10 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
 
     float4 velocity = otherParticle->vertex.currentVelocity - thisParticle->vertex.currentVelocity;
 
+    float4 otherR = closestOnOtherParticle - otherParticle->vertex.currentPosition;
+    float4 thisR = closestOnThisParticle - thisParticle->vertex.currentPosition;
+    float4 rotationVelocity = cross(otherParticle->vertex.currentAngularVelocity, otherR) - cross(thisParticle->vertex.currentAngularVelocity, thisR);
+
     float minAreaThis  = thisParticle->area  / 2.0;
     float minAreaOther = otherParticle->area / 2.0;
 
@@ -31,9 +35,9 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
     float4 oldForce       = otherParticle->oldForce - thisParticle->oldForce;
 
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
-    float4 dragForce = material_calculateDragForce(material, velocity, distance);
+    float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    float4 totalForce = -(force + dragForce);
+    float4 totalForce = - (force + dragForce);
 
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 }
@@ -54,6 +58,9 @@ void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
 
     float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 
+    float4 thisR = closestOnThisParticle - thisParticle->vertex.currentPosition;
+    float4 rotationVelocity = - cross(thisParticle->vertex.currentAngularVelocity, thisR);
+
     float minAreaThis  = thisParticle->area / 2.0;
     float minAreaOther = otherFace->area;
 
@@ -62,9 +69,9 @@ void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     float4 oldForce       = otherFace->oldForce - thisParticle->oldForce;
 
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
-    float4 dragForce = material_calculateDragForce(material, velocity, distance);
+    float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    float4 totalForce = -(force + dragForce);
+    float4 totalForce = - (force + dragForce);
 
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 }

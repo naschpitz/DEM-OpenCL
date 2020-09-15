@@ -27,6 +27,11 @@ typedef struct
 
     cl_float4 currentVelocity;
     cl_float4 oldVelocity;
+
+    cl_float4 angularAcceleration;
+
+    cl_float4 currentAngularVelocity;
+    cl_float4 oldAngularVelocity;
 } VertexCL;
 
 class Vertex
@@ -43,6 +48,11 @@ class Vertex
 
         Vector3D currentVelocity;
         Vector3D oldVelocity;
+
+        Vector3D angularAcceleration;
+
+        Vector3D currentAngularVelocity;
+        Vector3D oldAngularVelocity;
 
     public:
         Vertex();

@@ -38,9 +38,12 @@ typedef struct
 
 float4 material_calculateForce(const Material* material, float4 distance, float4 distanceUnitary, bool internal, float contactArea, float originalLength, float4 oldForce)
 {
-    float lengthDistance = length(distance);
+    float lengthDistance;
 
-    lengthDistance = (internal ? -lengthDistance : lengthDistance) + originalLength;
+    if (material->forceType >= 0) {
+        lengthDistance = length(distance);
+        lengthDistance = (internal ? -lengthDistance : lengthDistance) + originalLength;
+    }
 
     switch(material->forceType)
     {
@@ -112,18 +115,38 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
     return (float4)0;
 }
 
-float4 material_calculateDragForce(const Material* material, float4 velocity, float4 distance)
+float4 material_calculateDragForce(const Material* material, float4 velocity, float4 rotationVelocity, float4 force)
 {
+    float forceModule;
+
+    if (material->dragForceType >= 0)
+        forceModule = length(force);
+
     switch(material->dragForceType)
     {
         case linear:
-            return -(material->dragCoefficients[0]) * velocity;
+        {
+            float4 linearDrag  = - material->dragCoefficients[0] * velocity;
+            float4 angularDrag = - material->dragCoefficients[0] * rotationVelocity;
+
+            return (linearDrag + angularDrag) * forceModule;
+        }
 
         case quadratic:
-            return -(material->dragCoefficients[0]) * pown(length(velocity), 2) * vector_getUnitary(velocity);
+        {
+            float4 linearDrag  = - material->dragCoefficients[0] * pown(length(velocity), 2) * vector_getUnitary(velocity);
+            float4 angularDrag = - material->dragCoefficients[0] * pown(length(rotationVelocity), 2) * vector_getUnitary(rotationVelocity);
+
+            return (linearDrag + angularDrag) * forceModule;
+        }
 
         case cubic:
-            return -(material->dragCoefficients[0]) * pown(length(velocity), 3) * vector_getUnitary(velocity);
+        {
+            float4 linearDrag  = - material->dragCoefficients[0] * pown(length(velocity), 3) * vector_getUnitary(velocity);
+            float4 angularDrag = - material->dragCoefficients[0] * pown(length(rotationVelocity), 2) * vector_getUnitary(rotationVelocity);
+
+            return (linearDrag + angularDrag) * forceModule;
+        }
     }
 
     return (float4)0;

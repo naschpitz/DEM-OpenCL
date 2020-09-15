@@ -24,6 +24,9 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
 
     float4 velocity = otherParticle->vertex.currentVelocity - thisFace->currentVelocity;
 
+    float4 otherR = closestOnOtherParticle - otherParticle->vertex.currentPosition;
+    float4 rotationVelocity = cross(otherParticle->vertex.currentAngularVelocity, otherR);
+
     float minAreaThis  = thisFace->area;
     float minAreaOther = otherParticle->area / 2.0;
 
@@ -32,7 +35,7 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
     float4 oldForce       = otherParticle->oldForce - thisFace->oldForce;
 
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
-    float4 dragForce = material_calculateDragForce(material, velocity, distance);
+    float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
     float4 totalForce = -(force + dragForce);
 

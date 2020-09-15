@@ -31,6 +31,7 @@ class Simulation : public QThread
 
     private:
         QHostAddress serverAddress;
+        QString serverUrl;
         QString id;
 
         double currentTime;
@@ -60,6 +61,9 @@ class Simulation : public QThread
 
         const QHostAddress& getServerAddress() const;
         void setServerAddress(const QHostAddress& serverAddress);
+
+        const QString& getServerUrl() const;
+        void setServerUrl(const QString& serverUrl);
 
         const QString& getId() const;
         const double& getCurrentTime() const;

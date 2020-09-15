@@ -1,6 +1,7 @@
 #include "Simulation.h"
 
 #include <QFile>
+#include <QString>
 #include <QTextStream>
 #include <QTime>
 #include <iostream>
@@ -27,6 +28,14 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     this->currentTime = 0;
     this->currentStep = 0;
     this->et          = 0;
+
+    try {
+        this->serverUrl = QString::fromStdString(jsonObject.at("url").get<std::string>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'url' field in Simulation");
+    }
 
     try {
         this->timeStep = jsonObject.at("timeStep").get<double>();
@@ -79,7 +88,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 
 Simulation::~Simulation()
 {
-    std::cout << "Simulation destoyed!" << "\n";
+    std::cout << "Simulation destroyed!" << "\n";
 }
 
 SimulationCL Simulation::getCL() const
@@ -101,6 +110,16 @@ const QHostAddress& Simulation::getServerAddress() const
 void Simulation::setServerAddress(const QHostAddress& serverAddress)
 {
     this->serverAddress = serverAddress;
+}
+
+const QString& Simulation::getServerUrl() const
+{
+    return this->serverUrl;
+}
+
+void Simulation::setServerUrl(const QString& serverUrl)
+{
+    this->serverUrl = serverUrl;
 }
 
 const QString& Simulation::getId() const

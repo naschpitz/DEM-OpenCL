@@ -1,6 +1,7 @@
 #include <Material.h>
 
 #include <cstring>
+#include <iostream>
 
 Material::Material()
 {
