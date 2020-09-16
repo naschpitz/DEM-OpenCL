@@ -84,8 +84,8 @@ void RequestSender::newLog(QString message)
 
     nlohmann::json progressJsonObject;
     progressJsonObject["step"] = (int)simulation->getCurrentStep();
+    progressJsonObject["totalSteps"] = simulation->getTotalSteps();
     progressJsonObject["time"] = simulation->getCurrentTime();
-    progressJsonObject["stepsPerSecond"] = simulation->getStepsPerSecond();
     progressJsonObject["et"] = (int)simulation->getEt();
     progressJsonObject["eta"] = (int)simulation->getEta();
 
