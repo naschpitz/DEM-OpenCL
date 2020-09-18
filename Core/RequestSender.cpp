@@ -34,7 +34,7 @@ void RequestSender::newFrame()
 
     nlohmann::json jsonObject;
 
-    jsonObject["owner"]   = simulation->getId().toStdString();
+    jsonObject["owner"]   = simulation->getScenery().getId().toStdString();
     jsonObject["step"]    = (int)simulation->getCurrentStep();
     jsonObject["time"]    = simulation->getCurrentTime();
     jsonObject["scenery"] = simulation->getScenery().getJson();

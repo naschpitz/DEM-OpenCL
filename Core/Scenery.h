@@ -41,6 +41,8 @@ class Scenery
 
         SceneryCL getCL() const;
 
+        const QString& getId() const;
+
         const ObjectsManager& getObjectsManager() const;
         const MaterialsManager& getMaterialsManager() const;
         const nlohmann::json getJson() const;

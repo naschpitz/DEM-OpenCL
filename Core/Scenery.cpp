@@ -55,6 +55,11 @@ SceneryCL Scenery::getCL() const
     return sceneryCL;
 }
 
+const QString& Scenery::getId() const
+{
+    return this->id;
+}
+
 const ObjectsManager& Scenery::getObjectsManager() const
 {
     return this->objectsManager;
