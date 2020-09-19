@@ -212,14 +212,14 @@ void Simulation::run()
     bool hasParticles = particlesCL.size();
     bool hasFaces = facesCL.size();
 
-    if (!this->isPaused()) {
-        if (hasParticles) {
+    if(!this->isPaused()) {
+        if(hasParticles) {
             openClCore.addKernel("initialize_particles", particlesCL.size());
             openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
             openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
         }
 
-        if (hasFaces) {
+        if(hasFaces) {
             openClCore.addKernel("initialize_faces", facesCL.size());
             openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
             openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
@@ -235,24 +235,24 @@ void Simulation::run()
         emit this->newLog("Objects initialized");
     }
 
-    if (hasParticles) {
+    if(hasParticles) {
         openClCore.addKernel("reset_particles_forces", particlesCL.size());
         openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
     }
 
-    if (hasFaces) {
+    if(hasFaces) {
         openClCore.addKernel("reset_faces_forces", facesCL.size());
         openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
     }
 
-    if (hasParticles) {
+    if(hasParticles) {
         openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
     }
 
-    if (hasParticles && hasFaces) {
+    if(hasParticles && hasFaces) {
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
@@ -266,26 +266,26 @@ void Simulation::run()
         openClCore.addArgument<SceneryCL>("calculate_face_to_particle", sceneriesCL);
     }
 
-    if (hasParticles) {
+    if(hasParticles) {
         openClCore.addKernel("apply_particles_gravity", particlesCL.size());
         openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
         openClCore.addArgument<SceneryCL>("apply_particles_gravity", sceneriesCL);
     }
 
-    if (hasFaces) {
+    if(hasFaces) {
         openClCore.addKernel("apply_faces_gravity", facesCL.size());
         openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
         openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
     }
 
 
-    if (hasParticles) {
+    if(hasParticles) {
         openClCore.addKernel("integrate_particles", particlesCL.size());
         openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
         openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
     }
 
-    if (hasFaces) {
+    if(hasFaces) {
         openClCore.addKernel("integrate_faces", facesCL.size());
         openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
         openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
@@ -311,7 +311,7 @@ void Simulation::run()
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
 
-        if (this->currentStep % frameSteps == 0) {
+        if(this->currentStep % frameSteps == 0) {
             this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
             this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
 
@@ -321,7 +321,7 @@ void Simulation::run()
 
         int mSecElapsed = time.elapsed();
 
-        if (mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
+        if(mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
             long numSteps = this->currentStep - previousStep;
             this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
             this->et += mSecElapsed;
@@ -338,10 +338,10 @@ void Simulation::run()
     }
 
     // Decrement because the last loop dosen't happen.
-    if (ran && !this->isPaused())
+    if(ran && !this->isPaused())
         this->currentStep--;
 
-    if (this->isPaused()) {
+    if(this->isPaused()) {
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
 
@@ -351,7 +351,7 @@ void Simulation::run()
         this->newLog("Simulation paused");
     }
 
-    if (this->isStopped())
+    if(this->isStopped())
         this->newLog("Simulation stopped");
 
     emit this->newLog("Simulation ended");
@@ -368,14 +368,14 @@ void Simulation::stop()
 
     // TODO: Correct error when stopping a paused simulation, deadlock involved.
     /*
-    if (this->isPaused())
+    if(this->isPaused())
         emit this->newLog();
     */
 }
 
 void Simulation::selfDelete()
 {
-    if (this->isStopped() || !this->isPaused()) {
+    if(this->isStopped() || !this->isPaused()) {
         this->deleteLater();
     }
 }

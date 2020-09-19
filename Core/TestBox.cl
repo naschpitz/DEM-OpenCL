@@ -11,7 +11,7 @@ bool testBoxCommon1(const float4* minThis, const float4* maxThis, const float4* 
     // X axis.
     distance = minOther->x - maxThis->x;
     if(distance < 0) distance = minThis->x - maxOther->x;
-    if (distance > distanceThreshold) return false;
+    if(distance > distanceThreshold) return false;
 
     // Y axis.
     distance = minOther->y - maxThis->y;

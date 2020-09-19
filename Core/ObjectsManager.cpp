@@ -127,7 +127,7 @@ nlohmann::json ObjectsManager::getJson() const
     nlohmann::json nonSolidObjectsArray;
     nlohmann::json solidObjectsArray;
 
-    if (!this->nonSolidObjects.isEmpty()) {
+    if(!this->nonSolidObjects.isEmpty()) {
         foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
             nonSolidObjectsArray.push_back(nonSolidObject.getJson());
         }
@@ -135,7 +135,7 @@ nlohmann::json ObjectsManager::getJson() const
         jsonObject["nonSolidObjects"] = nonSolidObjectsArray;
     }
 
-    if (!this->solidObjects.isEmpty()) {
+    if(!this->solidObjects.isEmpty()) {
         foreach(const SolidObject& solidObject, this->solidObjects) {
             solidObjectsArray.push_back(solidObject.getJson());
         }

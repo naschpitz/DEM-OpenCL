@@ -32,7 +32,7 @@ void LogSender::run()
         bool isEmpty = this->buffer.isEmpty();
         this->mutex.unlock();
 
-        if (!isEmpty) {
+        if(!isEmpty) {
             this->mutex.lock();
             pair = this->buffer.first();
             this->mutex.unlock();
@@ -54,7 +54,7 @@ void LogSender::run()
         std::cout.flush();
 
         // If the package was successfully sent, remove the pair that originated it from the buffer.
-        if(r.code == 200) {
+        if(r.code == 200 && r.body == "OK") {
             this->mutex.lock();
             this->buffer.removeFirst();
             this->mutex.unlock();

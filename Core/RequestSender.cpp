@@ -15,7 +15,7 @@ RequestSender::RequestSender()
 
     QDir framesDataDir(dirPath);
 
-    if (!framesDataDir.exists())
+    if(!framesDataDir.exists())
        QDir().mkdir(dirPath);
 
     this->frameSender.setFramesDir(dirPath);
@@ -63,15 +63,15 @@ void RequestSender::newLog(QString message)
     jsonObject["owner"] = simulation->getId().toStdString();
 
     QString state;
-    if (simulation->isRunning()) {
+    if(simulation->isRunning()) {
         state = "running";
     }
 
-    else if (simulation->isStopped()) {
+    else if(simulation->isStopped()) {
         state = "stopped";
     }
 
-    else if (simulation->isPaused()) {
+    else if(simulation->isPaused()) {
         state = "paused";
     }
 

@@ -63,7 +63,7 @@ namespace OpenCL
         std::map<void*, cl::Buffer>::const_iterator it = this->bufferMap.find(&hBuffer);
         cl::Buffer dBuffer;
 
-        if (it != this->bufferMap.end())
+        if(it != this->bufferMap.end())
             dBuffer = it->second;
 
         else {

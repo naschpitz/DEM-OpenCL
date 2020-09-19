@@ -33,7 +33,7 @@ QString searchConfigFile()
     foreach (QString dir, searchList)
     {
         QFile file(dir + "/" + fileName);
-        if (file.exists())
+        if(file.exists())
         {
             // found
             fileName=QDir(file.fileName()).canonicalPath();

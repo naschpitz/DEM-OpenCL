@@ -19,7 +19,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 {
     QByteArray path = request.getPath();
 
-    if (path.startsWith("/simulations/start")) {
+    if(path.startsWith("/simulations/start")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
@@ -54,7 +54,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         }
     }
 
-    if (path.startsWith("/simulations/pause")) {
+    if(path.startsWith("/simulations/pause")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
@@ -64,10 +64,10 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 
             Simulation* simulation = this->getSimulationById(_id);
 
-            if (!simulation)
+            if(!simulation)
                 return;
 
-            if (!simulation->isRunning()) {
+            if(!simulation->isRunning()) {
                 response.setStatus(412);
                 response.write("Simulation not running");
             }
@@ -84,7 +84,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
         }
     }
 
-    if (path.startsWith("/simulations/stop")) {
+    if(path.startsWith("/simulations/stop")) {
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
@@ -94,7 +94,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 
             Simulation* simulation = this->getSimulationById(_id);
 
-            if (!simulation) {
+            if(!simulation) {
                 response.setStatus(412);
                 response.write("Simulation not paused or running");
             }
@@ -115,7 +115,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 Simulation* RequestMapper::getSimulationById(const QString& _id)
 {
     foreach(Simulation* simulation, this->simulations) {
-        if (simulation->getId() == _id) {
+        if(simulation->getId() == _id) {
             return simulation;
         }
     }

@@ -102,8 +102,7 @@ void SolidObject::loadStl()
 
     QVector<Vertex> vertexes;
 
-    for(int i = 0; i < in.numberofpoints; i++)
-    {
+    for(int i = 0; i < in.numberofpoints; i++) {
         double x = in.pointlist[i * 3];
         double y = in.pointlist[i * 3 + 1];
         double z = in.pointlist[i * 3 + 2];
@@ -111,12 +110,10 @@ void SolidObject::loadStl()
         vertexes.append(Vertex(x, y, z));
     }
 
-    for (int i = 0; i < in.numberoffacets; i++)
-    {
+    for(int i = 0; i < in.numberoffacets; i++) {
         tetgenio::facet facet = in.facetlist[i];
 
-        for (int j = 0; j < facet.numberofpolygons; j++)
-        {
+        for(int j = 0; j < facet.numberofpolygons; j++) {
             tetgenio::polygon polygon = facet.polygonlist[j];
 
             int v1Index = polygon.vertexlist[0];
@@ -137,7 +134,7 @@ void SolidObject::loadStl()
 
 void SolidObject::setFixed()
 {
-    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->setFixed(this->fixed);
     }
 }
@@ -146,7 +143,7 @@ void SolidObject::setMass()
 {
     double totalArea = this->getArea();
 
-    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         double mass = (this->mass * it->getArea()) / totalArea;
 
         it->setMass(mass);
@@ -155,21 +152,21 @@ void SolidObject::setMass()
 
 void SolidObject::setMaterial()
 {
-    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->setMaterial(this->material);
     }
 }
 
 void SolidObject::setPosition()
 {
-    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->displaceBy(this->position);
     }
 }
 
 void SolidObject::setVelocity()
 {
-    for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
         it->setVelocity(this->velocity);
     }
 }
@@ -219,10 +216,10 @@ void SolidObject::getBox(Vector3D &min, Vector3D &max)
     minY = maxY = this->faces[0].getVertexes()[0].getCurrentPosition().getY();
     minZ = maxZ = this->faces[0].getVertexes()[0].getCurrentPosition().getZ();
 
-    foreach(const Face& face, this->faces){
+    foreach(const Face& face, this->faces) {
         const QVector<Vertex>& vertexes = face.getVertexes();
 
-        foreach(const Vertex& vertex, vertexes){
+        foreach(const Vertex& vertex, vertexes) {
             const Vector3D &position = vertex.getCurrentPosition();
 
             if(position.getX() < minX) minX = position.getX();

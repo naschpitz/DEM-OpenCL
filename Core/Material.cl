@@ -40,7 +40,7 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
 {
     float lengthDistance;
 
-    if (material->forceType >= 0) {
+    if(material->forceType >= 0) {
         lengthDistance = length(distance);
         lengthDistance = (internal ? -lengthDistance : lengthDistance) + originalLength;
     }
@@ -119,7 +119,7 @@ float4 material_calculateDragForce(const Material* material, float4 velocity, fl
 {
     float forceModule;
 
-    if (material->dragForceType >= 0)
+    if(material->dragForceType >= 0)
         forceModule = length(force);
 
     switch(material->dragForceType)

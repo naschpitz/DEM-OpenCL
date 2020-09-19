@@ -177,7 +177,7 @@ nlohmann::json Face::getJson() const
     // -- vertexes
     nlohmann::json vertexesArray;
 
-    for (int i = 0; i < 3; i++) {
+    for(int i = 0; i < 3; i++) {
         vertexesArray.push_back(this->vertexes[i].getJson());
     }
 

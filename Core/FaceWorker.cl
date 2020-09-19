@@ -8,7 +8,7 @@
 
 void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
 {
-    if (!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
+    if(!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
         return;
 
     float4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
