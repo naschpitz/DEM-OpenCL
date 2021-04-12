@@ -33,6 +33,12 @@ void particle_addCurrentForce(Particle* particle, const float4* force, const flo
     particle->currentTorque += cross(r, (*force));
 }
 
+void particle_divideCurrentForce(Particle* particle, float divider)
+{
+    particle->currentForce /= divider;
+    particle->currentTorque /= divider;
+}
+
 void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, float4 *closestOnThisPaticle, float4 *closestOnOtherParticle, float4 *distanceUnitary)
 {
     float4 distance = otherParticle->vertex.currentPosition - thisParticle->vertex.currentPosition;

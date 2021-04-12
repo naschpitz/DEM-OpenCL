@@ -74,6 +74,8 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
             float e = material->coefficients[0];
             float n = material->coefficients[1];
 
+            // https://en.wikipedia.org/wiki/Lennard-Jones_potential (n-exp form)
+            // https://www.wolframalpha.com/input/?i=d%2Fdr+-E*%28%28s%2Fr%29%5E%282*n%29+-+2*%28s%2Fr%29%5E%28n%29%29
             return 2 * e * n * pown(originalLength, n) * pown(lengthDistance, (-2 * n) - 1) * (pown(originalLength, n) - pown(lengthDistance, n)) * distanceUnitary;
         }
 

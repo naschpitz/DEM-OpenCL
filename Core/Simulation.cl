@@ -91,6 +91,8 @@ kernel void calculate_particle_to_face(global Particle* particles, global Face* 
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
+    uint hitCount = 0;
+
     for(ulong i = 0; i < scenery.numFaces; i++) {
         Face otherFace = faces[i];
 
@@ -99,8 +101,14 @@ kernel void calculate_particle_to_face(global Particle* particles, global Face* 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        particleToFaceWorker_run(&thisParticle, &otherFace, material);
+        bool isHit = particleToFaceWorker_run(&thisParticle, &otherFace, material);
+
+        if(isHit)
+            hitCount++;
     }
+
+    if(hitCount)
+        particle_divideCurrentForce(&thisParticle, hitCount);
 
     particles[idx] = thisParticle;
 }

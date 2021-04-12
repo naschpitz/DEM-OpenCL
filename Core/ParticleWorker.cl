@@ -42,7 +42,7 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 }
 
-void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
+bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
 {
     float4 closestOnThisParticle, closestOnOtherFace, distanceUnitary;
 
@@ -54,7 +54,7 @@ void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     bool internal = particle_isInternal(thisParticle, closestOnOtherFace);
 
     if((length(distance) > material->distanceThreshold) && !internal)
-        return;
+        return false;
 
     float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 
@@ -74,6 +74,8 @@ void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     float4 totalForce = - (force + dragForce);
 
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+
+    return true;
 }
 
 #endif // PARTICLEWORKER_CL
