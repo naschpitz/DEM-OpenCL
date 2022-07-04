@@ -1,8 +1,10 @@
+#include "Common.h"
 #include "RequestSender.h"
 
 #include <QDir>
 #include <QFile>
 #include <QHostAddress>
+#include <QSettings>
 #include <QUuid>
 #include <iostream>
 #include <cstring>
@@ -11,6 +13,14 @@
 
 RequestSender::RequestSender()
 {
+    QString configFileName = Common::searchConfigFile();
+
+    QSettings* settings = new QSettings(configFileName, QSettings::IniFormat);
+
+    settings->beginGroup("interface");
+    this->remoteInterface = settings->value("remote").toBool();
+    settings->endGroup();
+
     QString dirPath = "./framesData/";
 
     QDir framesDataDir(dirPath);
@@ -49,7 +59,7 @@ void RequestSender::newFrame()
     file.write(data);
     file.flush();
 
-    QString url = this->getServerAddress(simulation) + "/api/frames";
+    QString url = this->getInterfaceAddress(simulation) + "/api/frames";
 
     this->frameSender.send(url, filename);
 }
@@ -91,27 +101,31 @@ void RequestSender::newLog(QString message)
 
     jsonObject["progress"] = progressJsonObject;
 
-    QString url = this->getServerAddress(simulation) + "/api/simulationsLogs";
+    QString url = this->getInterfaceAddress(simulation) + "/api/simulationsLogs";
     QByteArray data = QByteArray::fromStdString(jsonObject.dump());
 
     this->logSender.send(url, data);
 }
 
-QString RequestSender::getServerAddress(const Simulation *simulation) const
+QString RequestSender::getInterfaceAddress(const Simulation *simulation) const
 {
-    QHostAddress serverAddress = simulation->getServerAddress();
+    QHostAddress interfaceAddress = simulation->getInterfaceAddress();
     QString url;
 
-    if(serverAddress.isEqual(QHostAddress("127.0.0.1"))) {
-        url = "localhost:3000";
+    if (this->remoteInterface)
+    {
+        url = simulation->getInterfaceUrl();
     }
 
-    else if(QHostAddress(serverAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
-        url = QHostAddress(serverAddress.toIPv4Address()).toString() + ":3000";
-    }
+    else
+    {
+        if (interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
+            url = "localhost:3000";
+        }
 
-    else {
-        url = simulation->getServerUrl();
+        else if (QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
+            url = QHostAddress(interfaceAddress.toIPv4Address()).toString() + ":3000";
+        }
     }
 
     return url;

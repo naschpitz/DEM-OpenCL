@@ -24,13 +24,13 @@ class RequestSender : public QObject
         void newLog(QString message = QString());
 
     private:
-        QString serverAddress;
+        bool remoteInterface;
 
         FrameSender frameSender;
         LogSender logSender;
 
         RequestSender(); // Constructor? (the {} brackets) are needed here.
-        QString getServerAddress(const Simulation* simulation) const;
+        QString getInterfaceAddress(const Simulation* simulation) const;
 
         // C++ 11
         // =======

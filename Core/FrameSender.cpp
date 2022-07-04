@@ -71,7 +71,7 @@ void FrameSender::run()
 
             std::string package = EasyZLib::deflate(data);
 
-            std::cout << "Sending frame, size: " << package.size() << "\n";
+            std::cout << "Sending frame, size: " << package.size() << " to " << url.toStdString() << "\n";
             RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/octet-stream", package);
             std::cout << "Frame sent: " << r.code << " - " <<  r.body << "\n";
             std::cout.flush();

@@ -41,7 +41,8 @@ HEADERS += \
     LogSender.h \
     FrameSender.h \
     EasyZLib.h \
-    Sender.h
+    Sender.h \
+    Common.h
 
 SOURCES += \
     main.cpp \
@@ -63,7 +64,8 @@ SOURCES += \
     LogSender.cpp \
     FrameSender.cpp \
     EasyZLib.cpp \
-    Sender.cpp
+    Sender.cpp \
+    Common.cpp
 
 OTHER_FILES +=
 

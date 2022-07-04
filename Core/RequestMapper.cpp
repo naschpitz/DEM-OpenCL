@@ -36,7 +36,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 
                 this->simulations.insert(simulation);
 
-                simulation->setServerAddress(request.getPeerAddress());
+                simulation->setInterfaceAddress(request.getPeerAddress());
                 simulation->start();
             }
 
@@ -73,7 +73,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
             }
 
             else {
-                simulation->setServerAddress(request.getPeerAddress());
+                simulation->setInterfaceAddress(request.getPeerAddress());
                 simulation->pause();
             }
         }
@@ -100,7 +100,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
             }
 
             else {
-                simulation->setServerAddress(request.getPeerAddress());
+                simulation->setInterfaceAddress(request.getPeerAddress());
                 simulation->stop();
             }
         }

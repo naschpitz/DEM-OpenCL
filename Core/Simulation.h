@@ -30,8 +30,8 @@ class Simulation : public QThread
     Q_OBJECT
 
     private:
-        QHostAddress serverAddress;
-        QString serverUrl;
+        QHostAddress interfaceAddress;
+        QString interfaceUrl;
         QString id;
 
         double currentTime;
@@ -59,11 +59,11 @@ class Simulation : public QThread
 
         SimulationCL getCL() const;
 
-        const QHostAddress& getServerAddress() const;
-        void setServerAddress(const QHostAddress& serverAddress);
+        const QHostAddress& getInterfaceAddress() const;
+        void setInterfaceAddress(const QHostAddress& interfaceAddress);
 
-        const QString& getServerUrl() const;
-        void setServerUrl(const QString& serverUrl);
+        const QString& getInterfaceUrl() const;
+        void setInterfaceUrl(const QString& interfaceUrl);
 
         const QString& getId() const;
         const double& getCurrentTime() const;

@@ -30,7 +30,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     this->et          = 0;
 
     try {
-        this->serverUrl = QString::fromStdString(jsonObject.at("url").get<std::string>());
+        this->interfaceUrl = QString::fromStdString(jsonObject.at("url").get<std::string>());
     }
 
     catch (const nlohmann::detail::exception& e) {
@@ -102,24 +102,24 @@ SimulationCL Simulation::getCL() const
     return simulationCL;
 }
 
-const QHostAddress& Simulation::getServerAddress() const
+const QHostAddress& Simulation::getInterfaceAddress() const
 {
-    return this->serverAddress;
+    return this->interfaceAddress;
 }
 
-void Simulation::setServerAddress(const QHostAddress& serverAddress)
+void Simulation::setInterfaceAddress(const QHostAddress& serverAddress)
 {
-    this->serverAddress = serverAddress;
+    this->interfaceAddress = serverAddress;
 }
 
-const QString& Simulation::getServerUrl() const
+const QString& Simulation::getInterfaceUrl() const
 {
-    return this->serverUrl;
+    return this->interfaceUrl;
 }
 
-void Simulation::setServerUrl(const QString& serverUrl)
+void Simulation::setInterfaceUrl(const QString& serverUrl)
 {
-    this->serverUrl = serverUrl;
+    this->interfaceUrl = serverUrl;
 }
 
 const QString& Simulation::getId() const
@@ -191,8 +191,12 @@ void Simulation::run()
     std::vector<SimulationCL> simulationsCL = { this->getCL() };
     std::vector<SceneryCL>    sceneriesCL   = { this->scenery.getCL() };
 
-    std::vector<ParticleCL> particlesCL = this->scenery.getObjectsManager().getParticlesCL(materialsManager).toStdVector();
-    std::vector<FaceCL> facesCL = this->scenery.getObjectsManager().getFacesCL(materialsManager).toStdVector();
+    QVector<ParticleCL> particles = this->scenery.getObjectsManager().getParticlesCL(materialsManager);
+    std::vector<ParticleCL> particlesCL = std::vector(particles.begin(), particles.end());
+
+    QVector<FaceCL> faces = this->scenery.getObjectsManager().getFacesCL(materialsManager);
+    std::vector<FaceCL> facesCL = std::vector(faces.begin(), faces.end());
+
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
 
     OpenCL::Core openClCore;
@@ -295,8 +299,7 @@ void Simulation::run()
 
     uint frameSteps = this->frameTime / this->timeStep;
 
-    QTime time;
-    time.start();
+    QTime time = QTime::currentTime();
 
     bool ran = false;
     double previousStep = this->currentStep;
@@ -311,15 +314,15 @@ void Simulation::run()
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
 
-        if(this->currentStep % frameSteps == 0) {
-            this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
-            this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
+        if(this->currentStep % frameSteps == 0) {           
+            this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
+            this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
             emit this->newLog("New frame");
             emit this->newFrame();
         }
 
-        int mSecElapsed = time.elapsed();
+        int mSecElapsed = time.msecsTo(QTime::currentTime());
 
         if(mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
             long numSteps = this->currentStep - previousStep;
@@ -327,7 +330,7 @@ void Simulation::run()
             this->et += mSecElapsed;
 
             previousStep = this->currentStep;
-            time.restart();
+            time = QTime::currentTime();
 
             emit this->newLog("New log message");
         }
@@ -345,8 +348,8 @@ void Simulation::run()
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
 
-        this->scenery.setParticlesCL(QVector<ParticleCL>::fromStdVector(particlesCL));
-        this->scenery.setFacesCL(QVector<FaceCL>::fromStdVector(facesCL));
+        this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
+        this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
         this->newLog("Simulation paused");
     }
