@@ -51,6 +51,7 @@ class Simulation : public QThread
 
         bool paused;
         bool stoped;
+        bool primary;
 
     public:
         Simulation();
@@ -81,6 +82,7 @@ class Simulation : public QThread
 
         bool isPaused() const;
         bool isStopped() const;
+        bool isPrimary() const;
 
         void pause();
         void stop();

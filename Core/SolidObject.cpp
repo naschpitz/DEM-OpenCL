@@ -294,7 +294,7 @@ void SolidObject::setFacesCL(const QVector<FaceCL>& facesCL)
     }
 }
 
-nlohmann::json SolidObject::getJson() const
+nlohmann::json SolidObject::getJson(bool detailed = true) const
 {
     nlohmann::json jsonObject;
 
@@ -334,13 +334,15 @@ nlohmann::json SolidObject::getJson() const
     //
 
     // -- faces
-    nlohmann::json facesArray;
+    if(detailed) {
+        nlohmann::json facesArray;
 
-    foreach(const Face& face, this->faces) {
-        facesArray.push_back(face.getJson());
+        foreach(const Face& face, this->faces) {
+            facesArray.push_back(face.getJson());
+        }
+
+        jsonObject["faces"] = facesArray;
     }
-
-    jsonObject["faces"] = facesArray;
     //
 
     return jsonObject;

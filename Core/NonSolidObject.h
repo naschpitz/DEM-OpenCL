@@ -57,7 +57,7 @@ class NonSolidObject
 
         const QVector<Particle>& getParticles() const;
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
-        nlohmann::json getJson() const;
+        nlohmann::json getJson(bool detailed) const;
 
         void reset();
 

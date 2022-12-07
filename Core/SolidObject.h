@@ -45,7 +45,7 @@ class SolidObject
 
         const QVector<Face>& getFaces() const;
         void setFacesCL(const QVector<FaceCL>& facesCL);
-        nlohmann::json getJson() const;
+        nlohmann::json getJson(bool detailed) const;
 
     private:
         void loadStl();

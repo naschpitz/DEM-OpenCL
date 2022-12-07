@@ -45,7 +45,7 @@ class Scenery
 
         const ObjectsManager& getObjectsManager() const;
         const MaterialsManager& getMaterialsManager() const;
-        const nlohmann::json getJson() const;
+        const nlohmann::json getJson(bool detailed) const;
 
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
         void setFacesCL(const QVector<FaceCL>& facesCL);

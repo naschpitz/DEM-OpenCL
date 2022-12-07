@@ -25,6 +25,14 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing '_id' field in Simulation");
     }
 
+    try {
+        this->primary = jsonObject.at("primary").get<bool>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'primary' field in Simulation");
+    }
+
     this->currentTime = 0;
     this->currentStep = 0;
     this->et          = 0;
@@ -182,6 +190,11 @@ bool Simulation::isPaused() const
 bool Simulation::isStopped() const
 {
     return this->stoped;
+}
+
+bool Simulation::isPrimary() const
+{
+    return this->primary;
 }
 
 void Simulation::run()

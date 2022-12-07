@@ -70,12 +70,12 @@ const MaterialsManager& Scenery::getMaterialsManager() const
     return this->materialsManager;
 }
 
-const nlohmann::json Scenery::getJson() const
+const nlohmann::json Scenery::getJson(bool detailed = true) const
 {
     nlohmann::json jsonObject;
 
     jsonObject["_id"] = this->id.toStdString();
-    jsonObject["objects"] = this->objectsManager.getJson();
+    jsonObject["objects"] = this->objectsManager.getJson(detailed);
 
     return jsonObject;
 }

@@ -26,7 +26,7 @@ class ObjectsManager
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);
         void setFacesCL(const QVector<FaceCL>& facesCL);
 
-        nlohmann::json getJson() const;
+        nlohmann::json getJson(bool detailed) const;
 };
 
 #endif // OBJECTSMANAGER_H

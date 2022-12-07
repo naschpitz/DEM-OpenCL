@@ -44,10 +44,12 @@ void RequestSender::newFrame()
 
     nlohmann::json jsonObject;
 
+    bool detailed = simulation->isPrimary();
+
     jsonObject["owner"]   = simulation->getScenery().getId().toStdString();
     jsonObject["step"]    = (int)simulation->getCurrentStep();
     jsonObject["time"]    = simulation->getCurrentTime();
-    jsonObject["scenery"] = simulation->getScenery().getJson();
+    jsonObject["scenery"] = simulation->getScenery().getJson(detailed);
 
     QByteArray data = QByteArray::fromStdString(jsonObject.dump());
 
@@ -101,7 +103,7 @@ void RequestSender::newLog(QString message)
 
     jsonObject["progress"] = progressJsonObject;
 
-    QString url = this->getInterfaceAddress(simulation) + "/api/simulationsLogs";
+    QString url = this->getInterfaceAddress(simulation) + "/api/logs";
     QByteArray data = QByteArray::fromStdString(jsonObject.dump());
 
     this->logSender.send(url, data);

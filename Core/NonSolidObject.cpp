@@ -281,7 +281,7 @@ void NonSolidObject::setParticlesCL(const QVector<ParticleCL>& particlesCL)
     }
 }
 
-nlohmann::json NonSolidObject::getJson() const
+nlohmann::json NonSolidObject::getJson(bool detailed = true) const
 {
     nlohmann::json jsonObject;
 
@@ -339,13 +339,15 @@ nlohmann::json NonSolidObject::getJson() const
     //
 
     // -- particles
-    nlohmann::json particlesArray;
+    if(detailed) {
+        nlohmann::json particlesArray;
 
-    foreach(const Particle& particle, this->particles) {
-        particlesArray.push_back(particle.getJson());
+        foreach(const Particle& particle, this->particles) {
+            particlesArray.push_back(particle.getJson());
+        }
+
+        jsonObject["particles"] = particlesArray;
     }
-
-    jsonObject["particles"] = particlesArray;
     //
 
     return jsonObject;

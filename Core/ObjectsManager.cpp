@@ -120,7 +120,7 @@ void ObjectsManager::setFacesCL(const QVector<FaceCL>& facesCL)
     }
 }
 
-nlohmann::json ObjectsManager::getJson() const
+nlohmann::json ObjectsManager::getJson(bool detailed = true) const
 {
     nlohmann::json jsonObject;
 
@@ -129,7 +129,7 @@ nlohmann::json ObjectsManager::getJson() const
 
     if(!this->nonSolidObjects.isEmpty()) {
         foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
-            nonSolidObjectsArray.push_back(nonSolidObject.getJson());
+            nonSolidObjectsArray.push_back(nonSolidObject.getJson(detailed));
         }
 
         jsonObject["nonSolidObjects"] = nonSolidObjectsArray;
@@ -137,7 +137,7 @@ nlohmann::json ObjectsManager::getJson() const
 
     if(!this->solidObjects.isEmpty()) {
         foreach(const SolidObject& solidObject, this->solidObjects) {
-            solidObjectsArray.push_back(solidObject.getJson());
+            solidObjectsArray.push_back(solidObject.getJson(detailed));
         }
 
         jsonObject["solidObjects"] = solidObjectsArray;
