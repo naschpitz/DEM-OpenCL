@@ -3,7 +3,7 @@
 
 typedef struct
 {
-    bool useNeighborhood;
+    bool recalculateNeighborhood;
 } SimulationExtra;
 
 #endif

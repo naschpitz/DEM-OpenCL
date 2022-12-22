@@ -54,31 +54,8 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
     faces[idx] = thisFace;
 }
 
-kernel void reset_particles_neighborhoods(global ParticleNeighborhood* particlesNeighborhoods, constant SimulationExtra* ptrSimulationExtra) {
-    SimulationExtra simulationExtra = ptrSimulationExtra[0];
-
-    if(!simulationExtra.useNeighborhood)
-        return;
-
-    size_t idx = get_global_id(0);
-
-    particlesNeighborhoods[idx].numParticles = 0;
-    particlesNeighborhoods[idx].numFaces = 0;
-}
-
-kernel void reset_faces_neighborhoods(global FaceNeighborhood* facesNeighborhoods, constant SimulationExtra* ptrSimulationExtra) {
-    SimulationExtra simulationExtra = ptrSimulationExtra[0];
-
-    if(!simulationExtra.useNeighborhood)
-        return;
-
-    size_t idx = get_global_id(0);
-
-    facesNeighborhoods[idx].numParticles = 0;
-}
-
 kernel void calculate_particle_to_particle(global Particle* particles,
-                                           global ParticleNeighborhood* particlesNeighborhoods,
+                                           global ParticleNeighborhood* particlesToPariclesNeighborhoods,
                                            constant MaterialsManager* ptrMaterialsManager,
                                            constant Scenery* ptrScenery,
                                            constant SimulationExtra* ptrSimulationExtra)
@@ -86,7 +63,7 @@ kernel void calculate_particle_to_particle(global Particle* particles,
     size_t idx = get_global_id(0);
 
     Particle thisParticle = particles[idx];
-    ParticleNeighborhood thisParticleNeighborhood = particlesNeighborhoods[idx];
+    ParticleNeighborhood thisParticleToPariclesNeighborhood = particlesToPariclesNeighborhoods[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
     SimulationExtra simulationExtra = ptrSimulationExtra[0];
@@ -102,16 +79,23 @@ kernel void calculate_particle_to_particle(global Particle* particles,
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        particleToParticleWorker_run(&thisParticle, &thisParticleNeighborhood, &otherParticle, material, &simulationExtra);
+        bool isNeighbor = neighborhood_isNeighborToParticle(&thisParticleToPariclesNeighborhood, &otherParticle);
+
+        if(isNeighbor || simulationExtra.recalculateNeighborhood) {
+            bool isHit = particleToParticleWorker_run(&thisParticle, &otherParticle, material);
+
+            if(simulationExtra.recalculateNeighborhood)
+                neighborhood_setNeighborToParticle(&thisParticleToPariclesNeighborhood, &otherParticle, isHit);
+        }
     }
 
     particles[idx] = thisParticle;
-    particlesNeighborhoods[idx] = thisParticleNeighborhood;
+    particlesToPariclesNeighborhoods[idx] = thisParticleToPariclesNeighborhood;
 }
 
 kernel void calculate_particle_to_face(global Particle* particles,
                                        global Face* faces,
-                                       global ParticleNeighborhood* particlesNeighborhoods,
+                                       global FaceNeighborhood* particlesToFacesNeighborhoods,
                                        constant MaterialsManager* ptrMaterialsManager,
                                        constant Scenery* ptrScenery,
                                        constant SimulationExtra* ptrSimulationExtra)
@@ -119,7 +103,7 @@ kernel void calculate_particle_to_face(global Particle* particles,
     size_t idx  = get_global_id(0);
 
     Particle thisParticle = particles[idx];
-    ParticleNeighborhood thisParticleNeighborhood = particlesNeighborhoods[idx];
+    FaceNeighborhood thisParticleToFacesNeighborhood = particlesToFacesNeighborhoods[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
     SimulationExtra simulationExtra = ptrSimulationExtra[0];
@@ -134,22 +118,29 @@ kernel void calculate_particle_to_face(global Particle* particles,
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        bool isHit = particleToFaceWorker_run(&thisParticle, &thisParticleNeighborhood, &otherFace, material, &simulationExtra);
+        bool isNeighbor = neighborhood_isNeighborToFace(&thisParticleToFacesNeighborhood, &otherFace);
 
-        if(isHit)
-            hitCount++;
+        if(isNeighbor || simulationExtra.recalculateNeighborhood) {
+            bool isHit = particleToFaceWorker_run(&thisParticle, &otherFace, material);
+
+            if(simulationExtra.recalculateNeighborhood)
+                neighborhood_setNeighborToFace(&thisParticleToFacesNeighborhood, &otherFace, isHit);
+
+            if(isHit)
+                hitCount++;
+        }
     }
 
     if(hitCount)
         particle_divideCurrentForce(&thisParticle, hitCount);
 
     particles[idx] = thisParticle;
-    particlesNeighborhoods[idx] = thisParticleNeighborhood;
+    particlesToFacesNeighborhoods[idx] = thisParticleToFacesNeighborhood;
 }
 
 kernel void calculate_face_to_particle(global Face* faces,
                                        global Particle* particles,
-                                       global FaceNeighborhood* facesNeighborhoods,
+                                       global ParticleNeighborhood* facesToParticlesNeighborhoods,
                                        constant MaterialsManager* ptrMaterialsManager,
                                        constant Scenery* ptrScenery,
                                        constant SimulationExtra* ptrSimulationExtra)
@@ -157,7 +148,7 @@ kernel void calculate_face_to_particle(global Face* faces,
     size_t idx  = get_global_id(0);
 
     Face thisFace = faces[idx];
-    FaceNeighborhood thisFaceNeighborhood = facesNeighborhoods[idx];
+    ParticleNeighborhood thisFaceToParticlesNeighborhood = facesToParticlesNeighborhoods[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
     SimulationExtra simulationExtra = ptrSimulationExtra[0];
@@ -170,11 +161,18 @@ kernel void calculate_face_to_particle(global Face* faces,
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        faceToParticleWorker_run(&thisFace, &thisFaceNeighborhood, &otherParticle, material, &simulationExtra);
+        bool isNeighbor = neighborhood_isNeighborToParticle(&thisFaceToParticlesNeighborhood, &otherParticle);
+
+        if(isNeighbor || simulationExtra.recalculateNeighborhood) {
+            bool isHit = faceToParticleWorker_run(&thisFace, &otherParticle, material);
+
+            if(simulationExtra.recalculateNeighborhood)
+                neighborhood_setNeighborToParticle(&thisFaceToParticlesNeighborhood, &otherParticle, isHit);
+        }
     }
 
     faces[idx] = thisFace;
-    facesNeighborhoods[idx] = thisFaceNeighborhood;
+    facesToParticlesNeighborhoods[idx] = thisFaceToParticlesNeighborhood;
 }
 
 kernel void apply_particles_gravity(global Particle* particles, constant Scenery* ptrScenery)

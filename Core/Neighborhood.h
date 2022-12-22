@@ -11,10 +11,8 @@
 
 #include <CL/cl2.hpp>
 
-#define MAX_PARTICLES_TO_PARTICLES 128
-#define MAX_FACES_TO_PARTICLES 16
-
-#define MAX_PARTICLES_TO_FACES 512
+#define MAX_PARTICLES 131072
+#define MAX_FACES 65536
 
 #include <QVector>
 
@@ -23,18 +21,14 @@
 
 typedef struct
 {
-    cl_uint numParticles;
-    cl_uint numFaces;
-
-    cl_uint particles[MAX_PARTICLES_TO_PARTICLES];
-    cl_int faces[MAX_FACES_TO_PARTICLES];
+    // cl_bool has actually the size of an unsinged int, 32 bits.
+    cl_bool particles[MAX_PARTICLES/32];
 } ParticleNeighborhoodCL;
 
 typedef struct
 {
-    cl_uint numParticles;
-
-    cl_uint particles[MAX_PARTICLES_TO_FACES];
+    // cl_bool has actually the size of an unsinged int, 32 bits.
+    cl_bool faces[MAX_FACES/32];
 } FaceNeighborhoodCL;
 
 class Neighborhood

@@ -6,14 +6,10 @@
 #include "../Neighborhood.cl"
 #include "../Particle.cl"
 
-void particleToParticleWorker_run(Particle* thisParticle, ParticleNeighborhood* thisParticleNeighborhood, const Particle* otherParticle, const Material* material, const SimulationExtra* simulationExtra)
+bool particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material)
 {
-    if(simulationExtra->useNeighborhood)
-        if(!neighborhood_isParticleNeighborToParticle(thisParticleNeighborhood, otherParticle))
-            return;
-
     if(!testBox_particleToParticle(thisParticle, otherParticle, material->distanceThreshold))
-        return;
+        return false;
 
     float4 closestOnThisParticle, closestOnOtherParticle, distanceUnitary;
 
@@ -24,10 +20,7 @@ void particleToParticleWorker_run(Particle* thisParticle, ParticleNeighborhood* 
     bool internal = particle_isInternal(thisParticle, closestOnOtherParticle);
 
     if((length(distance) > material->distanceThreshold) && !internal)
-        return;
-
-    if(!simulationExtra->useNeighborhood)
-        neighborhood_addParticleToParticleNeighborhood(thisParticleNeighborhood, otherParticle);
+        return false;
 
     float4 velocity = otherParticle->vertex.currentVelocity - thisParticle->vertex.currentVelocity;
 
@@ -48,14 +41,12 @@ void particleToParticleWorker_run(Particle* thisParticle, ParticleNeighborhood* 
     float4 totalForce = - (force + dragForce);
 
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+
+    return true;
 }
 
-bool particleToFaceWorker_run(Particle* thisParticle, ParticleNeighborhood* thisParticleNeighborhood, const Face* otherFace, const Material* material, const SimulationExtra* simulationExtra)
+bool particleToFaceWorker_run(Particle* thisParticle, const Face* otherFace, const Material* material)
 {
-    if(simulationExtra->useNeighborhood)
-        if(!neighborhood_isParticleNeighborToFace(thisParticleNeighborhood, otherFace))
-            return false;
-
     if(!testBox_particleToFace(thisParticle, otherFace, material->distanceThreshold))
         return false;
 
@@ -70,9 +61,6 @@ bool particleToFaceWorker_run(Particle* thisParticle, ParticleNeighborhood* this
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return false;
-
-    if(!simulationExtra->useNeighborhood)
-        neighborhood_addFaceToParticleNeighborhood(thisParticleNeighborhood, otherFace);
 
     float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 

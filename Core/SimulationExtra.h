@@ -6,7 +6,7 @@ class Simulation;
 
 typedef struct
 {
-    bool useNeighborhood;
+    bool recalculateNeighborhood;
 } SimulationExtraCL;
 
 class SimulationExtra

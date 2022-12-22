@@ -8,14 +8,10 @@
 #include "../SimulationExtra.cl"
 #include "../TestBox.cl"
 
-void faceToParticleWorker_run(Face* thisFace, FaceNeighborhood* thisFaceNeighborhood, const Particle* otherParticle, const Material* material, const SimulationExtra* simulationExtra)
+bool faceToParticleWorker_run(Face* thisFace, const Particle* otherParticle, const Material* material)
 {
-    if(simulationExtra->useNeighborhood)
-        if(!neighborhood_isFaceNeighborToParticle(thisFaceNeighborhood, otherParticle))
-            return;
-
-    if(!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
-        return;
+//    if(!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
+//        return false;
 
     float4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
 
@@ -26,10 +22,7 @@ void faceToParticleWorker_run(Face* thisFace, FaceNeighborhood* thisFaceNeighbor
     bool internal = particle_isInternal(otherParticle, closestOnThisFace);
 
     if((length(distance) > material->distanceThreshold) && !internal)
-        return;
-
-    if(!simulationExtra->useNeighborhood)
-        neighborhood_addParticleToFaceNeighborhood(thisFaceNeighborhood, otherParticle);
+        return false;
 
     float4 velocity = otherParticle->vertex.currentVelocity - thisFace->currentVelocity;
 
@@ -49,6 +42,8 @@ void faceToParticleWorker_run(Face* thisFace, FaceNeighborhood* thisFaceNeighbor
     float4 totalForce = -(force + dragForce);
 
     face_addCurrentForce(thisFace, &totalForce, &closestOnThisFace);
+
+    return true;
 }
 
 #endif // FACEWORKER_CL

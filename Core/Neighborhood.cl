@@ -1,88 +1,60 @@
 #ifndef NEIGHBORHOOD_CL
 #define NEIGHBORHOOD_CL
 
-#define MAX_PARTICLES_TO_PARTICLES 128
-#define MAX_FACES_TO_PARTICLES 16
+#define MAX_PARTICLES 131072
+#define MAX_FACES 65536
 
-#define MAX_PARTICLES_TO_FACES 512
+#include "Face.cl"
+#include "Particle.cl"
 
 typedef struct
 {
-    uint numParticles;
-    uint numFaces;
-
-    uint particles[MAX_PARTICLES_TO_PARTICLES];
-    uint faces[MAX_FACES_TO_PARTICLES];
+    // bool has actually the size of an unsigned int, 32 bits.
+    bool particles[MAX_PARTICLES/32];
 } ParticleNeighborhood;
 
 typedef struct
 {
-    uint numParticles;
-
-    uint particles[MAX_PARTICLES_TO_FACES];
+    // bool has actually the size of an unsigned int, 32 bits.
+    bool faces[MAX_FACES/32];
 } FaceNeighborhood;
 
-void neighborhood_addParticleToParticleNeighborhood(ParticleNeighborhood* particleNeighborhood, const Particle* particle)
+bool neighborhood_isNeighborToParticle(const ParticleNeighborhood* particleNeighborhood, const Particle* particle)
 {
-    if(particleNeighborhood->numParticles == MAX_PARTICLES_TO_PARTICLES) {
-        printf("MAX_PARTICLES_TO_PARTICLES reached!\n");
-        return;
-    }
+    uint  index = particle->index / 32;
+    uchar remainder = particle->index % 32;
 
-    uint numParticles = ++particleNeighborhood->numParticles;
-    particleNeighborhood->particles[numParticles - 1] = particle->index;
+    return particleNeighborhood->particles[index] & (1 << remainder);
 }
 
-void neighborhood_addFaceToParticleNeighborhood(ParticleNeighborhood* particleNeighborhood, const Face* face)
+bool neighborhood_isNeighborToFace(const FaceNeighborhood* faceNeighborhood, const Face* face)
 {
-    if(particleNeighborhood->numParticles == MAX_FACES_TO_PARTICLES) {
-        printf("MAX_FACES_TO_PARTICLES reached!\n");
-        return;
-    }
+    uint  index = face->index / 32;
+    uchar remainder = face->index % 32;
 
-    uint numFaces = ++particleNeighborhood->numFaces;
-    particleNeighborhood->faces[numFaces - 1] = face->index;
+    return faceNeighborhood->faces[index] & (1 << remainder);
 }
 
-void neighborhood_addParticleToFaceNeighborhood(FaceNeighborhood* faceNeighborhood, const Particle* particle)
+void neighborhood_setNeighborToParticle(ParticleNeighborhood* particleNeighborhood, const Particle* particle, bool isNeighbor)
 {
-    if(faceNeighborhood->numParticles == MAX_PARTICLES_TO_FACES) {
-        printf("MAX_PARTICLES_TO_FACES reached!\n");
-        return;
-    }
+    uint  index = particle->index / 32;
+    uchar remainder = particle->index % 32;
 
-    uint numParticles = ++faceNeighborhood->numParticles;
-    faceNeighborhood->particles[numParticles - 1] = particle->index;
+    if (isNeighbor)
+        particleNeighborhood->particles[index] |= 1 << remainder;
+    else
+        particleNeighborhood->particles[index] &= ~(1 << remainder);
 }
 
-bool neighborhood_isParticleNeighborToParticle(const ParticleNeighborhood* particleNeighborhood, const Particle* particle)
+void neighborhood_setNeighborToFace(FaceNeighborhood* faceNeighborhood, const Face* face, bool isNeighbor)
 {
-    for(uint i = 0; i < particleNeighborhood->numParticles; i++) {
-        if (particleNeighborhood->particles[i] == particle->index)
-            return true;
-    }
+    uint  index = face->index / 32;
+    uchar remainder = face->index % 32;
 
-    return false;
-}
-
-bool neighborhood_isParticleNeighborToFace(const ParticleNeighborhood* particleNeighborhood, const Face* face)
-{
-    for(uint i = 0; i < particleNeighborhood->numFaces; i++) {
-        if (particleNeighborhood->faces[i] == face->index)
-            return true;
-    }
-
-    return false;
-}
-
-bool neighborhood_isFaceNeighborToParticle(const FaceNeighborhood* faceNeighborhood, const Particle* particle)
-{
-    for(uint i = 0; i < faceNeighborhood->numParticles; i++) {
-        if (faceNeighborhood->particles[i] == particle->index)
-            return true;
-    }
-
-    return false;
+    if (isNeighbor)
+        faceNeighborhood->faces[index] |= 1 << remainder;
+    else
+        faceNeighborhood->faces[index] &= ~(1 << remainder);
 }
 
 #endif // NEIGHBORHOOD_CL

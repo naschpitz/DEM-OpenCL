@@ -25,7 +25,7 @@ SimulationExtraCL SimulationExtra::getCL() const
 
     const long& currentStep = this->simulation->getCurrentStep();
 
-    simulationExtraCL.useNeighborhood = (currentStep % 20 != 0) && (currentStep != 0);
+    simulationExtraCL.recalculateNeighborhood = (currentStep % 200 == 0);
 
     return simulationExtraCL;
 }

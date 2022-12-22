@@ -211,20 +211,28 @@ void Simulation::run()
     QVector<ParticleCL> particles = this->scenery.getObjectsManager().getParticlesCL(materialsManager);
     std::vector<ParticleCL> particlesCL = std::vector(particles.begin(), particles.end());
 
-    uint particlesCount = this->scenery.getObjectsManager().getParticlesCount();
-
-    QVector<ParticleNeighborhoodCL> particlesNeighborhood = Neighborhood::getParticlesCL(particlesCount);
-    std::vector<ParticleNeighborhoodCL> particlesNeighborhoodsCL = std::vector(particlesNeighborhood.begin(), particlesNeighborhood.end());
-
     QVector<FaceCL> faces = this->scenery.getObjectsManager().getFacesCL(materialsManager);
     std::vector<FaceCL> facesCL = std::vector(faces.begin(), faces.end());
 
+    std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
+
+    uint particlesCount = this->scenery.getObjectsManager().getParticlesCount();
     uint facesCount = this->scenery.getObjectsManager().getFacesCount();
 
-    QVector<FaceNeighborhoodCL> facesNeighborhood = Neighborhood::getFacesCL(facesCount);
-    std::vector<FaceNeighborhoodCL> facesNeighborhoodsCL = std::vector(facesNeighborhood.begin(), facesNeighborhood.end());
+    std::cout << "Allocating particlesToParticlesNeighborhood" << "\n";
+    QVector<ParticleNeighborhoodCL> particlesToParticlesNeighborhood = Neighborhood::getParticlesCL(particlesCount);
+    std::vector<ParticleNeighborhoodCL> particlesToParticlesNeighborhoodsCL = std::vector(particlesToParticlesNeighborhood.begin(), particlesToParticlesNeighborhood.end());
+    std::cout << "particlesToParticlesNeighborhood allocated" << "\n";
 
-    std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
+    std::cout << "Allocating particlesToFacesNeighborhood" << "\n";
+    QVector<FaceNeighborhoodCL> particlesToFacesNeighborhood = Neighborhood::getFacesCL(particlesCount);
+    std::vector<FaceNeighborhoodCL> particlesToFacesNeighborhoodsCL = std::vector(particlesToFacesNeighborhood.begin(), particlesToFacesNeighborhood.end());
+    std::cout << "particlesToFacesNeighborhood allocated" << "\n";
+
+    std::cout << "Allocating facesToParticlesNeighborhood" << "\n";
+    QVector<ParticleNeighborhoodCL> facesToParticlesNeighborhood = Neighborhood::getParticlesCL(facesCount);
+    std::vector<ParticleNeighborhoodCL> facesToParticlesNeighborhoodsCL = std::vector(facesToParticlesNeighborhood.begin(), facesToParticlesNeighborhood.end());
+    std::cout << "facesToParticlesNeighborhood allocated" << "\n";
 
     OpenCL::Core openClCore;
 
@@ -237,13 +245,14 @@ void Simulation::run()
 
     emit this->newLog("Initiating objects copy to GPU's memory");
     openClCore.writeBuffer<ParticleCL>(particlesCL);
-    openClCore.writeBuffer<ParticleNeighborhoodCL>(particlesNeighborhoodsCL);
     openClCore.writeBuffer<FaceCL>(facesCL);
-    openClCore.writeBuffer<FaceNeighborhoodCL>(facesNeighborhoodsCL);
     openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
     openClCore.writeBuffer<SimulationCL>(simulationsCL);
     openClCore.writeBuffer<SimulationExtraCL>(simulationsExtrasCL);
     openClCore.writeBuffer<SceneryCL>(sceneriesCL);
+    openClCore.writeBuffer<ParticleNeighborhoodCL>(particlesToParticlesNeighborhoodsCL);
+    openClCore.writeBuffer<FaceNeighborhoodCL>(particlesToFacesNeighborhoodsCL);
+    openClCore.writeBuffer<ParticleNeighborhoodCL>(facesToParticlesNeighborhoodsCL);
     emit this->newLog("Objects copy to GPU's memory done");
 
     bool hasParticles = particlesCL.size();
@@ -275,25 +284,17 @@ void Simulation::run()
     if(hasParticles) {
         openClCore.addKernel("reset_particles_forces", particlesCL.size());
         openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
-
-        openClCore.addKernel("reset_particles_neighborhoods", particlesNeighborhoodsCL.size());
-        openClCore.addArgument<ParticleNeighborhoodCL>("reset_particles_neighborhoods", particlesNeighborhoodsCL);
-        openClCore.addArgument<SimulationExtraCL>("reset_particles_neighborhoods", simulationsExtrasCL);
     }
 
     if(hasFaces) {
         openClCore.addKernel("reset_faces_forces", facesCL.size());
         openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
-
-        openClCore.addKernel("reset_faces_neighborhoods", facesNeighborhoodsCL.size());
-        openClCore.addArgument<FaceNeighborhoodCL>("reset_faces_neighborhoods", facesNeighborhoodsCL);
-        openClCore.addArgument<SimulationExtraCL>("reset_faces_neighborhoods", simulationsExtrasCL);
     }
 
     if(hasParticles) {
         openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
-        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_particle_to_particle", particlesNeighborhoodsCL);
+        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_particle_to_particle", particlesToParticlesNeighborhoodsCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
         openClCore.addArgument<SimulationExtraCL>("calculate_particle_to_particle", simulationsExtrasCL);
@@ -303,7 +304,7 @@ void Simulation::run()
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
-        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_particle_to_face", particlesNeighborhoodsCL);
+        openClCore.addArgument<FaceNeighborhoodCL>("calculate_particle_to_face", particlesToFacesNeighborhoodsCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_particle_to_face", sceneriesCL);
         openClCore.addArgument<SimulationExtraCL>("calculate_particle_to_face", simulationsExtrasCL);
@@ -311,7 +312,7 @@ void Simulation::run()
         openClCore.addKernel("calculate_face_to_particle", facesCL.size());
         openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
         openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
-        openClCore.addArgument<FaceNeighborhoodCL>("calculate_face_to_particle", facesNeighborhoodsCL);
+        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_face_to_particle", facesToParticlesNeighborhoodsCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_face_to_particle", sceneriesCL);
         openClCore.addArgument<SimulationExtraCL>("calculate_face_to_particle", simulationsExtrasCL);
