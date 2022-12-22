@@ -10,8 +10,8 @@
 #define SCENERY_H
 
 #include "nlohmann/json.hpp"
-#include "MaterialsManager.h"
 #include "NonSolidObject.h"
+#include "MaterialsManager.h"
 #include "ObjectsManager.h"
 #include "Vector3D.h"
 

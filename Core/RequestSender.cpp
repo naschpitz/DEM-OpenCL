@@ -114,18 +114,18 @@ QString RequestSender::getInterfaceAddress(const Simulation *simulation) const
     QHostAddress interfaceAddress = simulation->getInterfaceAddress();
     QString url;
 
-    if(this->remoteInterface)
+    if (this->remoteInterface)
     {
         url = simulation->getInterfaceUrl();
     }
 
     else
     {
-        if(interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
+        if (interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
             url = "localhost:3000";
         }
 
-        else if(QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
+        else if (QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
             url = QHostAddress(interfaceAddress.toIPv4Address()).toString() + ":3000";
         }
     }

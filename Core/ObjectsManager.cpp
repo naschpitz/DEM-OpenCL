@@ -42,32 +42,6 @@ const QVector<SolidObject>& ObjectsManager::getSolidObjects() const
     return this->solidObjects;
 }
 
-uint ObjectsManager::getParticlesCount() const
-{
-    uint count = 0;
-
-    foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
-        const QVector<Particle>& particles = nonSolidObject.getParticles();
-
-        count += particles.count();
-    }
-
-    return count;
-}
-
-uint ObjectsManager::getFacesCount() const
-{
-    uint count = 0;
-
-    foreach(const SolidObject& solidObject, this->solidObjects) {
-        const QVector<Face>& faces = solidObject.getFaces();
-
-        count += faces.count();
-    }
-
-    return count;
-}
-
 QVector<ParticleCL> ObjectsManager::getParticlesCL(const MaterialsManager& materialsManager) const
 {
     uint particleIndex = 0;

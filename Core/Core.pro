@@ -22,10 +22,8 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 
 HEADERS += \
-    Neighborhood.h \
     OpenCL.h \
     NonSolidObject.h \
-    SimulationExtra.h \
     SolidObject.h \
     Material.h \
     Vertex.h \
@@ -47,8 +45,6 @@ HEADERS += \
     Common.h
 
 SOURCES += \
-    Neighborhood.cpp \
-    SimulationExtra.cpp \
     main.cpp \
     OpenCL.cpp \
     Vertex.cpp \
@@ -74,12 +70,9 @@ SOURCES += \
 OTHER_FILES +=
 
 DISTFILES += \
-    Main.cl \
-    Neighborhood.cl \
-    Simulation.cl \
-    SimulationExtra.cl \
     Vertex.cl \
     Particle.cl \
+    Simulation.cl \
     Vector.cl \
     ParticleWorker.cl \
     Material.cl \
