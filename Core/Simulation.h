@@ -10,7 +10,9 @@
 #define SIMULATION_H
 
 #include "nlohmann/json.hpp"
+#include "Neighborhood.h"
 #include "Scenery.h"
+#include "SimulationExtra.h"
 #include "Vector3D.h"
 
 #include <CL/cl2.hpp>
@@ -48,6 +50,7 @@ class Simulation : public QThread
         long et;
 
         Scenery scenery;
+        SimulationExtra simulationExtra;
 
         bool paused;
         bool stoped;
@@ -59,6 +62,8 @@ class Simulation : public QThread
         ~Simulation();
 
         SimulationCL getCL() const;
+        QVector<ParticleNeighborhoodCL> getParticlesNeighborhoodCL() const;
+        QVector<FaceNeighborhoodCL> getFacesNeighborhoodCL() const;
 
         const QHostAddress& getInterfaceAddress() const;
         void setInterfaceAddress(const QHostAddress& interfaceAddress);
@@ -66,19 +71,20 @@ class Simulation : public QThread
         const QString& getInterfaceUrl() const;
         void setInterfaceUrl(const QString& interfaceUrl);
 
-        const QString& getId() const;
-        const double& getCurrentTime() const;
-        const long& getCurrentStep()   const;
+        const QString& getId()          const;
+        const double&  getCurrentTime() const;
+        const long&    getCurrentStep() const;
 
-        const double& getTimeStep()  const;
-        const double& getTotalTime() const;
-        const long& getTotalSteps()  const;
+        const double& getTimeStep()   const;
+        const double& getTotalTime()  const;
+        const long&   getTotalSteps() const;
 
         const double& getStepsPerSecond() const;
         long getEta() const;
         long getEt()  const;
 
         const Scenery& getScenery() const;
+        const SimulationExtra& getSimulationExtra() const;
 
         bool isPaused() const;
         bool isStopped() const;

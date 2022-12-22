@@ -2,12 +2,18 @@
 #define FACEWORKER_CL
 
 #include "../Face.cl"
-#include "../Particle.cl"
 #include "../Material.cl"
+#include "../Neighborhood.cl"
+#include "../Particle.cl"
+#include "../SimulationExtra.cl"
 #include "../TestBox.cl"
 
-void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
+void faceToParticleWorker_run(Face* thisFace, FaceNeighborhood* thisFaceNeighborhood, const Particle* otherParticle, const Material* material, const SimulationExtra* simulationExtra)
 {
+    if(simulationExtra->useNeighborhood)
+        if(!neighborhood_isFaceNeighborToParticle(thisFaceNeighborhood, otherParticle))
+            return;
+
     if(!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
         return;
 
@@ -21,6 +27,9 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return;
+
+    if(!simulationExtra->useNeighborhood)
+        neighborhood_addParticleToFaceNeighborhood(thisFaceNeighborhood, otherParticle);
 
     float4 velocity = otherParticle->vertex.currentVelocity - thisFace->currentVelocity;
 

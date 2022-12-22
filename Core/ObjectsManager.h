@@ -21,6 +21,9 @@ class ObjectsManager
         const QVector<NonSolidObject>& getNonSolidObjects() const;
         const QVector<SolidObject>& getSolidObjects() const;
 
+        uint getParticlesCount() const;
+        uint getFacesCount() const;
+
         QVector<ParticleCL> getParticlesCL(const MaterialsManager& materialsManager) const;
         QVector<FaceCL>     getFacesCL(const MaterialsManager& materialsManager) const;
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);

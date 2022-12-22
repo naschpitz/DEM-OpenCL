@@ -2,11 +2,16 @@
 #define PARTICLEWORKER_CL
 
 #include "../Face.cl"
-#include "../Particle.cl"
 #include "../Material.cl"
+#include "../Neighborhood.cl"
+#include "../Particle.cl"
 
-void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material)
+void particleToParticleWorker_run(Particle* thisParticle, ParticleNeighborhood* thisParticleNeighborhood, const Particle* otherParticle, const Material* material, const SimulationExtra* simulationExtra)
 {
+    if(simulationExtra->useNeighborhood)
+        if(!neighborhood_isParticleNeighborToParticle(thisParticleNeighborhood, otherParticle))
+            return;
+
     if(!testBox_particleToParticle(thisParticle, otherParticle, material->distanceThreshold))
         return;
 
@@ -20,6 +25,9 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return;
+
+    if(!simulationExtra->useNeighborhood)
+        neighborhood_addParticleToParticleNeighborhood(thisParticleNeighborhood, otherParticle);
 
     float4 velocity = otherParticle->vertex.currentVelocity - thisParticle->vertex.currentVelocity;
 
@@ -42,8 +50,15 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
     particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 }
 
-bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
+bool particleToFaceWorker_run(Particle* thisParticle, ParticleNeighborhood* thisParticleNeighborhood, const Face* otherFace, const Material* material, const SimulationExtra* simulationExtra)
 {
+    if(simulationExtra->useNeighborhood)
+        if(!neighborhood_isParticleNeighborToFace(thisParticleNeighborhood, otherFace))
+            return false;
+
+    if(!testBox_particleToFace(thisParticle, otherFace, material->distanceThreshold))
+        return false;
+
     float4 closestOnThisParticle, closestOnOtherFace, distanceUnitary;
 
     face_getClosestTo(otherFace, thisParticle, &closestOnOtherFace, &closestOnThisParticle, &distanceUnitary);
@@ -55,6 +70,9 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
 
     if((length(distance) > material->distanceThreshold) && !internal)
         return false;
+
+    if(!simulationExtra->useNeighborhood)
+        neighborhood_addFaceToParticleNeighborhood(thisParticleNeighborhood, otherFace);
 
     float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 

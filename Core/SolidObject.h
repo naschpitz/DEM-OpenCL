@@ -29,7 +29,7 @@ class SolidObject
         SolidObject();
         SolidObject(const nlohmann::json& jsonObject);
 
-        const QString& getId()     const;
+        const QString& getId()       const;
         const QString& getMaterial() const;
 
         Vector3D getCurrentPosition() const;
@@ -37,11 +37,11 @@ class SolidObject
 
         void getBox(Vector3D& min, Vector3D& max);
 
-        double        getArea()                         const;
-        const double& getMass()                         const;
-        Vector3D      getCurrentMomentum()              const;
-        Vector3D      getCurrentForce()                 const;
-        double        getCurrentKineticEnergyTotal()    const;
+        double        getArea()                      const;
+        const double& getMass()                      const;
+        Vector3D      getCurrentMomentum()           const;
+        Vector3D      getCurrentForce()              const;
+        double        getCurrentKineticEnergyTotal() const;
 
         const QVector<Face>& getFaces() const;
         void setFacesCL(const QVector<FaceCL>& facesCL);

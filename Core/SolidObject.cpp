@@ -89,7 +89,7 @@ SolidObject::SolidObject(const nlohmann::json& jsonObject)
 
 void SolidObject::loadStl()
 {
-    tetgenio in;
+    tetgenio in, out;
 
     QFile file("temp.stl");
     file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
@@ -97,6 +97,9 @@ void SolidObject::loadStl()
     file.flush();
 
     in.load_stl(QString("temp.stl").toUtf8().data());
+
+    //tetgenbehavior behaviour;
+    //tetrahedralize(&behaviour, &in, &out);
 
     file.remove();
 
