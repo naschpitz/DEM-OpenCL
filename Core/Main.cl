@@ -57,7 +57,7 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
 kernel void reset_particles_neighborhoods(global ParticleNeighborhood* particlesNeighborhoods, constant SimulationExtra* ptrSimulationExtra) {
     SimulationExtra simulationExtra = ptrSimulationExtra[0];
 
-    if(!simulationExtra.useNeighborhood)
+    if(simulationExtra.useNeighborhood)
         return;
 
     size_t idx = get_global_id(0);
@@ -69,7 +69,7 @@ kernel void reset_particles_neighborhoods(global ParticleNeighborhood* particles
 kernel void reset_faces_neighborhoods(global FaceNeighborhood* facesNeighborhoods, constant SimulationExtra* ptrSimulationExtra) {
     SimulationExtra simulationExtra = ptrSimulationExtra[0];
 
-    if(!simulationExtra.useNeighborhood)
+    if(simulationExtra.useNeighborhood)
         return;
 
     size_t idx = get_global_id(0);
