@@ -27,7 +27,7 @@ typedef struct
     cl_uint numFaces;
 
     cl_uint particles[MAX_PARTICLES_TO_PARTICLES];
-    cl_int faces[MAX_FACES_TO_PARTICLES];
+    cl_uint faces[MAX_FACES_TO_PARTICLES];
 } ParticleNeighborhoodCL;
 
 typedef struct
