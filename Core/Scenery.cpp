@@ -43,6 +43,11 @@ Scenery::Scenery(const nlohmann::json& jsonObject)
     }
 }
 
+void Scenery::initialize()
+{
+    this->objectsManager.initialize();
+}
+
 SceneryCL Scenery::getCL() const
 {
     SceneryCL sceneryCL;

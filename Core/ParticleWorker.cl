@@ -44,6 +44,9 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
 
 bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
 {
+    if(!testBox_particleToFace(thisParticle, otherFace, material->distanceThreshold))
+        return false;
+
     float4 closestOnThisParticle, closestOnOtherFace, distanceUnitary;
 
     face_getClosestTo(otherFace, thisParticle, &closestOnOtherFace, &closestOnThisParticle, &distanceUnitary);

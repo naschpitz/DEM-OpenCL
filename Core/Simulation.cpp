@@ -12,11 +12,13 @@
 
 Simulation::Simulation()
 {
-
+    this->initialized = false;
 }
 
 Simulation::Simulation(const nlohmann::json& jsonObject)
 {
+    this->initialized = false;
+
     try {
         this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
     }
@@ -88,8 +90,8 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing 'scenery' field in Simulation");
     }
 
+    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)));
     connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
@@ -97,6 +99,11 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 Simulation::~Simulation()
 {
     std::cout << "Simulation destroyed!" << "\n";
+}
+
+void Simulation::initialize()
+{
+    this->scenery.initialize();
 }
 
 SimulationCL Simulation::getCL() const
@@ -199,6 +206,12 @@ bool Simulation::isPrimary() const
 
 void Simulation::run()
 {
+    if(!this->initialized) {
+        emit this->newLog("Initilizing simulation's scenery");
+        this->initialize();
+        emit this->newLog("Simulation's scenery initialized");
+    }
+
     const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
 
     std::vector<SimulationCL> simulationsCL = { this->getCL() };
@@ -217,6 +230,9 @@ void Simulation::run()
     emit this->newLog("Loading OpenCL kernel");
     openClCore.addSourceFile("../Simulation.cl");
     emit this->newLog("OpenCL kernel loaded");
+
+    emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));
+    emit this->newLog(QString("Total number of faces: %1").arg(facesCL.size()));
 
     emit this->newLog("Initiating objects copy to GPU's memory");
     openClCore.writeBuffer<ParticleCL>(particlesCL);
@@ -242,14 +258,11 @@ void Simulation::run()
             openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
         }
 
-        emit this->newLog("Initializing objects");
         openClCore.run();
         openClCore.clearKernels();
 
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
-
-        emit this->newLog("Objects initialized");
     }
 
     if(hasParticles) {

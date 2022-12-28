@@ -79,7 +79,10 @@ SolidObject::SolidObject(const nlohmann::json& jsonObject)
     catch (const nlohmann::detail::exception& e) {
         throw std::runtime_error("Missing 'velocity' field in Solid Object");
     }
+}
 
+void SolidObject::initialize()
+{
     this->setMaterial();
     this->setFixed();
     this->setMass();

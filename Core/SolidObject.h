@@ -29,6 +29,8 @@ class SolidObject
         SolidObject();
         SolidObject(const nlohmann::json& jsonObject);
 
+        void initialize();
+
         const QString& getId()     const;
         const QString& getMaterial() const;
 

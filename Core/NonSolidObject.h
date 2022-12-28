@@ -38,7 +38,9 @@ class NonSolidObject
         NonSolidObject();
         NonSolidObject(const nlohmann::json& jsonObject);
 
-        const QString& getId()     const;
+        void initialize();
+
+        const QString& getId()       const;
         const QString& getMaterial() const;
 
         Vector3D getCurrentPosition() const;

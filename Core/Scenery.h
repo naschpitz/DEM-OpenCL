@@ -39,6 +39,8 @@ class Scenery
         Scenery();
         Scenery(const nlohmann::json& jsonObject);
 
+        void initialize();
+
         SceneryCL getCL() const;
 
         const QString& getId() const;

@@ -18,6 +18,8 @@ class ObjectsManager
         ObjectsManager();
         ObjectsManager(const nlohmann::json& jsonValue);
 
+        void initialize();
+
         const QVector<NonSolidObject>& getNonSolidObjects() const;
         const QVector<SolidObject>& getSolidObjects() const;
 

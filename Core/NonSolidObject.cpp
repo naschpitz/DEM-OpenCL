@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QRandomGenerator>
 
 NonSolidObject::NonSolidObject()
 {
@@ -85,7 +86,10 @@ NonSolidObject::NonSolidObject(const nlohmann::json& jsonObject)
     catch (const nlohmann::detail::exception& e) {
         throw std::runtime_error("Missing 'velocity' field in Non-Solid Object");
     }
+}
 
+void NonSolidObject::initialize()
+{
     this->buildObject();
     this->setMaterial();
     this->setDensity();
@@ -353,29 +357,88 @@ nlohmann::json NonSolidObject::getJson(bool detailed = true) const
     return jsonObject;
 }
 
+// https://www.wikiwand.com/en/Close-packing_of_equal_spheres
 void NonSolidObject::buildObject()
 {
     this->particles.clear();
 
-    int numX = this->length.getX() / this->spacing;
-    int numY = this->length.getY() / this->spacing;
-    int numZ = this->length.getZ() / this->spacing;
+    double radius = this->spacing / 2.0;
 
-    for(int k = 0; k < numZ; k++)
-    {
-        for(int j = 0; j < numY; j++)
-        {
-            for(int i = 0; i < numX; i++)
-            {
-                double x = this->spacing * i - this->length.getX() / 2.0 + this->spacing / 2.0;
-                double y = this->spacing * j - this->length.getY() / 2.0 + this->spacing / 2.0;
-                double z = this->spacing * k - this->length.getZ() / 2.0 + this->spacing / 2.0;
-                double radius = this->spacing / 2.0;
+    int k = 0;
+    double z = 0;
 
+    while(((z = ((2 * sqrt(6) * k) / 3.) * radius + radius) + radius) < this->length.getZ()) {
+        int j = 0;
+        double y = 0;
+
+        while(((y = ((sqrt(3) * (j + (k % 2) / 3.)) * radius + radius)) + radius) < this->length.getY()) {
+            int i = 0;
+            double x = 0;
+
+            while(((x = ((2 * i + ((j + k) % 2)) * radius + radius)) + radius) < this->length.getX()) {
                 Particle particle = Particle(x, y, z, radius);
-
                 this->particles.append(particle);
+
+                i++;
             }
+
+            j++;
         }
+
+        k++;
     }
 }
+
+// Random particle position packing.
+//void NonSolidObject::buildObject()
+//{
+//    this->particles.clear();
+
+//    double radius = this->spacing / 2.0;
+//    double maxVolume = this->length.getX() * this->length.getY() * this->length.getZ();
+
+//    double density = 0;
+//    double particlesVolume = 0;
+//    QRandomGenerator randomGenerator;
+
+//    while(density < 0.5) {
+//        double x = randomGenerator.generateDouble() * this->length.getX();
+//        double y = randomGenerator.generateDouble() * this->length.getY();
+//        double z = randomGenerator.generateDouble() * this->length.getZ();
+
+//        if ((x - radius < 0) || (x + radius > this->length.getX())) continue;
+//        if ((y - radius < 0) || (y + radius > this->length.getY())) continue;
+//        if ((z - radius < 0) || (z + radius > this->length.getZ())) continue;
+
+//        bool isHit = false;
+
+//        foreach(const Particle& particle, this->particles) {
+//            double intersectionDistance = particle.getRadius() + radius;
+
+//            double xDiff = particle.getCurrentPosition().getX() - x;
+//            if(xDiff > intersectionDistance) continue;
+
+//            double yDiff = particle.getCurrentPosition().getY() - y;
+//            if(yDiff > intersectionDistance) continue;
+
+//            double zDiff = particle.getCurrentPosition().getZ() - z;
+//            if(zDiff > intersectionDistance) continue;
+
+//            double dist = sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
+
+//            if(dist < intersectionDistance) {
+//                isHit = true;
+//                break;
+//            }
+//        }
+
+//        if(isHit) continue;
+
+//        Particle particle = Particle(x, y, z, radius);
+
+//        this->particles.append(particle);
+
+//        particlesVolume += particle.getVolume();
+//        density = particlesVolume / maxVolume;
+//    }
+//}

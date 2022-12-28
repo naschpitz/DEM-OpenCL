@@ -10,6 +10,7 @@ enum ForceType
     inverse_linear,
     inverse_quadratic,
     inverse_cubic,
+    morse,
     lennard_jones,
     realistic_material
 };
@@ -68,6 +69,18 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
 
         case inverse_cubic:
             return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * distanceUnitary;
+
+        case morse:
+        {
+            float de = material->coefficients[0];
+            float ke = material->coefficients[1];
+
+            float a = sqrt(ke / (2 * de));
+            float length = lengthDistance - originalLength;
+
+            // https://en.wikipedia.org/wiki/Morse_potential
+            return -2 * de * a * exp(-a * length) * (1 - exp(-a * length)) * distanceUnitary;
+        }
 
         case lennard_jones:
         {
@@ -145,7 +158,7 @@ float4 material_calculateDragForce(const Material* material, float4 velocity, fl
         case cubic:
         {
             float4 linearDrag  = - material->dragCoefficients[0] * pown(length(velocity), 3) * vector_getUnitary(velocity);
-            float4 angularDrag = - material->dragCoefficients[0] * pown(length(rotationVelocity), 2) * vector_getUnitary(rotationVelocity);
+            float4 angularDrag = - material->dragCoefficients[0] * pown(length(rotationVelocity), 3) * vector_getUnitary(rotationVelocity);
 
             return (linearDrag + angularDrag) * forceModule;
         }

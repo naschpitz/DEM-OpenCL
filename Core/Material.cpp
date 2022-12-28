@@ -151,6 +151,9 @@ int Material::fromQStringToForceType(const QString& forceTypeString) const
     else if(forceTypeString == "inverse_cubic")
         return inverse_cubic;
 
+    else if(forceTypeString == "morse")
+        return morse;
+
     else if(forceTypeString == "lennard_jones")
         return lennard_jones;
 

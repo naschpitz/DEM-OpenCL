@@ -49,9 +49,12 @@ class Simulation : public QThread
 
         Scenery scenery;
 
+        bool initialized;
         bool paused;
         bool stoped;
         bool primary;
+
+        void initialize();
 
     public:
         Simulation();

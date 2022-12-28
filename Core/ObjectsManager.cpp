@@ -32,6 +32,17 @@ ObjectsManager::ObjectsManager(const nlohmann::json& jsonValue)
     catch (...) { }
 }
 
+void ObjectsManager::initialize()
+{
+    for(QVector<NonSolidObject>::iterator it = this->nonSolidObjects.begin(); it != this->nonSolidObjects.end(); it++) {
+        it->initialize();
+    }
+
+    for(QVector<SolidObject>::iterator it = this->solidObjects.begin(); it != this->solidObjects.end(); it++) {
+        it->initialize();
+    }
+}
+
 const QVector<NonSolidObject>& ObjectsManager::getNonSolidObjects() const
 {
     return this->nonSolidObjects;
