@@ -39,13 +39,13 @@ void particle_divideCurrentForce(Particle* particle, float divider)
     particle->currentTorque /= divider;
 }
 
-void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, float4 *closestOnThisPaticle, float4 *closestOnOtherParticle, float4 *distanceUnitary)
+void particle_getClosestTo(const Particle* thisParticle, const Particle* otherParticle, float4 *closestOnThisPaticle, float4 *closestOnOtherParticle)
 {
     float4 distance = otherParticle->vertex.currentPosition - thisParticle->vertex.currentPosition;
+    float4 distanceUnitary = vector_getUnitary(distance);
 
-    (*distanceUnitary)        = vector_getUnitary(distance);
-    (*closestOnThisPaticle)   = thisParticle->vertex.currentPosition + (*distanceUnitary) * thisParticle->radius;
-    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - (*distanceUnitary) * otherParticle->radius;
+    (*closestOnThisPaticle)   = thisParticle->vertex.currentPosition + distanceUnitary * thisParticle->radius;
+    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
 }
 
 float4 particle_getCurrentAcceleration(const Particle* particle)

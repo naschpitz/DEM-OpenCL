@@ -22,14 +22,14 @@ ComputeUnit::ComputeUnit(const cl::Device& device, uint index, double fraction, 
 
 void ComputeUnit::buildContext()
 {
-    std::cout << "Building context...";
+    std::cout << "Building context...\n";
 
     cl_int result;
 
     this->context = cl::Context(this->device, NULL, NULL, NULL, &result);
 
     if(result != CL_SUCCESS) {
-        std::cout << "Error creating context: " << result << "\n";
+        std::cout << " Error creating context: " << result << "\n";
         exit(1);
     }
 
@@ -38,7 +38,7 @@ void ComputeUnit::buildContext()
 
 void ComputeUnit::buildQueue()
 {
-    std::cout << "Building queue...";
+    std::cout << "Building queue...\n";
 
     this->queue = cl::CommandQueue(this->context, this->device);
 
@@ -47,19 +47,19 @@ void ComputeUnit::buildQueue()
 
 void ComputeUnit::buildProgram()
 {
-    std::cout << "Building program...";
+    std::cout << "Building program...\n";
 
     cl_int result;
 
     this->program = cl::Program(this->context, this->sources, &result);
 
     if(result != CL_SUCCESS) {
-        std::cout << "Error creating program: " << result << "\n";
+        std::cout << " Error creating program: " << result << "\n";
         exit(1);
     }
 
     if(this->program.build({this->device}, "-I ./") != CL_SUCCESS) {
-        std::cout << "Error building: " << this->program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(this->device) << "\n";
+        std::cout << " Error building: " << this->program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(this->device) << "\n";
         std::cout.flush();
         exit(1);
     }
@@ -84,13 +84,13 @@ void ComputeUnit::addKernel(const std::string& kernelName, uint nElements)
     kernel.name = kernelName;
     kernel.nElements = nElements;
 
-    std::cout << "Building kernel...";
+    std::cout << "Building kernel...\n";
 
     cl_int result;
     kernel.kernel = cl::Kernel(this->program, kernelName.c_str(), &result);
 
     if(result != CL_SUCCESS) {
-        std::cout << "Error creating kernel: " << result << "\n";
+        std::cout << " Error creating kernel: " << result << "\n";
         exit(1);
     }
 
@@ -102,6 +102,7 @@ void ComputeUnit::addKernel(const std::string& kernelName, uint nElements)
 void ComputeUnit::clearKernels()
 {
     this->kernels.clear();
+        std::cout << "Kernel cleaned\n";
 }
 
 void ComputeUnit::run()

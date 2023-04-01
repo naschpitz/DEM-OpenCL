@@ -141,5 +141,3 @@ void Core::run()
         it->waitFinish();
     }
 }
-
-

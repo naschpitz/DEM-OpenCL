@@ -66,7 +66,7 @@ void face_getBox(const Face* face, float4* min, float4* max)
     max->z = maxZ;
 }
 
-void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace, float4* closestOnOtherParticle, float4* distanceUnitary)
+void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace, float4* closestOnOtherParticle)
 {
     float4 p1 = thisFace->vertexes[0].currentPosition;
     float4 p2 = thisFace->vertexes[1].currentPosition;
@@ -116,9 +116,9 @@ void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, floa
         (*closestOnThisFace) = p1 + u * edge_getDistance(&e1) + v * edge_getDistance(&e2);
 
     float4 distance = otherParticle->vertex.currentPosition - (*closestOnThisFace);
+    float4 distanceUnitary = vector_getUnitary(distance);
 
-    (*distanceUnitary)        = vector_getUnitary(distance);
-    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - (*distanceUnitary) * otherParticle->radius;
+    (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
 }
 
 void face_calculateCurrentPosition(Face* face)

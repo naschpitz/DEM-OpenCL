@@ -11,11 +11,12 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
     if(!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
         return;
 
-    float4 closestOnThisFace, closestOnOtherParticle, distanceUnitary;
+    float4 closestOnThisFace, closestOnOtherParticle;
 
-    face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle, &distanceUnitary);
+    face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle);
 
     float4 distance = closestOnOtherParticle - closestOnThisFace;
+    float4 distanceUnitary = vector_getUnitary(distance);
 
     bool internal = particle_isInternal(otherParticle, closestOnThisFace);
 

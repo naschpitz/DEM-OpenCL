@@ -2,6 +2,7 @@
 #include "FrameSender.h"
 #include "Sender.h"
 
+#include <QDateTime>
 #include <QFile>
 #include <iostream>
 #include <cstring>
@@ -71,9 +72,9 @@ void FrameSender::run()
 
             std::string package = EasyZLib::deflate(data);
 
-            std::cout << "Sending frame, size: " << package.size() << " to " << url.toStdString() << "\n";
+            std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "Sending frame, size: " << package.size() << " to " << url.toStdString() << "\n";
             RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/octet-stream", package);
-            std::cout << "Frame sent: " << r.code << " - " <<  r.body << "\n";
+            std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "Frame sent: " << r.code << " - " <<  r.body << "\n";
             std::cout.flush();
 
             // If the package was successfully sent, remove the pair that originated it from the buffer.

@@ -39,12 +39,7 @@ typedef struct
 
 float4 material_calculateForce(const Material* material, float4 distance, float4 distanceUnitary, bool internal, float contactArea, float originalLength, float4 oldForce)
 {
-    float lengthDistance;
-
-    if(material->forceType >= 0) {
-        lengthDistance = length(distance);
-        lengthDistance = (internal ? -lengthDistance : lengthDistance) + originalLength;
-    }
+    float lengthDistance = length(distance);
 
     switch(material->forceType)
     {
@@ -62,21 +57,33 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
             return -(material->coefficients[0]) * distance;
 
         case inverse_linear:
+            if (internal)
+                distanceUnitary = -distanceUnitary;
+
             return (material->coefficients[0] / lengthDistance) * distanceUnitary;
 
         case inverse_quadratic:
+            if (internal)
+                distanceUnitary = -distanceUnitary;
+
             return (material->coefficients[0] / (lengthDistance * lengthDistance)) * distanceUnitary;
 
         case inverse_cubic:
+            if (internal)
+                distanceUnitary = -distanceUnitary;
+
             return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * distanceUnitary;
 
         case morse:
         {
+            if (internal)
+                distanceUnitary = -distanceUnitary;
+
             float de = material->coefficients[0];
             float ke = material->coefficients[1];
 
             float a = sqrt(ke / (2 * de));
-            float length = lengthDistance - originalLength;
+            float length = lengthDistance;
 
             // https://en.wikipedia.org/wiki/Morse_potential
             return -2 * de * a * exp(-a * length) * (1 - exp(-a * length)) * distanceUnitary;
@@ -97,13 +104,13 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
             // Rupture regime:
             float ruptureDistance = originalLength * material->coefficients[3];
 
-            if(length(distance) > ruptureDistance && !internal) // First test, easyest calculation to return value, probably most of the cases.
+            if(lengthDistance > ruptureDistance && !internal) // First test, easyest calculation to return value, probably most of the cases.
                 return (float4)0;
 
             // Elastic regime distance limit:
             float elasticLimitDistance = originalLength * material->coefficients[1];
 
-            if(length(distance) < elasticLimitDistance || internal) {
+            if(lengthDistance < elasticLimitDistance || internal) {
                 // Elastic regime: F = -k*x
                 float ea = material->coefficients[0] * contactArea;
                 float k = ea / originalLength;
@@ -112,7 +119,6 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
             }
 
             else {
-                float4 distanceUnitary = vector_getUnitary(distance);
                 float4 oldForceProjection = dot(oldForce, distanceUnitary) * distanceUnitary;
 
                 // Plastic regime: F = min(plasticMax, oldForce)

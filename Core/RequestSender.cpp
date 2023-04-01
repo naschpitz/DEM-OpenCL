@@ -47,7 +47,7 @@ void RequestSender::newFrame()
     bool detailed = simulation->isPrimary();
 
     jsonObject["owner"]   = simulation->getScenery().getId().toStdString();
-    jsonObject["step"]    = (int)simulation->getCurrentStep();
+    jsonObject["step"]    = simulation->getCurrentStep();
     jsonObject["time"]    = simulation->getCurrentTime();
     jsonObject["scenery"] = simulation->getScenery().getJson(detailed);
 
@@ -91,15 +91,15 @@ void RequestSender::newLog(QString message)
         state = "done";
     }
 
-    jsonObject["state"] = state.toStdString();
+    jsonObject["state"]   = state.toStdString();
     jsonObject["message"] = message.toStdString();
 
     nlohmann::json progressJsonObject;
-    progressJsonObject["step"] = (int)simulation->getCurrentStep();
+    progressJsonObject["step"]       = simulation->getCurrentStep();
     progressJsonObject["totalSteps"] = simulation->getTotalSteps();
-    progressJsonObject["time"] = simulation->getCurrentTime();
-    progressJsonObject["et"] = (int)simulation->getEt();
-    progressJsonObject["eta"] = (int)simulation->getEta();
+    progressJsonObject["time"]       = simulation->getCurrentTime();
+    progressJsonObject["et"]         = simulation->getEt();
+    progressJsonObject["eta"]        = simulation->getEta();
 
     jsonObject["progress"] = progressJsonObject;
 
@@ -114,18 +114,18 @@ QString RequestSender::getInterfaceAddress(const Simulation *simulation) const
     QHostAddress interfaceAddress = simulation->getInterfaceAddress();
     QString url;
 
-    if (this->remoteInterface)
+    if(this->remoteInterface)
     {
         url = simulation->getInterfaceUrl();
     }
 
     else
     {
-        if (interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
+        if(interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
             url = "localhost:3000";
         }
 
-        else if (QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
+        else if(QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
             url = QHostAddress(interfaceAddress.toIPv4Address()).toString() + ":3000";
         }
     }

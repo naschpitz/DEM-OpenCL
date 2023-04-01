@@ -5,9 +5,13 @@
 
 #include <QCoreApplication>
 #include <iostream>
+#include <cstring>
 
 RequestMapper::RequestMapper(QObject* parent) : HttpRequestHandler(parent)
 {
+    connect(&this->statusTimer, SIGNAL(timeout()), this, SLOT(printStatus()));
+
+    this->statusTimer.start(10000);
 }
 
 RequestMapper::~RequestMapper()
@@ -123,9 +127,34 @@ Simulation* RequestMapper::getSimulationById(const QString& _id)
     return NULL;
 }
 
+uint RequestMapper::getTotalSimulations()
+{
+    return this->simulations.count();
+}
+
+uint RequestMapper::getRunningSimulations()
+{
+    uint simulationsRunning = 0;
+
+    foreach(const Simulation* simulation, this->simulations) {
+        if(simulation->isRunning())
+            simulationsRunning++;
+    }
+
+    return simulationsRunning;
+}
+
 void RequestMapper::simulationDestroyed(QObject* obj)
 {
     Simulation *simulation = (Simulation*)obj;
 
     this->simulations.remove(simulation);
+}
+
+void RequestMapper::printStatus()
+{
+    std::cout << "-----------------------STATUS-----------------------\n";
+    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "There are " << this->getTotalSimulations() << " Simulations instantiated\n";
+    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "There are " << this->getRunningSimulations() << " Simulations running\n";
+    std::cout << "----------------------------------------------------\n";
 }

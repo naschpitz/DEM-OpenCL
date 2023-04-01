@@ -5,6 +5,7 @@
 #include "Simulation.h"
 
 #include <QSet>
+#include <QTimer>
 
 using namespace stefanfrings;
 
@@ -21,6 +22,10 @@ class RequestMapper : public HttpRequestHandler {
         QSet<Simulation*> simulations;
 
         Simulation* getSimulationById(const QString& _id);
+        uint getTotalSimulations();
+        uint getRunningSimulations();
+
+        QTimer statusTimer;
 
     public:
         RequestMapper(QObject* parent=0);
@@ -30,6 +35,9 @@ class RequestMapper : public HttpRequestHandler {
 
     public slots:
         void simulationDestroyed(QObject*);
+
+    private slots:
+        void printStatus();
 };
 
 #endif // REQUESTMAPPER_H

@@ -2,6 +2,7 @@
 #include "LogSender.h"
 #include "Sender.h"
 
+#include <QDateTime>
 #include <iostream>
 #include <cstring>
 
@@ -48,9 +49,9 @@ void LogSender::run()
 
         std::string package = EasyZLib::deflate(data);
 
-        std::cout << "Sending log, size: " << package.size() << " to " << url.toStdString() << "\n";
+        std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "Sending log, size: " << package.size() << " to " << url.toStdString() << "\n";
         RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/octet-stream", package);
-        std::cout << "Log sent: " << r.code << " - " <<  r.body << "\n";
+        std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "Log sent: " << r.code << " - " <<  r.body << "\n";
         std::cout.flush();
 
         // If the package was successfully sent, remove the pair that originated it from the buffer.

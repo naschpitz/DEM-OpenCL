@@ -5,6 +5,8 @@
 #include <QJsonArray>
 #include <QRandomGenerator>
 
+#include <iostream>
+
 NonSolidObject::NonSolidObject()
 {
 
@@ -121,8 +123,26 @@ void NonSolidObject::setDensity()
 
 void NonSolidObject::setPosition()
 {
+    Vector3D min, max;
+    this->getBox(min, max);
+
+    double xLength = max.getX() - min.getX();
+    double yLength = max.getY() - min.getY();
+    double zLength = max.getZ() - min.getZ();
+
+    double xMaxCentered = xLength / 2.;
+    double xCorrection = -(max.getX() - xMaxCentered);
+
+    double yMaxCentered = yLength / 2.;
+    double yCorrection = -(max.getY() - yMaxCentered);
+
+    double zMaxCentered = zLength / 2.;
+    double zCorrection = -(max.getZ() - zMaxCentered);
+
+    Vector3D correction = Vector3D (xCorrection, yCorrection, zCorrection);
+
     for(QVector<Particle>::iterator it = this->particles.begin(); it != this->particles.end(); it++) {
-        it->displaceBy(this->position);
+        it->displaceBy(this->position + correction);
     }
 }
 

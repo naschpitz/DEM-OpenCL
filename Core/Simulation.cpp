@@ -1,9 +1,9 @@
 #include "Simulation.h"
 
+#include <QDateTime>
 #include <QFile>
 #include <QString>
 #include <QTextStream>
-#include <QTime>
 #include <iostream>
 
 #include "RequestSender.h"
@@ -35,9 +35,10 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing 'primary' field in Simulation");
     }
 
-    this->currentTime = 0;
-    this->currentStep = 0;
-    this->et          = 0;
+    this->currentTime    = 0;
+    this->currentStep    = 0;
+    this->stepsPerSecond = 0;
+    this->et             = 0;
 
     try {
         this->interfaceUrl = QString::fromStdString(jsonObject.at("url").get<std::string>());
@@ -181,7 +182,12 @@ long Simulation::getEta() const
 {
     long remaningSteps = this->getTotalSteps() - this->getCurrentStep();
 
-    return remaningSteps / this->getStepsPerSecond();
+    if(this->getStepsPerSecond() > 0) {
+        return remaningSteps / this->getStepsPerSecond();
+    }
+    else {
+        return 0;
+    }
 }
 
 long Simulation::getEt() const
@@ -325,7 +331,7 @@ void Simulation::run()
 
     uint frameSteps = this->frameTime / this->timeStep;
 
-    QTime time = QTime::currentTime();
+    QDateTime dateTime = QDateTime::currentDateTime();
 
     bool ran = false;
     double previousStep = this->currentStep;
@@ -348,7 +354,7 @@ void Simulation::run()
             emit this->newFrame();
         }
 
-        int mSecElapsed = time.msecsTo(QTime::currentTime());
+        long mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());
 
         if(mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
             long numSteps = this->currentStep - previousStep;
@@ -356,7 +362,7 @@ void Simulation::run()
             this->et += mSecElapsed;
 
             previousStep = this->currentStep;
-            time = QTime::currentTime();
+            dateTime = QDateTime::currentDateTime();
 
             emit this->newLog("New log message");
         }
@@ -377,11 +383,11 @@ void Simulation::run()
         this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
         this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
-        this->newLog("Simulation paused");
+        emit this->newLog("Simulation paused");
     }
 
     if(this->isStopped())
-        this->newLog("Simulation stopped");
+        emit this->newLog("Simulation stopped");
 
     emit this->newLog("Simulation ended");
 }
