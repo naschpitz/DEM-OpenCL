@@ -1,108 +1,110 @@
 #include "OpenCL.h"
 
+#include <climits>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 using namespace OpenCL;
 
-Core::Core()
+std::mutex Core::mutex;
+std::vector<cl::Platform> Core::platforms;
+std::vector<cl::Device> Core::devices;
+std::map<const cl::Device*, uint> Core::devicesUsage;
+
+Core::Core(bool useMultipleGPUs)
 {
-    this->showDevices();
-    this->buildPlatforms();
+    this->useMultipleGPUs = useMultipleGPUs;
+
     this->buildComputeUnits();
 }
 
-void Core::showDevices()
+Core::~Core()
 {
-    std::vector<cl::Platform> platforms;
-
-    cl::Platform::get(&(platforms));
-
-    if(platforms.size() == 0) {
-        std::cout << "No platforms found. Check OpenCL installation!\n";
-        exit(1);
+    for(auto it = this->devicesInUse.begin(); it != this->devicesInUse.end(); it++) {
+        Core::removeJobFromDevice(**it);
     }
-
-    for(uint i = 0; i < platforms.size(); i++) {
-        std::cout << "Platform: " << platforms[i].getInfo<CL_PLATFORM_NAME>() << "\n";
-
-        std::vector<cl::Device> devices;
-
-        platforms[i].getDevices(CL_DEVICE_TYPE_GPU, &(devices));
-
-        if(devices.size() == 0) {
-            std::cout << "      No devices found. Check OpenCL installation!\n";
-            exit(1);
-        }
-
-        for(uint j = 0; j < devices.size(); j++) {
-            std::cout << "      Device: " << devices[j].getInfo<CL_DEVICE_NAME>() << "\n";
-        }
-    }
-
-    std::cout.flush();
-}
-
-void Core::buildPlatforms()
-{
-    std::cout << "Building platform...";
-
-    // Get all platforms (drivers).
-    cl::Platform::get(&(this->platforms));
-
-    if(this->platforms.size() == 0) {
-        std::cout << "No platforms found. Check OpenCL installation!\n";
-        exit(1);
-    }
-
-    std::cout << " Done!\n";
 }
 
 void Core::buildComputeUnits()
 {
-    std::cout << "Building compute units...";
+    std::cout << "Building compute units...\n";
 
-    std::vector<cl::Device> allDevices;
+    if(this->useMultipleGPUs) {
+        std::cout << "      Using all available GPUs.\n";
 
-    for(std::vector<cl::Platform>::iterator it = this->platforms.begin(); it != this->platforms.end(); it++) {
-        std::vector<cl::Device> devices;
+        for(std::vector<cl::Device>::iterator it = Core::devices.begin(); it != Core::devices.end(); it++) {
+            uint index = std::distance(Core::devices.begin(), it);
+            double fraction = 1. / Core::devices.size();
+            bool last = false;
 
-        it->getDevices(CL_DEVICE_TYPE_GPU, &(devices));
+            if(std::distance(it, Core::devices.end()) == 1)
+                last = true;
 
-        if(devices.size() == 0) {
-            std::cout << "No devices found. Check OpenCL installation!\n";
+            ComputeUnit computeUnit = ComputeUnit(*it, index, fraction, last);
+
+            Core::addJobToDevice(*it);
+
+            this->computeUnits.push_back(computeUnit);
+        }
+    }
+
+    else {
+        Core::mutex.lock();
+
+        const cl::Device& device = Core::getAvailableDevice();
+
+        auto itFirst = Core::devices.begin();
+        auto itLast = Core::devices.end();
+        auto it = std::find(itFirst, itLast, device);
+
+        if(it == itLast) {
+            std::cout << "      Device not found\n";
             exit(1);
         }
 
-        allDevices.insert(allDevices.end(), devices.begin(), devices.end());
-    }
+        uint deviceIndex = std::distance(itFirst, it);
 
-    for(std::vector<cl::Device>::iterator it = allDevices.begin(); it != allDevices.end(); it++) {
-        uint index = std::distance(allDevices.begin(), it);
-        double fraction = 1. / allDevices.size();
-        bool last = false;
+        std::cout << "      Using GPU #" << deviceIndex << "\n";
 
-        if(std::distance(it, allDevices.end()) == 1)
-            last = true;
+        uint index = 0;
+        double fraction = 1;
+        bool last = true;
 
-        ComputeUnit computeUnit = ComputeUnit(*it, index, fraction, last);
+        ComputeUnit computeUnit = ComputeUnit(device, index, fraction, last);
+
+        Core::addJobToDevice(device);
 
         this->computeUnits.push_back(computeUnit);
+
+        Core::mutex.unlock();
     }
 
     std::cout << " Done!\n";
+    std::cout.flush();
+}
+
+void Core::addJobToDevice(const cl::Device& device)
+{
+    this->devicesInUse.push_back(&device);
+
+    Core::devicesUsage[&device]++;
+}
+
+void Core::removeJobFromDevice(const cl::Device& device)
+{
+    Core::devicesUsage[&device]--;
 }
 
 void Core::addSourceFile(std::string fileName)
 {
-    std::cout << "Reading source file...";
+    std::cout << "Reading source file...\n";
 
     std::ifstream sourceFile;
     sourceFile.open(fileName); // Open the input file
 
     if((sourceFile.rdstate() & std::ifstream::failbit) != 0) {
-        std::cout << "Source file not found.\n";
+        std::cout << "      Source file not found.\n";
         exit(1);
     }
 
@@ -115,6 +117,7 @@ void Core::addSourceFile(std::string fileName)
     }
 
     std::cout << " Done!\n";
+    std::cout.flush();
 }
 
 void Core::addKernel(const std::string& kernelName, uint nElements)
@@ -140,4 +143,76 @@ void Core::run()
     for(std::vector<ComputeUnit>::iterator it = this->computeUnits.begin(); it != this->computeUnits.end(); it++) {
         it->waitFinish();
     }
+}
+
+void Core::buildPlatforms()
+{
+    std::cout << "Building platform...\n";
+
+    // Get all platforms (drivers).
+    cl::Platform::get(&(Core::platforms));
+
+    if(Core::platforms.size() == 0) {
+        std::cout << "      No platforms found. Check OpenCL installation!\n";
+        exit(1);
+    }
+
+    std::cout << " Done!\n";
+    std::cout.flush();
+}
+
+void Core::buildDevices()
+{
+    std::cout << "Building devices...\n";
+
+    for(std::vector<cl::Platform>::iterator it = Core::platforms.begin(); it != Core::platforms.end(); it++) {
+        std::cout << "Platform: " << it->getInfo<CL_PLATFORM_NAME>() << "\n";
+
+        it->getDevices(CL_DEVICE_TYPE_GPU, &(Core::devices));
+
+        if(Core::devices.size() == 0) {
+            std::cout << "      No devices found. Check OpenCL installation!\n";
+            exit(1);
+        }
+
+        for(std::vector<cl::Device>::iterator it = Core::devices.begin(); it != Core::devices.end(); it++) {
+            std::cout << "      Device: " << it->getInfo<CL_DEVICE_NAME>() << "\n";
+        }
+    }
+
+    std::cout << " Done!\n";
+    std::cout.flush();
+}
+
+void Core::buildDevicesUsageMap()
+{
+    for(std::vector<cl::Device>::iterator it = Core::devices.begin(); it != Core::devices.end(); it++) {
+        Core::devicesUsage[&*it] = 0;
+    }
+}
+
+const cl::Device& Core::getAvailableDevice()
+{
+    const cl::Device* deviceWithLeastUsage = nullptr;
+
+    uint leastUsage = UINT_MAX;
+
+    for(auto it = Core::devicesUsage.begin(); it != Core::devicesUsage.end(); it++) {
+        if(it->second < leastUsage) {
+          deviceWithLeastUsage = it->first;
+          leastUsage = it->second;
+        }
+    }
+
+    return *deviceWithLeastUsage;
+}
+
+void Core::initialize() {
+    Core::buildPlatforms();
+    Core::buildDevices();
+    Core::buildDevicesUsageMap();
+}
+
+std::map<const cl::Device*, uint>& Core::getDevicesUsage() {
+    return Core::devicesUsage;
 }

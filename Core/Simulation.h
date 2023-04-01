@@ -44,6 +44,8 @@ class Simulation : public QThread
         double frameTime;
         double logTime;
 
+        bool multiGPU;
+
         double stepsPerSecond;
         long et;
 

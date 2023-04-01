@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 
     std::setlocale(LC_NUMERIC, "C");
 
+    OpenCL::Core::initialize();
+
     QString configFileName = Common::searchConfigFile();
 
     QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);

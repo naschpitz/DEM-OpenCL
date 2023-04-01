@@ -34,6 +34,7 @@ void ComputeUnit::buildContext()
     }
 
     std::cout << " Done!\n";
+    std::cout.flush();
 }
 
 void ComputeUnit::buildQueue()
@@ -43,6 +44,7 @@ void ComputeUnit::buildQueue()
     this->queue = cl::CommandQueue(this->context, this->device);
 
     std::cout << " Done!\n";
+    std::cout.flush();
 }
 
 void ComputeUnit::buildProgram()
@@ -67,6 +69,7 @@ void ComputeUnit::buildProgram()
     this->programBuilt = true;
 
     std::cout << " Done!\n";
+    std::cout.flush();
 }
 
 void ComputeUnit::addSource(const std::string& sourceCode)
@@ -97,12 +100,15 @@ void ComputeUnit::addKernel(const std::string& kernelName, uint nElements)
     this->kernels.push_back(kernel);
 
     std::cout << " Done!\n";
+    std::cout.flush();
 }
 
 void ComputeUnit::clearKernels()
 {
     this->kernels.clear();
-        std::cout << "Kernel cleaned\n";
+
+    std::cout << "Kernel cleaned\n";
+    std::cout.flush();
 }
 
 void ComputeUnit::run()
@@ -125,6 +131,7 @@ void ComputeUnit::run()
     }
 
     this->queue.flush();
+    std::cout.flush();
 }
 
 void ComputeUnit::waitFinish()

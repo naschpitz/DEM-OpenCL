@@ -11,6 +11,7 @@
 
 #include <CL/cl2.hpp>
 #include <iostream>
+#include <mutex>
 #include <unistd.h>
 
 #include "OpenCLCU.h"
@@ -20,18 +21,33 @@ namespace OpenCL
     class Core
     {
         private:
-            std::vector<cl::Platform> platforms;
             std::vector<ComputeUnit> computeUnits;
 
             cl::Program::Sources sources;
 
-            void buildPlatforms();
+            bool useMultipleGPUs;
+            std::vector<const cl::Device*> devicesInUse;
+
             void buildComputeUnits();
 
-        public:
-            Core();
+            void addJobToDevice(const cl::Device& device);
+            void removeJobFromDevice(const cl::Device& device);
 
-            static void showDevices();
+            static std::mutex mutex;
+
+            static std::vector<cl::Platform> platforms;
+            static std::vector<cl::Device> devices;
+            static std::map<const cl::Device*, uint> devicesUsage;
+
+            static void buildPlatforms();
+            static void buildDevices();
+            static void buildDevicesUsageMap();
+
+            static const cl::Device& getAvailableDevice();
+
+        public:
+            Core(bool useMultipleGPUs = false);
+            ~Core();
 
             void addSourceFile(std::string fileName);
             void addKernel(const std::string& kernelName, uint nElements);
@@ -43,6 +59,9 @@ namespace OpenCL
             template<class T> void addArgument(std::string kernelName, std::vector<T>& hBuffer);
 
             void run();
+
+            static void initialize();
+            static std::map<const cl::Device*, uint>& getDevicesUsage();
     };
 
     template<class T> void Core::writeBuffer(std::vector<T>& hBuffer)

@@ -1,3 +1,4 @@
+#include "OpenCL.h"
 #include "RequestMapper.h"
 #include "RequestSender.h"
 
@@ -153,8 +154,21 @@ void RequestMapper::simulationDestroyed(QObject* obj)
 
 void RequestMapper::printStatus()
 {
-    std::cout << "-----------------------STATUS-----------------------\n";
-    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "There are " << this->getTotalSimulations() << " Simulations instantiated\n";
-    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "There are " << this->getRunningSimulations() << " Simulations running\n";
-    std::cout << "----------------------------------------------------\n";
+    std::map<const cl::Device*, uint> &devicesUsage = OpenCL::Core::getDevicesUsage();
+
+    std::cout << "\n-----------------------STATUS-----------------------\n";
+    std::cout << "               " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz").toStdString() << "\n\n";
+
+    std::cout << "There are " << this->getTotalSimulations() << " Simulations instantiated\n";
+    std::cout << "There are " << this->getRunningSimulations() << " Simulations running\n";
+    std::cout << "\n";
+
+    for(auto it = devicesUsage.begin(); it != devicesUsage.end(); it++) {
+        uint deviceIndex = std::distance(devicesUsage.begin(), it);
+        uint jobs = it->second;
+
+        std::cout << "GPU #" << deviceIndex << " has " << jobs << " job(s) running\n";
+    }
+
+    std::cout << "----------------------------------------------------\n\n";
 }

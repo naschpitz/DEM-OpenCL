@@ -80,6 +80,14 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing 'logTime' field in Simulation");
     }
 
+    try {
+        this->multiGPU = jsonObject.at("multiGPU").get<bool>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'multiGPU' field in Simulation");
+    }
+
     this->totalSteps = qRound(this->totalTime / this->timeStep);
 
     try {
@@ -100,6 +108,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 Simulation::~Simulation()
 {
     std::cout << "Simulation destroyed!" << "\n";
+    std::cout.flush();
 }
 
 void Simulation::initialize()
@@ -231,7 +240,7 @@ void Simulation::run()
 
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
 
-    OpenCL::Core openClCore;
+    OpenCL::Core openClCore(this->multiGPU);
 
     emit this->newLog("Loading OpenCL kernel");
     openClCore.addSourceFile("../Simulation.cl");
