@@ -11,7 +11,7 @@
 
 #include "nlohmann/json.hpp"
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 #include <QString>
 #include <QVector>
 #include <QMap>

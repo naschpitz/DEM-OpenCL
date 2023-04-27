@@ -173,6 +173,7 @@ void Particle::calculateArea()
 {
     const double& radius = this->radius;
 
+    // Surface area
     this->area = 4 * 3.14159265359 * radius * radius;
 }
 

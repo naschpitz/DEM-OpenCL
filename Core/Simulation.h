@@ -13,7 +13,7 @@
 #include "Scenery.h"
 #include "Vector3D.h"
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 #include <QObject>
 #include <QThread>
 #include <QHostAddress>

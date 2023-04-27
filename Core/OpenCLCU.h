@@ -9,7 +9,7 @@
 #ifndef OPENCLCU_H
 #define OPENCLCU_H
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 #include <iostream>
 #include <unistd.h>
 #include <map>

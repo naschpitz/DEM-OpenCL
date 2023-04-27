@@ -15,7 +15,7 @@
 
 #include <QVector>
 #include <QMap>
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 
 class NonSolidObject
 {

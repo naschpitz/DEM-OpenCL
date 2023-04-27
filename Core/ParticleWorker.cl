@@ -28,8 +28,8 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
     float4 thisR = closestOnThisParticle - thisParticle->vertex.currentPosition;
     float4 rotationVelocity = cross(otherParticle->vertex.currentAngularVelocity, otherR) - cross(thisParticle->vertex.currentAngularVelocity, thisR);
 
-    float minAreaThis  = thisParticle->area  / 2.0;
-    float minAreaOther = otherParticle->area / 2.0;
+    float minAreaThis  = thisParticle->area  / 4.0;
+    float minAreaOther = otherParticle->area / 4.0;
 
     float  minContactArea = min(minAreaThis, minAreaOther);
     float  originalLength = thisParticle->radius + otherParticle->radius;

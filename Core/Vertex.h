@@ -12,7 +12,7 @@
 #include "nlohmann/json.hpp"
 #include "Vector3D.h"
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 
 typedef struct
 {
@@ -24,6 +24,9 @@ typedef struct
 
     cl_float4 currentPosition;
     cl_float4 oldPosition;
+
+    cl_double4 preciseCurrentPosition;
+    cl_double4 preciseOldPosition;
 
     cl_float4 currentVelocity;
     cl_float4 oldVelocity;

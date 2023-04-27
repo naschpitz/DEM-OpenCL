@@ -101,6 +101,8 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
 
         case realistic_material:
         {
+            // https://en.wikipedia.org/wiki/Young%27s_modulus
+
             // Rupture regime:
             float ruptureDistance = originalLength * material->coefficients[3];
 

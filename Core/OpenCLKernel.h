@@ -9,7 +9,7 @@
 #ifndef OPENCLKERNEL_H
 #define OPENCLKERNEL_H
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 
 namespace OpenCL
 {

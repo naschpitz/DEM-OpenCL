@@ -9,7 +9,7 @@
 #ifndef OPENCL_H
 #define OPENCL_H
 
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 #include <iostream>
 #include <mutex>
 #include <unistd.h>

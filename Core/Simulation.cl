@@ -25,6 +25,9 @@ kernel void initialize_particles(global Particle* particles, constant Simulation
     thisParticle.vertex.oldPosition = thisParticle.vertex.originalPosition - thisParticle.vertex.originalVelocity * (simulation.timeStep);
     thisParticle.vertex.currentPosition = thisParticle.vertex.originalPosition;
 
+    thisParticle.vertex.preciseOldPosition = convert_double4(thisParticle.vertex.oldPosition);
+    thisParticle.vertex.preciseCurrentPosition = convert_double4(thisParticle.vertex.currentPosition);
+
     thisParticle.currentForce = (0, 0, 0, 0);
     thisParticle.oldForce     = (0, 0, 0, 0);
 
@@ -44,6 +47,9 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
     for(int i = 0; i < 3; i++) {
         thisFace.vertexes[i].oldPosition = thisFace.vertexes[i].originalPosition - thisFace.vertexes[i].originalVelocity * (simulation.timeStep);
         thisFace.vertexes[i].currentPosition = thisFace.vertexes[i].originalPosition;
+
+        thisFace.vertexes[i].preciseOldPosition = convert_double4(thisFace.vertexes[i].oldPosition);
+        thisFace.vertexes[i].preciseCurrentPosition = convert_double4(thisFace.vertexes[i].currentPosition);
     }
 
     face_calculateCurrentPosition(&thisFace);

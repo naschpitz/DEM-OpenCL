@@ -12,6 +12,9 @@ typedef struct
     float4 currentPosition;
     float4 oldPosition;
 
+    double4 preciseCurrentPosition;
+    double4 preciseOldPosition;
+
     float4 currentVelocity;
     float4 oldVelocity;
 
@@ -24,18 +27,20 @@ typedef struct
 
 void vertex_integrate(Vertex* vertex, float timeStep)
 {
-    float4 tempPosition;
-
     // Stores the current position.
-    tempPosition = vertex->currentPosition;
+    float4 tempPosition = vertex->currentPosition;
+    double4 preciseTempPosition = vertex->preciseCurrentPosition;
 
-    if(vertex->fixed)
+    if(vertex->fixed) {
         vertex->currentPosition += vertex->currentVelocity * timeStep;
+        vertex->preciseCurrentPosition = convert_double4(vertex->currentPosition);
+    }
 
     else
     {
         // Calculates the new position based on Verlet integration method.
-        vertex->currentPosition = 2 * vertex->currentPosition - vertex->oldPosition + vertex->acceleration * timeStep * timeStep;
+        vertex->preciseCurrentPosition = 2 * vertex->preciseCurrentPosition - vertex->preciseOldPosition + convert_double4(vertex->acceleration) * timeStep * timeStep;
+        vertex->currentPosition = convert_float4(vertex->preciseCurrentPosition);
 
         // Calculates the new speed.
         vertex->oldVelocity = vertex->currentVelocity;
@@ -47,6 +52,7 @@ void vertex_integrate(Vertex* vertex, float timeStep)
 
     // Recovers the position stored before and assigns it to the vertice's past position field.
     vertex->oldPosition = tempPosition;
+    vertex->preciseOldPosition = preciseTempPosition;
 
     // Resets the acceleration.
     vertex->acceleration = 0;
