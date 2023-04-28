@@ -10,6 +10,7 @@
 #define PARTICLE_H
 
 #include "nlohmann/json.hpp"
+#include "Neighborhood.h"
 #include "Vertex.h"
 
 #include <QString>
@@ -33,6 +34,8 @@ typedef struct
     cl_float4 oldTorque;
 
     VertexCL vertex;
+
+    ParticleNeighborhoodCL neighborhood;
 } ParticleCL;
 
 class Particle : public Vertex

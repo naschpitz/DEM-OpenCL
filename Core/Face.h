@@ -9,6 +9,7 @@
 #ifndef FACE_H
 #define FACE_H
 
+#include "Neighborhood.h"
 #include "Vertex.h"
 #include "nlohmann/json.hpp"
 
@@ -35,6 +36,8 @@ typedef struct
     cl_float4 oldTorque;
 
     VertexCL vertexes[3];
+
+    FaceNeighborhoodCL neighborhood;
 } FaceCL;
 
 class Face

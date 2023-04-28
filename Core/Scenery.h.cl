@@ -1,5 +1,5 @@
-#ifndef SCENERY_CL
-#define SCENERY_CL
+#ifndef SCENERY_H_CL
+#define SCENERY_H_CL
 
 typedef struct
 {
@@ -9,4 +9,4 @@ typedef struct
     float4 gravity;
 } Scenery;
 
-#endif // SCENERY_CL
+#endif // SCENERY_H_CL

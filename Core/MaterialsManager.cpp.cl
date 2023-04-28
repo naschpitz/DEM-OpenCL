@@ -1,13 +1,8 @@
-#ifndef MATERIALSMANAGER_CL
-#define MATERIALSMANAGER_CL
+#ifndef MATERIALSMANAGER_CPP_CL
+#define MATERIALSMANAGER_CPP_CL
 
-#include "../Material.cl"
-
-typedef struct
-{
-    int size;
-    Material materials[20];
-} MaterialsManager;
+#include "../Material.h.cl"
+#include "../MaterialsManager.h.cl"
 
 const Material* materialsManager_getMaterial(int materialIndex1, int materialIndex2, const MaterialsManager* materialsManager)
 {
@@ -26,5 +21,5 @@ const Material* materialsManager_getMaterial(int materialIndex1, int materialInd
     return 0;
 }
 
-#endif // MATERIALSMANAGER_CL
+#endif // MATERIALSMANAGER_CPP_CL
 

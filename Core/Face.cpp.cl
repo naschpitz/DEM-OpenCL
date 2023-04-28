@@ -1,30 +1,12 @@
-#ifndef FACE_CL
-#define FACE_CL
+#ifndef FACE_CPP_CL
+#define FACE_CPP_CL
 
-#include "../Edge.cl"
-#include "../Particle.cl"
-#include "../Vector.cl"
-#include "../Vertex.cl"
+#include "../Face.h.cl"
+#include "../Particle.h.cl"
 
-typedef struct
-{
-    uint index;
-    uint materialIndex;
-
-    float area;
-    float mass;
-
-    float4 currentPosition;
-    float4 currentVelocity;
-
-    float4 currentForce;
-    float4 oldForce;
-
-    float4 currentTorque;
-    float4 oldTorque;
-
-    Vertex vertexes[3];
-} Face;
+#include "../Edge.cpp.cl"
+#include "../Vector.cpp.cl"
+#include "../Vertex.cpp.cl"
 
 void face_addCurrentForce(Face* face, const float4* force, const float4* pointOfForce)
 {
@@ -152,4 +134,4 @@ void face_integrate(Face* face, float timeStep)
     face_calculateCurrentVelocity(face);
 }
 
-#endif // FACE_CL
+#endif // FACE_CPP_CL

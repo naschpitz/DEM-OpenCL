@@ -1,8 +1,5 @@
-#ifndef TESTBOX_CL
-#define TESTBOX_CL
-
-#include "../Face.cl"
-#include "../Particle.cl"
+#ifndef TESTBOX_CPP_CL
+#define TESTBOX_CPP_CL
 
 bool testBoxCommon1(const float4* minThis, const float4* maxThis, const float4* minOther, const float4* maxOther, float distanceThreshold)
 {
@@ -85,4 +82,4 @@ bool testBox_particleToFace(const Particle* particleThis, const Face* faceOther,
     return testBoxCommon2(positionThis, &minOther, &maxOther, distanceThreshold + particleThis->radius);
 }
 
-#endif // TESTBOX_CL
+#endif // TESTBOX_CPP_CL
