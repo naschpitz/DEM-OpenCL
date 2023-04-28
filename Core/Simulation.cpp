@@ -13,11 +13,15 @@
 Simulation::Simulation()
 {
     this->initialized = false;
+    this->paused = false;
+    this->stoped = false;
 }
 
 Simulation::Simulation(const nlohmann::json& jsonObject)
 {
     this->initialized = false;
+    this->paused = false;
+    this->stoped = false;
 
     try {
         this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
@@ -99,7 +103,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing 'scenery' field in Simulation");
     }
 
-    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)));
+    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
@@ -368,10 +372,12 @@ void Simulation::run()
         simulationsCL = { this->getCL() };
         openClCore.writeBuffer(simulationsCL);
 
-        openClCore.syncDevicesBuffers(particlesCL);
-        openClCore.syncDevicesBuffers(facesCL);
+        if(this->multiGPU || this->currentStep % frameSteps == 0) {
+            openClCore.syncDevicesBuffers(particlesCL);
+            openClCore.syncDevicesBuffers(facesCL);
+        }
 
-        if(this->currentStep % frameSteps == 0) {           
+        if(this->currentStep % frameSteps == 0) {
             this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
             this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 

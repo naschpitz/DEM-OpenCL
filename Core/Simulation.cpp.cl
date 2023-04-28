@@ -15,6 +15,9 @@ kernel void initialize_particles(global Particle* particles, constant Simulation
 {
     size_t idx = get_global_id(0);
 
+    if(idx == 0)
+        printf("Initializing particles.\n");
+
     Particle thisParticle = particles[idx];
     Simulation simulation = ptrSimulation[0];
 
@@ -36,6 +39,9 @@ kernel void initialize_particles(global Particle* particles, constant Simulation
 kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulation)
 {
     size_t idx = get_global_id(0);
+
+    if(idx == 0)
+        printf("Initializing faces.\n");
 
     Face thisFace = faces[idx];
     Simulation simulation = ptrSimulation[0];
