@@ -1,41 +1,9 @@
-#ifndef MATERIAL_CL
-#define MATERIAL_CL
+#ifndef MATERIAL_CPP_CL
+#define MATERIAL_CPP_CL
 
-#include "../Vector.cl"
+#include "../Material.h.cl"
 
-enum ForceType
-{
-    adiabatic_compression,
-    hooks_law,
-    inverse_linear,
-    inverse_quadratic,
-    inverse_cubic,
-    morse,
-    lennard_jones,
-    realistic_material
-};
-
-
-enum DragForceType
-{
-    linear,
-    quadratic,
-    cubic
-};
-
-typedef struct
-{
-    int materialIndex1;
-    int materialIndex2;
-
-    int forceType;
-    int dragForceType;
-
-    float distanceThreshold;
-
-    float coefficients[10];
-    float dragCoefficients[10];
-} Material;
+#include "../Vector.cpp.cl"
 
 float4 material_calculateForce(const Material* material, float4 distance, float4 distanceUnitary, bool internal, float contactArea, float originalLength, float4 oldForce)
 {
@@ -175,4 +143,4 @@ float4 material_calculateDragForce(const Material* material, float4 velocity, fl
     return (float4)0;
 }
 
-#endif // MATERIAL_CL
+#endif // MATERIAL_CPP_CL

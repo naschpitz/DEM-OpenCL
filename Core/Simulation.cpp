@@ -13,11 +13,15 @@
 Simulation::Simulation()
 {
     this->initialized = false;
+    this->paused = false;
+    this->stoped = false;
 }
 
 Simulation::Simulation(const nlohmann::json& jsonObject)
 {
     this->initialized = false;
+    this->paused = false;
+    this->stoped = false;
 
     try {
         this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
@@ -99,7 +103,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing 'scenery' field in Simulation");
     }
 
-    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)));
+    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
@@ -121,6 +125,8 @@ SimulationCL Simulation::getCL() const
     SimulationCL simulationCL;
 
     simulationCL.currentTime = this->currentTime;
+    simulationCL.currentStep = this->currentStep;
+
     simulationCL.timeStep = this->timeStep;
     simulationCL.totalTime = this->totalTime;
 
@@ -152,7 +158,7 @@ const QString& Simulation::getId() const
     return this->id;
 }
 
-const long& Simulation::getCurrentStep() const
+const ulong& Simulation::getCurrentStep() const
 {
     return this->currentStep;
 }
@@ -177,7 +183,7 @@ const double& Simulation::getTotalTime() const
     return this->totalTime;
 }
 
-const long& Simulation::getTotalSteps() const
+const ulong& Simulation::getTotalSteps() const
 {
     return this->totalSteps;
 }
@@ -187,9 +193,9 @@ const double& Simulation::getStepsPerSecond() const
     return this->stepsPerSecond;
 }
 
-long Simulation::getEta() const
+ulong Simulation::getEta() const
 {
-    long remaningSteps = this->getTotalSteps() - this->getCurrentStep();
+    ulong remaningSteps = this->getTotalSteps() - this->getCurrentStep();
 
     if(this->getStepsPerSecond() > 0) {
         return remaningSteps / this->getStepsPerSecond();
@@ -199,7 +205,7 @@ long Simulation::getEta() const
     }
 }
 
-long Simulation::getEt() const
+ulong Simulation::getEt() const
 {
     return this->et / 1000;
 }
@@ -243,7 +249,7 @@ void Simulation::run()
     OpenCL::Core openClCore(this->multiGPU);
 
     emit this->newLog("Loading OpenCL kernel");
-    openClCore.addSourceFile("../Simulation.cl");
+    openClCore.addSourceFile("../Simulation.cpp.cl");
     emit this->newLog("OpenCL kernel loaded");
 
     emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));
@@ -291,24 +297,35 @@ void Simulation::run()
     }
 
     if(hasParticles) {
+        openClCore.addKernel("calculate_particles_neighborhood", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("calculate_particles_neighborhood", particlesCL);
+        openClCore.addArgument<FaceCL>("calculate_particles_neighborhood", facesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_particles_neighborhood", materialsManagerCL);
+        openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
+        openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
+
         openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_particle_to_particle", sceneriesCL);
     }
 
     if(hasParticles && hasFaces) {
+        openClCore.addKernel("calculate_faces_neighborhood", facesCL.size());
+        openClCore.addArgument<FaceCL>("calculate_faces_neighborhood", facesCL);
+        openClCore.addArgument<ParticleCL>("calculate_faces_neighborhood", particlesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_faces_neighborhood", materialsManagerCL);
+        openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
+        openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
+
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_particle_to_face", sceneriesCL);
 
         openClCore.addKernel("calculate_face_to_particle", facesCL.size());
         openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
         openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_face_to_particle", sceneriesCL);
     }
 
     if(hasParticles) {
@@ -352,10 +369,15 @@ void Simulation::run()
         ran = true;
         this->currentTime = this->timeStep * this->currentStep;
 
-        openClCore.syncDevicesBuffers(particlesCL);
-        openClCore.syncDevicesBuffers(facesCL);
+        simulationsCL = { this->getCL() };
+        openClCore.writeBuffer(simulationsCL);
 
-        if(this->currentStep % frameSteps == 0) {           
+        if(this->multiGPU || this->currentStep % frameSteps == 0) {
+            openClCore.syncDevicesBuffers(particlesCL);
+            openClCore.syncDevicesBuffers(facesCL);
+        }
+
+        if(this->currentStep % frameSteps == 0) {
             this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
             this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
@@ -363,10 +385,10 @@ void Simulation::run()
             emit this->newFrame();
         }
 
-        long mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());
+        ulong mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());
 
         if(mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
-            long numSteps = this->currentStep - previousStep;
+            ulong numSteps = this->currentStep - previousStep;
             this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
             this->et += mSecElapsed;
 

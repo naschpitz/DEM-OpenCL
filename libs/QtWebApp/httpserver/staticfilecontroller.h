@@ -34,7 +34,7 @@ namespace stefanfrings {
   The encoding is sent to the web browser in case of text and html files.
   <p>
   The cache improves performance of small files when loaded from a network
-  drive. Large files are not cached. Files are cached as long as possible,
+  drive. Large files are not cached. Files are cached as ulong as possible,
   when cacheTime=0. The maxAge value (in msec!) controls the remote browsers cache.
   <p>
   Do not instantiate this class in each request, because this would make the file cache

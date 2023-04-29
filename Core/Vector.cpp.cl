@@ -1,5 +1,5 @@
-#ifndef VECTOR_CL
-#define VECTOR_CL
+#ifndef VECTOR_CPP_CL
+#define VECTOR_CPP_CL
 
 float4 vector_getUnitary(float4 vector)
 {
@@ -13,4 +13,4 @@ float4 vector_getUnitary(float4 vector)
     return unitary;
 }
 
-#endif // VECTOR_CL
+#endif // VECTOR_CPP_CL

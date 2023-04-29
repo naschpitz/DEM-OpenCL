@@ -1,29 +1,10 @@
 #ifndef PARTICLE_CL
 #define PARTICLE_CL
 
-#include "../Vector.cl"
-#include "../Vertex.cl"
+#include "../Particle.h.cl"
 
-typedef struct
-{
-    uint index;
-    uint materialIndex;
-
-    float radius;
-    float density;
-    float mass;
-    float area;
-    float volume;
-    float inertiaMomentum;
-
-    float4 currentForce;
-    float4 oldForce;
-
-    float4 currentTorque;
-    float4 oldTorque;
-
-    Vertex vertex;
-} Particle;
+#include "../Vector.cpp.cl"
+#include "../Vertex.cpp.cl"
 
 void particle_addCurrentForce(Particle* particle, const float4* force, const float4* pointOfForce)
 {

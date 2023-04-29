@@ -1,16 +1,13 @@
-#ifndef FACEWORKER_CL
-#define FACEWORKER_CL
+#ifndef FACEWORKER_CPP_CL
+#define FACEWORKER_CPP_CL
 
-#include "../Face.cl"
-#include "../Particle.cl"
-#include "../Material.cl"
-#include "../TestBox.cl"
+#include "../Face.cpp.cl"
+#include "../Particle.cpp.cl"
+#include "../Material.cpp.cl"
+#include "../TestBox.cpp.cl"
 
 void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
 {
-    if(!testBox_particleToFace(otherParticle, thisFace, material->distanceThreshold))
-        return;
-
     float4 closestOnThisFace, closestOnOtherParticle;
 
     face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle);
@@ -43,4 +40,4 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
     face_addCurrentForce(thisFace, &totalForce, &closestOnThisFace);
 }
 
-#endif // FACEWORKER_CL
+#endif // FACEWORKER_CPP_CL

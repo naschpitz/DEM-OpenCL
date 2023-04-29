@@ -1,12 +1,7 @@
-#ifndef EDGE_CL
-#define EDGE_CL
+#ifndef EDGE_CPP_CL
+#define EDGE_CPP_CL
 
-#include "../Vertex.cl"
-
-typedef struct
-{
-    Vertex v1, v2;
-} Edge;
+#include "../Edge.h.cl"
 
 float4 edge_getDistance(const Edge* edge)
 {
@@ -35,4 +30,4 @@ void edge_getClosestTo(const Edge* thisEdge, const float4* otherVector, float4* 
         (*closestOnThisEdge) = p1 + u * b;
 }
 
-#endif // EDGE_CL
+#endif // EDGE_CPP_CL

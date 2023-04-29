@@ -21,6 +21,8 @@
 typedef struct
 {
     cl_float currentTime;
+    cl_ulong currentStep;
+
     cl_float timeStep;
     cl_float totalTime;
 } SimulationCL;
@@ -35,11 +37,11 @@ class Simulation : public QThread
         QString id;
 
         double currentTime;
-        long   currentStep;
+        ulong  currentStep;
 
         double timeStep;
         double totalTime;
-        long   totalSteps;
+        ulong  totalSteps;
 
         double frameTime;
         double logTime;
@@ -47,7 +49,7 @@ class Simulation : public QThread
         bool multiGPU;
 
         double stepsPerSecond;
-        long et;
+        ulong et;
 
         Scenery scenery;
 
@@ -71,17 +73,17 @@ class Simulation : public QThread
         const QString& getInterfaceUrl() const;
         void setInterfaceUrl(const QString& interfaceUrl);
 
-        const QString& getId() const;
-        const double& getCurrentTime() const;
-        const long& getCurrentStep()   const;
+        const QString& getId()          const;
+        const double&  getCurrentTime() const;
+        const ulong&   getCurrentStep() const;
 
-        const double& getTimeStep()  const;
-        const double& getTotalTime() const;
-        const long& getTotalSteps()  const;
+        const double& getTimeStep()   const;
+        const double& getTotalTime()  const;
+        const ulong&  getTotalSteps() const;
 
         const double& getStepsPerSecond() const;
-        long getEta() const;
-        long getEt()  const;
+        ulong getEta() const;
+        ulong getEt()  const;
 
         const Scenery& getScenery() const;
 

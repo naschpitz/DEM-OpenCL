@@ -1,29 +1,7 @@
-#ifndef VERTEX_CL
-#define VERTEX_CL
+#ifndef VERTEX_CPP_CL
+#define VERTEX_CPP_CL
 
-typedef struct
-{
-    bool fixed;
-
-    float4 originalPosition;
-    float4 originalVelocity;
-    float4 acceleration;
-
-    float4 currentPosition;
-    float4 oldPosition;
-
-    double4 preciseCurrentPosition;
-    double4 preciseOldPosition;
-
-    float4 currentVelocity;
-    float4 oldVelocity;
-
-    float4 angularAcceleration;
-
-    float4 currentAngularVelocity;
-    float4 oldAngularVelocity;
-} Vertex;
-
+#include "../Vertex.h.cl"
 
 void vertex_integrate(Vertex* vertex, float timeStep)
 {
@@ -59,4 +37,4 @@ void vertex_integrate(Vertex* vertex, float timeStep)
     vertex->angularAcceleration = 0;
 }
 
-#endif // VERTEX_CL
+#endif // VERTEX_CPP_CL
