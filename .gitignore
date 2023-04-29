@@ -1,0 +1,50 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+
+# Compiled Qt files
+*.moc
+*.moc.*
+*.ui
+*.rcc
+
+# Generated files
+Makefile
+*.pro.user
+*.qbs.user
+*.qmake.cache
+*.qmake.stash
+
+# Qt Creator files
+*.autosave
+*.backup*
+*.creator.*
+*.gcno
+*.gcda
+
+# Generated documentation
+*.qch
+*.chm
+
+# Debug files
+*.pdb
+*.debug
+*.release
+*.xcarchive
+
+# Other files
+*.log
+*.d
+*.pyc
+
+/.qtc_clangd
+
+/Core/bin
+/Core/moc
+/Core/obj
+/Core/.qtc_clangd
+
+/Test/bin
+/Test/moc
+/Test/obj
+
+
