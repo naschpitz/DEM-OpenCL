@@ -70,7 +70,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
 {
     Simulation simulation = ptrSimulation[0];
 
-    if(simulation.currentStep % 1000 != 0 && simulation.currentStep != 0)
+    if(simulation.currentStep % 10000 != 0 && simulation.currentStep != 0)
         return;
 
     size_t idx = get_global_id(0);
@@ -95,7 +95,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        if(!testBox_particleToParticle(&thisParticle, &otherParticle, material->distanceThreshold * 5))
+        if(!testBox_particleToParticle(&thisParticle, &otherParticle, material->distanceThreshold * 3))
             continue;
 
         neighborhood_addParticleToParticleNeighborhood(&thisParticle, &otherParticle);
@@ -109,7 +109,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        if(!testBox_particleToFace(&thisParticle, &otherFace, material->distanceThreshold * 5))
+        if(!testBox_particleToFace(&thisParticle, &otherFace, material->distanceThreshold * 3))
             continue;
 
         neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace);
@@ -122,7 +122,7 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
 {
     Simulation simulation = ptrSimulation[0];
 
-    if(simulation.currentStep % 1000 != 0 && simulation.currentStep != 0)
+    if(simulation.currentStep % 10000 != 0 && simulation.currentStep != 0)
         return;
 
     size_t idx = get_global_id(0);
@@ -144,7 +144,7 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        if(!testBox_particleToFace(&otherParticle, &thisFace, material->distanceThreshold * 5))
+        if(!testBox_particleToFace(&otherParticle, &thisFace, material->distanceThreshold * 3))
             continue;
 
         neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle);
