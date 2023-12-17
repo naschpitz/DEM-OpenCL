@@ -70,7 +70,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
 {
     Simulation simulation = ptrSimulation[0];
 
-    if(simulation.currentStep % 10000 != 0 && simulation.currentStep != 0)
+    if((simulation.currentStep % simulation.calcNeighStepsInt) != 0 && simulation.currentStep != 0)
         return;
 
     size_t idx = get_global_id(0);
@@ -122,7 +122,7 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
 {
     Simulation simulation = ptrSimulation[0];
 
-    if(simulation.currentStep % 10000 != 0 && simulation.currentStep != 0)
+    if((simulation.currentStep % simulation.calcNeighStepsInt) != 0 && simulation.currentStep != 0)
         return;
 
     size_t idx = get_global_id(0);

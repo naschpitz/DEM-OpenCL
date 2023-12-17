@@ -8,6 +8,8 @@ typedef struct
 
     float timeStep;
     float totalTime;
+
+    ulong calcNeighStepsInt;
 } Simulation;
 
 #endif // SIMULATION_H_CL
