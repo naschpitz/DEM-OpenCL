@@ -94,6 +94,15 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     }
 
     try {
+        this->neighDistThresMult = jsonObject.at("neighDistThresMult").get<double>();
+        this->neighDistThresMult = qRound(this->neighDistThresMult / this->timeStep);
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'neighDistThresMult' field in Simulation");
+    }
+
+    try {
         this->multiGPU = jsonObject.at("multiGPU").get<bool>();
     }
 
@@ -140,6 +149,7 @@ SimulationCL Simulation::getCL() const
     simulationCL.totalTime = this->totalTime;
 
     simulationCL.calcNeighStepsInt = this->calcNeighStepsInt;
+    simulationCL.neighDistThresMult = this->neighDistThresMult;
 
     return simulationCL;
 }

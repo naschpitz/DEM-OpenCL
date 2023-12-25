@@ -26,7 +26,8 @@ typedef struct
     cl_float timeStep;
     cl_float totalTime;
 
-    cl_ulong calcNeighStepsInt;
+    cl_ulong  calcNeighStepsInt;
+    cl_double neighDistThresMult;
 } SimulationCL;
 
 class Simulation : public QThread
@@ -50,6 +51,8 @@ class Simulation : public QThread
 
         double calcNeighTimeInt;
         ulong  calcNeighStepsInt;
+
+        double neighDistThresMult;
 
         bool multiGPU;
 
