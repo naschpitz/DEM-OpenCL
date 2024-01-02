@@ -197,7 +197,8 @@ const cl::Device& Core::getAvailableDevice()
 
     uint leastUsage = UINT_MAX;
 
-    for(auto it = Core::devicesUsage.begin(); it != Core::devicesUsage.end(); it++) {
+    // In reverse order, so it will prioritize the latest GPU, which is not connected to the video output.
+    for(auto it = Core::devicesUsage.rbegin(); it != Core::devicesUsage.rend(); it++) {
         if(it->second < leastUsage) {
           deviceWithLeastUsage = it->first;
           leastUsage = it->second;

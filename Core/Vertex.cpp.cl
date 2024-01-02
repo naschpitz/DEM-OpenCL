@@ -10,8 +10,8 @@ void vertex_integrate(Vertex* vertex, float timeStep)
     double4 preciseTempPosition = vertex->preciseCurrentPosition;
 
     if(vertex->fixed) {
-        vertex->currentPosition += vertex->currentVelocity * timeStep;
-        vertex->preciseCurrentPosition = convert_double4(vertex->currentPosition);
+        vertex->preciseCurrentPosition += convert_double4(vertex->currentVelocity) * timeStep;
+        vertex->currentPosition = convert_float4(vertex->preciseCurrentPosition);
     }
 
     else

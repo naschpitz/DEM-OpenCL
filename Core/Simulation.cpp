@@ -95,7 +95,6 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 
     try {
         this->neighDistThresMult = jsonObject.at("neighDistThresMult").get<double>();
-        this->neighDistThresMult = qRound(this->neighDistThresMult / this->timeStep);
     }
 
     catch (const nlohmann::detail::exception& e) {
