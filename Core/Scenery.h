@@ -19,8 +19,8 @@
 
 typedef struct
 {
-    cl_ulong numParticles;
-    cl_ulong numFaces;
+    cl_uint numParticles;
+    cl_uint numFaces;
 
     cl_float4 gravity;
 } SceneryCL;

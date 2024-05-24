@@ -11,11 +11,12 @@
 
 #include "nlohmann/json.hpp"
 #include "Scenery.h"
-#include "Vector3D.h"
 
 #include <CL/opencl.hpp>
 #include <QObject>
 #include <QThread>
+#include <QVector>
+#include <QPair>
 #include <QHostAddress>
 
 typedef struct

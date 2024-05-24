@@ -5,7 +5,7 @@
 #include "../Material.cpp.cl"
 #include "../Particle.cpp.cl"
 
-void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material)
+void particleToParticleWorker_run(Particle* thisParticle, Particle* otherParticle, const Material* material)
 {
     float4 closestOnThisParticle, closestOnOtherParticle;
 
@@ -37,7 +37,7 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
 
     float4 totalForce = - (force + dragForce);
 
-    particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+    particle_atomicAddCurrentForce(thisParticle, otherParticle, &totalForce, &closestOnThisParticle);
 }
 
 bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)

@@ -3,8 +3,8 @@
 
 typedef struct
 {
-    ulong numParticles;
-    ulong numFaces;
+    uint numParticles;
+    uint numFaces;
 
     float4 gravity;
 } Scenery;

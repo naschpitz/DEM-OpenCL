@@ -24,6 +24,7 @@ MOC_DIR = moc
 HEADERS += \
     OpenCL.h \
     NonSolidObject.h \
+    Pair.h \
     SolidObject.h \
     Material.h \
     Vertex.h \
@@ -46,6 +47,7 @@ HEADERS += \
     Common.h
 
 SOURCES += \
+    Pair.cpp \
     main.cpp \
     OpenCL.cpp \
     Vertex.cpp \
@@ -82,6 +84,7 @@ DISTFILES += \
     MaterialsManager.h.cl \
     Neighborhood.cpp.cl \
     Neighborhood.h.cl \
+    Pair.h.cl \
     Particle.cpp.cl \
     Particle.h.cl \
     ParticleWorker.cpp.cl \

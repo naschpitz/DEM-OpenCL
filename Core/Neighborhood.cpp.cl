@@ -8,7 +8,6 @@
 void neighborhood_addParticleToParticleNeighborhood(Particle* thisParticle, const Particle* otherParticle)
 {
     if(thisParticle->neighborhood.numParticles == MAX_PARTICLES_TO_PARTICLES) {
-        printf("MAX_PARTICLES_TO_PARTICLES reached!\n");
         return;
     }
 
@@ -19,7 +18,6 @@ void neighborhood_addParticleToParticleNeighborhood(Particle* thisParticle, cons
 void neighborhood_addFaceToParticleNeighborhood(Particle* thisParticle, const Face* otherFace)
 {
     if(thisParticle->neighborhood.numFaces == MAX_FACES_TO_PARTICLES) {
-        printf("MAX_FACES_TO_PARTICLES reached!\n");
         return;
     }
 
@@ -30,7 +28,6 @@ void neighborhood_addFaceToParticleNeighborhood(Particle* thisParticle, const Fa
 void neighborhood_addParticleToFaceNeighborhood(Face* thisFace, const Particle* otherParticle)
 {
     if(thisFace->neighborhood.numParticles == MAX_PARTICLES_TO_FACES) {
-        printf("MAX_PARTICLES_TO_FACES reached!\n");
         return;
     }
 

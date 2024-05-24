@@ -14,6 +14,14 @@ void particle_addCurrentForce(Particle* particle, const float4* force, const flo
     particle->currentTorque += cross(r, (*force));
 }
 
+void particle_atomicAddCurrentForce(Particle* thisParticle, const float4* force, const float4* pointOfForce)
+{
+    particle->currentForce += (*force);
+
+    float4 r = (*pointOfForce) - particle->vertex.currentPosition;
+    particle->currentTorque += cross(r, (*force));
+}
+
 void particle_divideCurrentForce(Particle* particle, float divider)
 {
     particle->currentForce /= divider;

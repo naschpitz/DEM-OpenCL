@@ -8,6 +8,7 @@
 
 #include "RequestSender.h"
 #include "OpenCL.h"
+#include "Pair.h"
 #include "Particle.h"
 
 Simulation::Simulation()
@@ -135,6 +136,20 @@ Simulation::~Simulation()
 void Simulation::initialize()
 {
     this->scenery.initialize();
+}
+
+QVector<QPair<ulong, ulong>> Simulation::calculatePairs(ulong nElements)
+{
+    QVector<QPair<ulong, ulong>> pairs;
+
+    for(ulong i = 0; i < nElements; i++) {
+        for(ulong j = i + 1; j < nElements; j++) {
+            QPair<ulong, ulong> pair(i, j);
+            pairs.push_back(pair);
+        }
+    }
+
+    return pairs;
 }
 
 SimulationCL Simulation::getCL() const
@@ -268,12 +283,20 @@ void Simulation::run()
 
     OpenCL::Core openClCore(this->multiGPU);
 
+    QVector<PairCL> particlesPairs = Pair::getPairsCL(particles.count());
+    std::vector<PairCL> particlesPairsCL = std::vector(particlesPairs.begin(), particlesPairs.end());
+
+    QVector<PairCL> facesPairs =  Pair::getPairsCL(faces.count());
+    std::vector<PairCL> facesPairsCL = std::vector(facesPairs.begin(), facesPairs.end());
+
     emit this->newLog("Loading OpenCL kernel");
     openClCore.addSourceFile("../Simulation.cpp.cl");
     emit this->newLog("OpenCL kernel loaded");
 
     emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));
+    emit this->newLog(QString("Total number of particles pairs: %1").arg(particlesPairsCL.size()));
     emit this->newLog(QString("Total number of faces: %1").arg(facesCL.size()));
+    emit this->newLog(QString("Total number of faces pairs: %1").arg(facesPairsCL.size()));
 
     emit this->newLog("Initiating objects copy to GPU's memory");
     openClCore.writeBuffer<ParticleCL>(particlesCL);
@@ -324,12 +347,13 @@ void Simulation::run()
         openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
         openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
 
-        openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
+        openClCore.addKernel("calculate_particle_to_particle", particlesPairsCL.size());
+        openClCore.addArgument<PairCL>("calculate_particle_to_particle", particlesPairsCL);
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
     }
 
-    if(hasParticles && hasFaces) {
+    if(hasFaces) {
         openClCore.addKernel("calculate_faces_neighborhood", facesCL.size());
         openClCore.addArgument<FaceCL>("calculate_faces_neighborhood", facesCL);
         openClCore.addArgument<ParticleCL>("calculate_faces_neighborhood", particlesCL);
@@ -337,15 +361,18 @@ void Simulation::run()
         openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
         openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
 
+        // Kernel not implemented yet.
+        // openClCore.addKernel("calculate_face_to_face", facesPairsCL.size());
+        // openClCore.addArgument<PairCL>("calculate_particle_to_particle", facesPairsCL);
+        // openClCore.addArgument<FaceCL>("calculate_particle_to_particle", facesCL);
+        // openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_face", materialsManagerCL);
+    }
+
+    if(hasParticles && hasFaces) {
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
-
-        openClCore.addKernel("calculate_face_to_particle", facesCL.size());
-        openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
-        openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
     }
 
     if(hasParticles) {
@@ -453,6 +480,8 @@ void Simulation::stop()
     this->stoped = true;
 
     // TODO: Correct error when stopping a paused simulation, deadlock involved.
+    // This issue happens because Simulation::stop() is called from the same thread
+    // (the main thread) where the Slot connected to this Signal lives.
     /*
     if(this->isPaused())
         emit this->newLog();

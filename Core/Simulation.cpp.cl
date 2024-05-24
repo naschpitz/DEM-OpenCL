@@ -1,6 +1,7 @@
 #ifndef SIMULATION_CPP_CL
 #define SIMULATION_CPP_CL
 
+#include "../Pair.h.cl"
 #include "../Scenery.h.cl"
 #include "../Simulation.h.cl"
 
@@ -147,25 +148,30 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
     faces[idx] = thisFace;
 }
 
-kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager)
+kernel void calculate_particle_to_particle(global Pair* pairs, global Particle* particles, constant MaterialsManager* ptrMaterialsManager)
 {
     size_t idx = get_global_id(0);
 
-    Particle thisParticle = particles[idx];
+    Pair pair = pairs[idx]
+
+    Particle *thisParticle = &particles[pair.first];
+    Particle *otherParticle = &particles[pair.second];
+
     MaterialsManager materialsManager = ptrMaterialsManager[0];
 
     for(ulong i = 0; i < thisParticle.neighborhood.numParticles; i++) {
-        Particle otherParticle = particles[thisParticle.neighborhood.particles[i]];
+        unit otherParticleIndex = thisParticle.neighborhood.particles[i];
+
+        if(otherParticleIndex != pair.second)
+            continue;
 
         int thisMaterialIndex = thisParticle.materialIndex;
         int otherMateriaIndex = otherParticle.materialIndex;
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        particleToParticleWorker_run(&thisParticle, &otherParticle, material);
+        particleToParticleWorker_run(thisParticle, otherParticle, material);
     }
-
-    particles[idx] = thisParticle;
 }
 
 kernel void calculate_particle_to_face(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager)
