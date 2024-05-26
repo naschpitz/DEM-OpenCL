@@ -3,7 +3,7 @@
 #endif
 
 #ifndef CL_HPP_TARGET_OPENCL_VERSION
-#define CL_HPP_TARGET_OPENCL_VERSION 210
+#define CL_HPP_TARGET_OPENCL_VERSION 300
 #endif
 
 #ifndef PAIR_H
@@ -18,6 +18,7 @@ typedef struct
 {
     cl_uint first;
     cl_uint second;
+    cl_bool isNeighbor;
 } PairCL;
 
 class Pair
@@ -26,6 +27,7 @@ class Pair
         Pair();
 
         static QVector<PairCL> getPairsCL(uint nElements);
+        static QVector<PairCL> getPairsCL(uint nElements1, uint nElements2);
 };
 
 #endif // PAIR_H

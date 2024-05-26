@@ -44,11 +44,19 @@ ParticleCL Particle::getCL(uint index, uint materialIndex) const
     particleCL.volume = this->volume;
     particleCL.inertiaMomentum = this->inertiaMomentum;
 
-    particleCL.currentForce = {this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0};
-    particleCL.oldForce     = {this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0};
+    particleCL.currentForceX = this->currentForce.getX();
+    particleCL.currentForceY = this->currentForce.getY();
+    particleCL.currentForceZ = this->currentForce.getZ();
 
-    particleCL.currentTorque = {this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0};
-    particleCL.oldTorque     = {this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0};
+    particleCL.currentForce = {{this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0}};
+    particleCL.oldForce     = {{this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0}};
+
+    particleCL.currentTorqueX = this->currentTorque.getX();
+    particleCL.currentTorqueY = this->currentTorque.getY();
+    particleCL.currentTorqueZ = this->currentTorque.getZ();
+
+    particleCL.currentTorque = {{this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0}};
+    particleCL.oldTorque     = {{this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0}};
 
     Vertex vertex = (*this);
     particleCL.vertex = vertex.getCL();

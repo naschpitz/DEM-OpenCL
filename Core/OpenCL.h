@@ -3,7 +3,7 @@
 #endif
 
 #ifndef CL_HPP_TARGET_OPENCL_VERSION
-#define CL_HPP_TARGET_OPENCL_VERSION 210
+#define CL_HPP_TARGET_OPENCL_VERSION 300
 #endif
 
 #ifndef OPENCL_H
@@ -39,6 +39,7 @@ namespace OpenCL
             static std::vector<cl::Device> devices;
             static std::map<const cl::Device*, uint> devicesUsage;
 
+            static void printDevicesInfo();
             static void buildPlatforms();
             static void buildDevices();
             static void buildDevicesUsageMap();

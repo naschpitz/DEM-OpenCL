@@ -191,6 +191,34 @@ void Core::buildDevicesUsageMap()
     }
 }
 
+void Core::printDevicesInfo()
+{
+    std::cout << "Devices Information:\n";
+
+    for(std::vector<cl::Device>::iterator it = Core::devices.begin(); it != Core::devices.end(); it++) {
+        std::string deviceName = it->getInfo<CL_DEVICE_NAME>();
+        std::string deviceVendor = it->getInfo<CL_DEVICE_VENDOR>();
+        std::string driverVersion = it->getInfo<CL_DRIVER_VERSION>();
+        std::string deviceVersion = it->getInfo<CL_DEVICE_VERSION>();
+        cl_ulong globalMemSize = it->getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>();
+        cl_ulong localMemSize = it->getInfo<CL_DEVICE_LOCAL_MEM_SIZE>();
+        cl_uint computeUnits = it->getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>();
+        size_t maxWorkGroupSize = it->getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+        std::cout << "  Device Name: " << deviceName << "\n";
+        std::cout << "  Vendor: " << deviceVendor << "\n";
+        std::cout << "  Driver Version: " << driverVersion << "\n";
+        std::cout << "  Device Version: " << deviceVersion << "\n";
+        std::cout << "  Global Memory Size: " << globalMemSize / (1024 * 1024) << " MB\n";
+        std::cout << "  Local Memory Size: " << localMemSize / 1024 << " KB\n";
+        std::cout << "  Compute Units: " << computeUnits << "\n";
+        std::cout << "  Max Work Group Size: " << maxWorkGroupSize << "\n";
+        std::cout << "------------------------------------\n";
+    }
+
+    std::cout.flush();
+}
+
 const cl::Device& Core::getAvailableDevice()
 {
     const cl::Device* deviceWithLeastUsage = nullptr;
@@ -212,6 +240,8 @@ void Core::initialize() {
     Core::buildPlatforms();
     Core::buildDevices();
     Core::buildDevicesUsageMap();
+
+    Core::printDevicesInfo();
 }
 
 std::map<const cl::Device*, uint>& Core::getDevicesUsage() {

@@ -3,13 +3,12 @@
 #endif
 
 #ifndef CL_HPP_TARGET_OPENCL_VERSION
-#define CL_HPP_TARGET_OPENCL_VERSION 210
+#define CL_HPP_TARGET_OPENCL_VERSION 300
 #endif
 
 #ifndef FACE_H
 #define FACE_H
 
-#include "Neighborhood.h"
 #include "Vertex.h"
 #include "nlohmann/json.hpp"
 
@@ -29,15 +28,15 @@ typedef struct
     cl_float4 currentPosition;
     cl_float4 currentVelocity;
 
+    cl_float currentForceX, currentForceY, currentForceZ;
     cl_float4 currentForce;
     cl_float4 oldForce;
 
+    cl_float currentTorqueX, currentTorqueY, currentTorqueZ;
     cl_float4 currentTorque;
     cl_float4 oldTorque;
 
     VertexCL vertexes[3];
-
-    FaceNeighborhoodCL neighborhood;
 } FaceCL;
 
 class Face
@@ -51,9 +50,11 @@ class Face
         Vector3D currentPosition;
         Vector3D currentVelocity;
 
+        float currentForceX, currentForceY, currentForceZ;
         Vector3D currentForce;
         Vector3D oldForce;
 
+        float currentTorqueX, currentTorqueY, currentTorqueZ;
         Vector3D currentTorque;
         Vector3D oldTorque;
 

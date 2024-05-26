@@ -31,7 +31,6 @@ HEADERS += \
     Simulation.h \
     Scenery.h \
     MaterialsManager.h \
-    Neighborhood.h \
     ObjectsManager.h \
     Vector3D.h \
     Particle.h \
@@ -77,24 +76,22 @@ DISTFILES += \
     Edge.h.cl \
     Face.cpp.cl \
     Face.h.cl \
-    FaceWorker.cpp.cl \
     Material.cpp.cl \
     Material.h.cl \
     MaterialsManager.cpp.cl \
     MaterialsManager.h.cl \
-    Neighborhood.cpp.cl \
-    Neighborhood.h.cl \
     Pair.h.cl \
     Particle.cpp.cl \
     Particle.h.cl \
-    ParticleWorker.cpp.cl \
     Scenery.h.cl \
     Simulation.cpp.cl \
     Simulation.h.cl \
     TestBox.cpp.cl \
+    Utils.cpp.cl \
     Vector.cpp.cl \
     Vertex.cpp.cl \
-    Vertex.h.cl
+    Vertex.h.cl \
+    Workers.cpp.cl
 
 LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
 

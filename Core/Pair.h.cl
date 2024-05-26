@@ -5,6 +5,7 @@ typedef struct
 {
     uint first;
     uint second;
+    bool isNeighbor;
 } Pair;
 
 #endif // PAIR_H_CL

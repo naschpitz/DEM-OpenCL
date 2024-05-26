@@ -29,14 +29,22 @@ FaceCL Face::getCL(uint index, uint materialIndex) const
     faceCL.area = this->area;
     faceCL.mass = this->mass;
 
-    faceCL.currentPosition = {this->currentPosition.getX(), this->currentPosition.getY(), this->currentPosition.getZ(), 0};
-    faceCL.currentVelocity = {this->currentVelocity.getX(), this->currentVelocity.getY(), this->currentVelocity.getZ(), 0};
+    faceCL.currentPosition = {{this->currentPosition.getX(), this->currentPosition.getY(), this->currentPosition.getZ(), 0}};
+    faceCL.currentVelocity = {{this->currentVelocity.getX(), this->currentVelocity.getY(), this->currentVelocity.getZ(), 0}};
 
-    faceCL.currentForce = {this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0};
-    faceCL.oldForce     = {this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0};
+    faceCL.currentForceX = this->currentForce.getX();
+    faceCL.currentForceY = this->currentForce.getY();
+    faceCL.currentForceZ = this->currentForce.getZ();
 
-    faceCL.currentTorque = {this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0};
-    faceCL.oldTorque     = {this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0};
+    faceCL.currentForce = {{this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0}};
+    faceCL.oldForce     = {{this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0}};
+
+    faceCL.currentTorqueX = this->currentTorque.getX();
+    faceCL.currentTorqueY = this->currentTorque.getY();
+    faceCL.currentTorqueZ = this->currentTorque.getZ();
+
+    faceCL.currentTorque = {{this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0}};
+    faceCL.oldTorque     = {{this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0}};
 
     for(int i = 0; i < 3; i++) {
         faceCL.vertexes[i] = this->vertexes[i].getCL();

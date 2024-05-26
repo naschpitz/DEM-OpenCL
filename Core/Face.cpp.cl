@@ -5,6 +5,7 @@
 #include "../Particle.h.cl"
 
 #include "../Edge.cpp.cl"
+#include "../Utils.cpp.cl"
 #include "../Vector.cpp.cl"
 #include "../Vertex.cpp.cl"
 
@@ -14,6 +15,20 @@ void face_addCurrentForce(Face* face, const float4* force, const float4* pointOf
 
     float4 r = (*pointOfForce) - face->currentPosition;
     face->currentTorque += cross(r, (*force));
+}
+
+void face_atomicAddCurrentForce(volatile global Face* face, const float4* force, const float4* pointOfForce)
+{
+    atomic_add_float(&(face->currentForceX), force->x);
+    atomic_add_float(&(face->currentForceY), force->y);
+    atomic_add_float(&(face->currentForceZ), force->z);
+
+    float4 r = (*pointOfForce) - face->currentPosition;
+    float4 torque = cross(r, (*force));
+
+    atomic_add_float(&(face->currentTorqueX), torque.x);
+    atomic_add_float(&(face->currentTorqueY), torque.y);
+    atomic_add_float(&(face->currentTorqueZ), torque.z);
 }
 
 void face_getBox(const Face* face, float4* min, float4* max)
@@ -27,7 +42,7 @@ void face_getBox(const Face* face, float4* min, float4* max)
     minZ = maxZ = face->vertexes[0].currentPosition.z;
 
     for(int i = 0; i < 3; i++) {
-        const float4 *position = &(face->vertexes[i].currentPosition);
+        const float4* position = &(face->vertexes[i].currentPosition);
 
         if(position->x < minX) minX = position->x;
         if(position->x > maxX) maxX = position->x;
@@ -48,7 +63,7 @@ void face_getBox(const Face* face, float4* min, float4* max)
     max->z = maxZ;
 }
 
-void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace, float4* closestOnOtherParticle)
+void face_getClosestTo(volatile global const Face* thisFace, volatile global const Particle* otherParticle, float4* closestOnThisFace, float4* closestOnOtherParticle)
 {
     float4 p1 = thisFace->vertexes[0].currentPosition;
     float4 p2 = thisFace->vertexes[1].currentPosition;
@@ -120,6 +135,9 @@ float4 face_getCurrentAcceleration(Face* face)
 
 void face_integrate(Face* face, float timeStep)
 {
+    face->currentForce = (float4)(face->currentForce.x, face->currentForce.y, face->currentForce.z, 0);
+    face->currentTorque = (float4)(face->currentTorque.x, face->currentTorque.y, face->currentTorque.z, 0);
+
     float4 currentAcceleration = face_getCurrentAcceleration(face);
 
     for(int i = 0; i < 3; i++) {

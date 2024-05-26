@@ -3,14 +3,13 @@
 #endif
 
 #ifndef CL_HPP_TARGET_OPENCL_VERSION
-#define CL_HPP_TARGET_OPENCL_VERSION 210
+#define CL_HPP_TARGET_OPENCL_VERSION 300
 #endif
 
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
 #include "nlohmann/json.hpp"
-#include "Neighborhood.h"
 #include "Vertex.h"
 
 #include <QString>
@@ -27,15 +26,15 @@ typedef struct
     cl_float volume;
     cl_float inertiaMomentum;
 
+    cl_float currentForceX, currentForceY, currentForceZ;
     cl_float4 currentForce;
     cl_float4 oldForce;
 
+    cl_float currentTorqueX, currentTorqueY, currentTorqueZ;
     cl_float4 currentTorque;
     cl_float4 oldTorque;
 
     VertexCL vertex;
-
-    ParticleNeighborhoodCL neighborhood;
 } ParticleCL;
 
 class Particle : public Vertex
@@ -50,9 +49,11 @@ class Particle : public Vertex
         double volume;
         double inertiaMomentum;
 
+        float currentForceX, currentForceY, currentForceZ;
         Vector3D currentForce;
         Vector3D oldForce;
 
+        float currentTorqueX, currentTorqueY, currentTorqueZ;
         Vector3D currentTorque;
         Vector3D oldTorque;
 

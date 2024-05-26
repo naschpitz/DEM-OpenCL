@@ -1,11 +1,11 @@
-#ifndef PARTICLEWORKER_CPP_CL
-#define PARTICLEWORKER_CPP_CL
+#ifndef WORKERS_CPP_CL
+#define WORKERS_CPP_CL
 
 #include "../Face.cpp.cl"
 #include "../Material.cpp.cl"
 #include "../Particle.cpp.cl"
 
-void particleToParticleWorker_run(Particle* thisParticle, Particle* otherParticle, const Material* material)
+void particleToParticleWorker_run(volatile global Particle* thisParticle, volatile global Particle* otherParticle, const Material* material)
 {
     float4 closestOnThisParticle, closestOnOtherParticle;
 
@@ -35,12 +35,16 @@ void particleToParticleWorker_run(Particle* thisParticle, Particle* otherParticl
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
     float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    float4 totalForce = - (force + dragForce);
+    float4 totalForce;
 
-    particle_atomicAddCurrentForce(thisParticle, otherParticle, &totalForce, &closestOnThisParticle);
+    totalForce = -(force + dragForce);
+    particle_atomicAddCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+
+    totalForce = -totalForce;
+    particle_atomicAddCurrentForce(otherParticle, &totalForce, &closestOnOtherParticle);
 }
 
-bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
+void particleToFaceWorker_run(volatile global Particle* thisParticle, volatile global Face* otherFace, const Material* material)
 {
     float4 closestOnThisParticle, closestOnOtherFace;
 
@@ -52,7 +56,7 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     bool internal = particle_isInternal(thisParticle, closestOnOtherFace);
 
     if((length(distance) > material->distanceThreshold) && !internal)
-        return false;
+        return;
 
     float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 
@@ -69,11 +73,13 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
     float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    float4 totalForce = - (force + dragForce);
+    float4 totalForce;
 
-    particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+    totalForce = -(force + dragForce);
+    particle_atomicAddCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
 
-    return true;
+    // totalForce = -totalForce;
+    // face_atomicAddCurrentForce(otherFace, &totalForce, &closestOnOtherFace);
 }
 
-#endif // PARTICLEWORKER_CPP_CL
+#endif // WORKERS_CPP_CL

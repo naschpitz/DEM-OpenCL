@@ -138,20 +138,6 @@ void Simulation::initialize()
     this->scenery.initialize();
 }
 
-QVector<QPair<ulong, ulong>> Simulation::calculatePairs(ulong nElements)
-{
-    QVector<QPair<ulong, ulong>> pairs;
-
-    for(ulong i = 0; i < nElements; i++) {
-        for(ulong j = i + 1; j < nElements; j++) {
-            QPair<ulong, ulong> pair(i, j);
-            pairs.push_back(pair);
-        }
-    }
-
-    return pairs;
-}
-
 SimulationCL Simulation::getCL() const
 {
     SimulationCL simulationCL;
@@ -286,6 +272,9 @@ void Simulation::run()
     QVector<PairCL> particlesPairs = Pair::getPairsCL(particles.count());
     std::vector<PairCL> particlesPairsCL = std::vector(particlesPairs.begin(), particlesPairs.end());
 
+    QVector<PairCL> particlesFacesPairs = Pair::getPairsCL(particles.count(), faces.count());
+    std::vector<PairCL> particlesFacesPairsCL = std::vector(particlesFacesPairs.begin(), particlesFacesPairs.end());
+
     QVector<PairCL> facesPairs =  Pair::getPairsCL(faces.count());
     std::vector<PairCL> facesPairsCL = std::vector(facesPairs.begin(), facesPairs.end());
 
@@ -294,8 +283,9 @@ void Simulation::run()
     emit this->newLog("OpenCL kernel loaded");
 
     emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));
-    emit this->newLog(QString("Total number of particles pairs: %1").arg(particlesPairsCL.size()));
     emit this->newLog(QString("Total number of faces: %1").arg(facesCL.size()));
+
+    emit this->newLog(QString("Total number of particles pairs: %1").arg(particlesPairsCL.size()));
     emit this->newLog(QString("Total number of faces pairs: %1").arg(facesPairsCL.size()));
 
     emit this->newLog("Initiating objects copy to GPU's memory");
@@ -304,6 +294,10 @@ void Simulation::run()
     openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
     openClCore.writeBuffer<SimulationCL>(simulationsCL);
     openClCore.writeBuffer<SceneryCL>(sceneriesCL);
+
+    openClCore.writeBuffer<PairCL>(particlesPairsCL);
+    openClCore.writeBuffer<PairCL>(particlesFacesPairsCL);
+    openClCore.writeBuffer<PairCL>(facesPairsCL);
     emit this->newLog("Objects copy to GPU's memory done");
 
     bool hasParticles = particlesCL.size();
@@ -340,12 +334,11 @@ void Simulation::run()
     }
 
     if(hasParticles) {
-        openClCore.addKernel("calculate_particles_neighborhood", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("calculate_particles_neighborhood", particlesCL);
-        openClCore.addArgument<FaceCL>("calculate_particles_neighborhood", facesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_particles_neighborhood", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
-        openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
+        openClCore.addKernel("calculate_particle_to_particle_neighborhood", particlesPairsCL.size());
+        openClCore.addArgument<PairCL>("calculate_particle_to_particle_neighborhood", particlesPairsCL);
+        openClCore.addArgument<ParticleCL>("calculate_particle_to_particle_neighborhood", particlesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle_neighborhood", materialsManagerCL);
+        openClCore.addArgument<SimulationCL>("calculate_particle_to_particle_neighborhood", simulationsCL);
 
         openClCore.addKernel("calculate_particle_to_particle", particlesPairsCL.size());
         openClCore.addArgument<PairCL>("calculate_particle_to_particle", particlesPairsCL);
@@ -353,23 +346,33 @@ void Simulation::run()
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
     }
 
+    // Kernels not implemented yet.
+    /*
     if(hasFaces) {
-        openClCore.addKernel("calculate_faces_neighborhood", facesCL.size());
-        openClCore.addArgument<FaceCL>("calculate_faces_neighborhood", facesCL);
-        openClCore.addArgument<ParticleCL>("calculate_faces_neighborhood", particlesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_faces_neighborhood", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
-        openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
+        openClCore.addKernel("calculate_face_to_face_neighborhood", facesPairsCL.size());
+        openClCore.addArgument<PairCL>("calculate_face_to_face_neighborhood", facesPairsCL);
+        openClCore.addArgument<FaceCL>("calculate_face_to_face_neighborhood", facesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_face_neighborhood", materialsManagerCL);
+        openClCore.addArgument<SceneryCL>("calculate_face_to_face_neighborhood", sceneriesCL);
+        openClCore.addArgument<SimulationCL>("calculate_face_to_face_neighborhood", simulationsCL);
 
-        // Kernel not implemented yet.
-        // openClCore.addKernel("calculate_face_to_face", facesPairsCL.size());
-        // openClCore.addArgument<PairCL>("calculate_particle_to_particle", facesPairsCL);
-        // openClCore.addArgument<FaceCL>("calculate_particle_to_particle", facesCL);
-        // openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_face", materialsManagerCL);
+        openClCore.addKernel("calculate_face_to_face", facesPairsCL.size());
+        openClCore.addArgument<PairCL>("calculate_particle_to_particle", facesPairsCL);
+        openClCore.addArgument<FaceCL>("calculate_particle_to_particle", facesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_face", materialsManagerCL);
     }
+    */
 
     if(hasParticles && hasFaces) {
-        openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
+        openClCore.addKernel("calculate_particle_to_face_neighborhood", particlesFacesPairsCL.size());
+        openClCore.addArgument<PairCL>("calculate_particle_to_face_neighborhood", particlesFacesPairsCL);
+        openClCore.addArgument<ParticleCL>("calculate_particle_to_face_neighborhood", particlesCL);
+        openClCore.addArgument<FaceCL>("calculate_particle_to_face_neighborhood", facesCL);
+        openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face_neighborhood", materialsManagerCL);
+        openClCore.addArgument<SimulationCL>("calculate_particle_to_face_neighborhood", simulationsCL);
+
+        openClCore.addKernel("calculate_particle_to_face", particlesFacesPairsCL.size());
+        openClCore.addArgument<PairCL>("calculate_particle_to_face", particlesFacesPairsCL);
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
@@ -386,7 +389,6 @@ void Simulation::run()
         openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
         openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
     }
-
 
     if(hasParticles) {
         openClCore.addKernel("integrate_particles", particlesCL.size());
