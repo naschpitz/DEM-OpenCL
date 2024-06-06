@@ -3,7 +3,7 @@
 #endif
 
 #ifndef CL_HPP_TARGET_OPENCL_VERSION
-#define CL_HPP_TARGET_OPENCL_VERSION 210
+#define CL_HPP_TARGET_OPENCL_VERSION 300
 #endif
 
 #ifndef OPENCL_H
@@ -44,6 +44,7 @@ namespace OpenCL
             static void buildDevicesUsageMap();
 
             static const cl::Device& getAvailableDevice();
+            static void printDevicesInfo();
 
         public:
             Core(bool useMultipleGPUs = false);

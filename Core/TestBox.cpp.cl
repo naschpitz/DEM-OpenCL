@@ -82,4 +82,13 @@ bool testBox_particleToFace(const Particle* particleThis, const Face* faceOther,
     return testBoxCommon2(positionThis, &minOther, &maxOther, distanceThreshold + particleThis->radius);
 }
 
+bool testBox_faceToFace(const Face* thisFace, const Face* otherFace, float distanceThreshold)
+{
+    float4 thisMin, thisMax, otherMin, otherMax;
+    face_getBox(thisFace, &thisMin, &thisMax);
+    face_getBox(otherFace, &otherMin, &otherMax);
+
+    return testBoxCommon1(&thisMin, &thisMax, &otherMin, &otherMax, distanceThreshold);
+}
+
 #endif // TESTBOX_CPP_CL

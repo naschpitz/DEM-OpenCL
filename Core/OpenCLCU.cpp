@@ -88,13 +88,13 @@ void ComputeUnit::addKernel(const std::string& kernelName, uint nElements)
     kernel.name = kernelName;
     kernel.nElements = nElements;
 
-    std::cout << "Building kernel...\n";
+    std::cout << "Building kernel " << kernelName << "...\n";
 
     cl_int result;
     kernel.kernel = cl::Kernel(this->program, kernelName.c_str(), &result);
 
     if(result != CL_SUCCESS) {
-        std::cout << " Error creating kernel: " << result << "\n";
+        std::cout << " Error creating kernel " << kernelName << ": " << result << "\n";
         exit(1);
     }
 
@@ -108,7 +108,7 @@ void ComputeUnit::clearKernels()
 {
     this->kernels.clear();
 
-    std::cout << "Kernel cleaned\n";
+    std::cout << "Kernels cleaned\n";
     std::cout.flush();
 }
 
@@ -124,7 +124,7 @@ void ComputeUnit::run()
         cl_int result = this->queue.enqueueNDRangeKernel(it->kernel, offset, cl::NDRange(count), cl::NullRange);
 
         if(result != CL_SUCCESS) {
-            std::cout << "Error enqueueing kernel: " << result << "\n";
+            std::cout << " Error enqueueing kernel " << it->name << ": " << result << "\n";
             exit(1);
         }
 
