@@ -38,6 +38,7 @@ class Simulation : public QThread
         QHostAddress interfaceAddress;
         QString interfaceUrl;
         QString id;
+        QString instance;
 
         double currentTime;
         ulong  currentStep;
@@ -82,6 +83,7 @@ class Simulation : public QThread
         void setInterfaceUrl(const QString& interfaceUrl);
 
         const QString& getId()          const;
+        const QString& getInstance()    const;
         const double&  getCurrentTime() const;
         const ulong&   getCurrentStep() const;
 

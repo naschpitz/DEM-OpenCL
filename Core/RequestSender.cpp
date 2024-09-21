@@ -46,7 +46,9 @@ void RequestSender::newFrame()
 
     bool detailed = simulation->isPrimary();
 
-    jsonObject["owner"]   = simulation->getScenery().getId().toStdString();
+    jsonObject["owner"]    = simulation->getScenery().getId().toStdString();
+    jsonObject["instance"] = simulation->getInstance().toStdString();
+
     jsonObject["step"]    = simulation->getCurrentStep();
     jsonObject["time"]    = simulation->getCurrentTime();
     jsonObject["scenery"] = simulation->getScenery().getJson(detailed);
@@ -73,6 +75,7 @@ void RequestSender::newLog(QString message)
     nlohmann::json jsonObject;
 
     jsonObject["owner"] = simulation->getId().toStdString();
+    jsonObject["instance"] = simulation->getInstance().toStdString();
 
     QString state;
     if(simulation->isRunning()) {

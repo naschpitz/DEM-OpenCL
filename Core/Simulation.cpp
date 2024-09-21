@@ -32,6 +32,14 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     }
 
     try {
+        this->instance = QString::fromStdString(jsonObject.at("instance").get<std::string>());
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'instance' field in Simulation");
+    }
+
+    try {
         this->primary = jsonObject.at("primary").get<bool>();
     }
 
@@ -176,6 +184,11 @@ void Simulation::setInterfaceUrl(const QString& serverUrl)
 const QString& Simulation::getId() const
 {
     return this->id;
+}
+
+const QString& Simulation::getInstance() const
+{
+    return this->instance;
 }
 
 const ulong& Simulation::getCurrentStep() const
