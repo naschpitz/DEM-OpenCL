@@ -8,39 +8,43 @@
 float4 material_calculateForce(const Material* material, float4 distance, float4 distanceUnitary, bool internal, float contactArea, float originalLength, float4 oldForce)
 {
     float lengthDistance = length(distance);
+    float4 force = (float4)0;
 
     switch(material->forceType)
-    {
+    {     
         case adiabatic_compression:
         {
-            float newRadius = lengthDistance / 2.;
+            float newRadius = (lengthDistance + originalLength) / 2.;
             float newRadius2 = newRadius * newRadius;
 
-            float4 force = ((float)(material->coefficients[0] * 12.56637061 * newRadius2) * pow(pown((float)(originalLength / 2.), 3) / pown(newRadius, 3), material->coefficients[1])) * distanceUnitary;
-
-            return force;
+            force = ((float)(material->coefficients[0] * 12.56637061 * newRadius2) * pow(pown((float)(originalLength / 2.), 3) / pown(newRadius, 3), material->coefficients[1])) * distanceUnitary;
+            break;
         }
 
         case hooks_law:
-            return -(material->coefficients[0]) * distance;
+            force = -(material->coefficients[0]) * distance;
+            break;
 
         case inverse_linear:
             if (internal)
                 distanceUnitary = -distanceUnitary;
 
-            return (material->coefficients[0] / lengthDistance) * distanceUnitary;
+            force = (material->coefficients[0] / lengthDistance) * distanceUnitary;
+            break;
 
         case inverse_quadratic:
             if (internal)
                 distanceUnitary = -distanceUnitary;
 
-            return (material->coefficients[0] / (lengthDistance * lengthDistance)) * distanceUnitary;
+            force = (material->coefficients[0] / (lengthDistance * lengthDistance)) * distanceUnitary;
+            break;
 
         case inverse_cubic:
             if (internal)
                 distanceUnitary = -distanceUnitary;
 
-            return (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * distanceUnitary;
+            force = (material->coefficients[0] / (lengthDistance * lengthDistance * lengthDistance)) * distanceUnitary;
+            break;
 
         case morse:
         {
@@ -54,7 +58,8 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
             float length = lengthDistance;
 
             // https://en.wikipedia.org/wiki/Morse_potential
-            return -2 * de * a * exp(-a * length) * (1 - exp(-a * length)) * distanceUnitary;
+            force = -2 * de * a * exp(-a * length) * (1 - exp(-a * length)) * distanceUnitary;
+            break;
         }
 
         case lennard_jones:
@@ -64,7 +69,8 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
 
             // https://en.wikipedia.org/wiki/Lennard-Jones_potential (n-exp form)
             // https://www.wolframalpha.com/input/?i=d%2Fdr+-E*%28%28s%2Fr%29%5E%282*n%29+-+2*%28s%2Fr%29%5E%28n%29%29
-            return 2 * e * n * pown(originalLength, n) * pown(lengthDistance, (-2 * n) - 1) * (pown(originalLength, n) - pown(lengthDistance, n)) * distanceUnitary;
+            force = 2 * e * n * pown(originalLength, n) * pown(lengthDistance, (-2 * n) - 1) * (pown(originalLength, n) - pown(lengthDistance, n)) * distanceUnitary;
+            break;
         }
 
         case realistic_material:
@@ -75,7 +81,7 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
             float ruptureDistance = originalLength * material->coefficients[3];
 
             if(lengthDistance > ruptureDistance && !internal) // First test, easyest calculation to return value, probably most of the cases.
-                return (float4)0;
+                force = (float4)0;
 
             // Elastic regime distance limit:
             float elasticLimitDistance = originalLength * material->coefficients[1];
@@ -85,7 +91,7 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
                 float ea = material->coefficients[0] * contactArea;
                 float k = ea / originalLength;
 
-                return -k * distance;
+                force = -k * distance;
             }
 
             else {
@@ -95,15 +101,23 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
                 float plasticMaximumForce = material->coefficients[2] * contactArea;
 
                 if(length(oldForceProjection) > plasticMaximumForce)
-                    return plasticMaximumForce * vector_getUnitary(oldForceProjection);
+                    force = plasticMaximumForce * vector_getUnitary(oldForceProjection);
 
                 else
-                    return -oldForceProjection;
+                    force = -oldForceProjection;
             }
+
+            break;
         }
     }
 
-    return (float4)0;
+    int4 nan_mask = isnan(force);
+    bool any_nan = nan_mask.x || nan_mask.y || nan_mask.z || nan_mask.w;
+
+    if (any_nan)
+        return (float4)0;
+
+    return force;
 }
 
 float4 material_calculateDragForce(const Material* material, float4 velocity, float4 rotationVelocity, float4 force)
