@@ -1,5 +1,6 @@
-#include "OpenCL.h"
 #include "RequestMapper.h"
+
+#include <OpenCLWrapper/OCLW_Core.hpp>
 #include "RequestSender.h"
 
 #include "nlohmann/json.hpp"
@@ -154,7 +155,7 @@ void RequestMapper::simulationDestroyed(QObject* obj)
 
 void RequestMapper::printStatus()
 {
-    std::map<const cl::Device*, uint> &devicesUsage = OpenCL::Core::getDevicesUsage();
+    std::map<const cl::Device*, uint> &devicesUsage = OpenCLWrapper::Core::getDevicesUsage();
 
     std::cout << "\n-----------------------STATUS-----------------------\n";
     std::cout << "               " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz").toStdString() << "\n\n";

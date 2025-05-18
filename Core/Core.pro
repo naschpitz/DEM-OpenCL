@@ -22,7 +22,6 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 
 HEADERS += \
-    OpenCL.h \
     NonSolidObject.h \
     SolidObject.h \
     Material.h \
@@ -37,7 +36,6 @@ HEADERS += \
     Face.h \
     RequestMapper.h \
     RequestSender.h \
-    OpenCLCU.h \
     OpenCLKernel.h \
     LogSender.h \
     FrameSender.h \
@@ -47,7 +45,6 @@ HEADERS += \
 
 SOURCES += \
     main.cpp \
-    OpenCL.cpp \
     Vertex.cpp \
     Particle.cpp \
     NonSolidObject.cpp \
@@ -61,7 +58,6 @@ SOURCES += \
     Face.cpp \
     RequestMapper.cpp \
     RequestSender.cpp \
-    OpenCLCU.cpp \
     LogSender.cpp \
     FrameSender.cpp \
     EasyZLib.cpp \
@@ -95,20 +91,23 @@ DISTFILES += \
 
 LIBS+= -lcurl -lOpenCL -L/usr/local/lib -lrestclient-cpp
 
-## TetGen Library
-unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.1/ -ltet
-
 INCLUDEPATH += $$PWD/../libs
 DEPENDPATH += $$PWD/../libs
+
+## OpenCLWrapper Library
+unix:!macx: LIBS += -L$$PWD/../libs/OpenCLWrapper/ -lOpenCLWrapper
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/OpenCLWrapper/libOpenCLWrapper.a
+
+
+## TetGen Library
+unix:!macx: LIBS += -L$$PWD/../libs/tetgen1.5.1/ -ltet
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/tetgen1.5.1/libtet.a
 
 
 ## EasyZLib Library
 unix:!macx: LIBS += -L$$PWD/../libs/easyzlib/ -leasyzlib
-
-INCLUDEPATH += $$PWD/../libs
-DEPENDPATH += $$PWD/../libs
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../libs/easyzlib/libeasyzlib.a
 

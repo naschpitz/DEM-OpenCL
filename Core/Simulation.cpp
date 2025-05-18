@@ -6,8 +6,9 @@
 #include <QTextStream>
 #include <iostream>
 
+#include <OpenCLWrapper/OCLW_Core.hpp>
+
 #include "RequestSender.h"
-#include "OpenCL.h"
 #include "Particle.h"
 
 Simulation::Simulation()
@@ -279,7 +280,7 @@ void Simulation::run()
 
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
 
-    OpenCL::Core openClCore(this->multiGPU);
+    OpenCLWrapper::Core openClCore(this->multiGPU);
 
     emit this->newLog("Loading OpenCL kernel");
     openClCore.addSourceFile("../Simulation.cpp.cl");
@@ -315,8 +316,8 @@ void Simulation::run()
         openClCore.run();
         openClCore.clearKernels();
 
-        openClCore.syncDevicesBuffers(particlesCL);
-        openClCore.syncDevicesBuffers(facesCL);
+	openClCore.syncDevicesBuffers(particlesCL);
+	openClCore.syncDevicesBuffers<FaceCL>(facesCL);
     }
 
     if(hasParticles) {

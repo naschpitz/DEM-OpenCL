@@ -2,9 +2,10 @@
 #include <QDir>
 #include <QString>
 
+#include <OpenCLWrapper/OCLW_Core.hpp>
+
 #include "Common.h"
 #include "httplistener.h"
-#include "OpenCL.h"
 #include "RequestMapper.h"
 #include "Simulation.h"
 
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
 
     std::setlocale(LC_NUMERIC, "C");
 
-    OpenCL::Core::initialize();
+    OpenCLWrapper::Core::initialize();
 
     QString configFileName = Common::searchConfigFile();
 
