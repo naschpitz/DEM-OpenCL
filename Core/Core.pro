@@ -22,7 +22,9 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 
 HEADERS += \
+    Deflater.h \
     NonSolidObject.h \
+    Pigz.h \
     SolidObject.h \
     Material.h \
     Vertex.h \
@@ -44,6 +46,8 @@ HEADERS += \
     Common.h
 
 SOURCES += \
+    Deflater.cpp \
+    Pigz.cpp \
     main.cpp \
     Vertex.cpp \
     Particle.cpp \

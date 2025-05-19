@@ -47,7 +47,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
             }
 
             catch (const std::runtime_error& e) {
-                std::cout << e.what() << "\n";
+                std::cout << e.what() << std::endl;
                 std::cout.flush();
                 response.setStatus(402);
                 response.write(e.what());
@@ -162,7 +162,7 @@ void RequestMapper::printStatus()
 
     std::cout << "There are " << this->getTotalSimulations() << " Simulations instantiated\n";
     std::cout << "There are " << this->getRunningSimulations() << " Simulations running\n";
-    std::cout << "\n";
+    std::cout << std::endl;
 
     for(auto it = devicesUsage.begin(); it != devicesUsage.end(); it++) {
         uint deviceIndex = std::distance(devicesUsage.begin(), it);

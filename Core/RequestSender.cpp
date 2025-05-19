@@ -58,14 +58,15 @@ void RequestSender::newFrame()
     QString filename = QUuid::createUuid().toString(QUuid::WithoutBraces);
     const QString& framesDir = this->frameSender.getFramesDir();
 
-    QFile file = QFile(framesDir + filename);
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    file.write(data);
-    file.flush();
+    QSharedPointer<QFile> file = QSharedPointer<QFile>::create(framesDir + filename + ".json");
+    file->open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file->write(data);
+    file->flush();
+    file->close();
 
     QString url = this->getInterfaceAddress(simulation) + "/api/frames";
 
-    this->frameSender.send(url, filename);
+    this->frameSender.send(url, file);
 }
 
 void RequestSender::newLog(QString message)

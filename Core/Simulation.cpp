@@ -137,7 +137,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 
 Simulation::~Simulation()
 {
-    std::cout << "Simulation destroyed!" << "\n";
+    std::cout << "Simulation destroyed!" << std::endl;
     std::cout.flush();
 }
 
