@@ -94,6 +94,14 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     }
 
     try {
+        this->detailedFramesDiv = jsonObject.at("detailedFramesDiv").get<long>();
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+        throw std::runtime_error("Missing 'detailedFramesDiv' field in Simulation");
+    }
+
+    try {
         this->calcNeighTimeInt = jsonObject.at("calcNeighTimeInt").get<double>();
         this->calcNeighStepsInt = qRound(this->calcNeighTimeInt / this->timeStep);
     }
@@ -130,7 +138,7 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     }
 
     connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(newFrame()), &(RequestSender::getInstance()), SLOT(newFrame()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newFrame(bool)), &(RequestSender::getInstance()), SLOT(newFrame(bool)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
@@ -415,8 +423,14 @@ void Simulation::run()
             this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
             this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
+            bool isDetailed = false;
+
+	    if (this->isPrimary()) {
+		isDetailed = this->currentStep % (frameSteps * this->detailedFramesDiv) == 0;
+	    }
+
             emit this->newLog("New frame");
-            emit this->newFrame();
+            emit this->newFrame(isDetailed);
         }
 
         ulong mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());

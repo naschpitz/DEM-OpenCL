@@ -31,6 +31,8 @@ class FrameSender : public QThread
 
 	Deflater deflater;
 
+	void sendFrame(const QString& url, QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair);
+
     protected:
         void run();
 

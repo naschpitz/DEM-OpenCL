@@ -38,20 +38,19 @@ RequestSender& RequestSender::getInstance()
     return instance;
 }
 
-void RequestSender::newFrame()
+void RequestSender::newFrame(bool detailed)
 {    
     Simulation *simulation = (Simulation*)QObject::sender();
 
     nlohmann::json jsonObject;
 
-    bool detailed = simulation->isPrimary();
-
     jsonObject["owner"]    = simulation->getScenery().getId().toStdString();
     jsonObject["instance"] = simulation->getInstance().toStdString();
 
-    jsonObject["step"]    = simulation->getCurrentStep();
-    jsonObject["time"]    = simulation->getCurrentTime();
-    jsonObject["scenery"] = simulation->getScenery().getJson(detailed);
+    jsonObject["detailed"] = detailed;
+    jsonObject["step"]     = simulation->getCurrentStep();
+    jsonObject["time"]     = simulation->getCurrentTime();
+    jsonObject["scenery"]  = simulation->getScenery().getJson(detailed);
 
     QByteArray data = QByteArray::fromStdString(jsonObject.dump());
 

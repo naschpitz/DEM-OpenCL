@@ -26,14 +26,25 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
     QByteArray path = request.getPath();
 
     if(path.startsWith("/simulations/start")) {
+        response.setStatus(204);
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
 
         try {
             QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+            QString instance = QString::fromStdString(jsonObject.at("instance").get<std::string>());
 
             Simulation* simulation = this->getSimulationById(_id);
+
+            std::cout << "Simulation id: " << _id.toStdString() << " start order received" << std::endl;
+
+	    // The means the current simulation has been invalidated in the webserver.
+	    if (simulation && simulation->getInstance() != instance) {
+		std::cout << "Different instance received, stopping the old one" << std::endl;
+		simulation->stop();
+		simulation = NULL; // Invalidate the lcoal pointer, as it is going to be destryoed soon be it own thread.
+	    }
 
             try {
                 simulation = simulation ? simulation : new Simulation(jsonObject);
@@ -61,6 +72,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
     }
 
     if(path.startsWith("/simulations/pause")) {
+        response.setStatus(204);
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
@@ -91,6 +103,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
     }
 
     if(path.startsWith("/simulations/stop")) {
+        response.setStatus(204);
         response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
         nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());

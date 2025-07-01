@@ -5,6 +5,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QSharedPointer>
+#include <QtConcurrent/QtConcurrent>
 #include <iostream>
 
 #include "restclient-cpp/restclient.h"
@@ -60,76 +61,77 @@ void FrameSender::run()
         bool isDeflatedFilePairsEmpty = this->deflatedFilePairs.isEmpty();
         this->mutex.unlock();
 
-        QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair;
-
-        if (!isDeflatedFilePairsEmpty) {
-            this->mutex.lock();
-            deflatedFilePair = this->deflatedFilePairs.first();
-            this->mutex.unlock();
-        }
-
-        else {
-            this->sleep(1);
-            continue;
-        }
-
-        QSharedPointer<QFile> inflatedFile = deflatedFilePair.first;
-        QSharedPointer<QFile> deflatedFile = deflatedFilePair.second;
-
-	this->mutex.lock();
-	auto inflatedFilePairIterator = std::find_if(this->inflatedFilePairs.begin(), this->inflatedFilePairs.end(), [&](const QPair<QString, QSharedPointer<QFile>>& inflatedFilePair) {
-	    return inflatedFilePair.second == inflatedFile;
-	});
-
-	if (inflatedFilePairIterator == this->inflatedFilePairs.end()) {
-	    this->mutex.unlock();
-	    std::cout << "Something went wrong when searching for the inflatedFilePair" << std::endl;
+	if (isDeflatedFilePairsEmpty) {
+	    this->sleep(1);
 	    continue;
 	}
 
-	QString url = inflatedFilePairIterator->first;
+	this->mutex.lock();
+
+	QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair = this->deflatedFilePairs.takeFirst();
+
+	QString url;
+
+	auto it = std::find_if(this->inflatedFilePairs.begin(), this->inflatedFilePairs.end(), [&](const QPair<QString, QSharedPointer<QFile>>& pair) {
+	    return pair.second == deflatedFilePair.first;
+	});
+
+	if (it != this->inflatedFilePairs.end()) {
+	    url = it->first;
+	}
+
 	this->mutex.unlock();
 
-	bool result = deflatedFile->open(QIODevice::ReadOnly);
+	// Dispatch to thread pool for concurrent sending
+	QtConcurrent::run([this, url, deflatedFilePair]() {
+	    sendFrame(url, deflatedFilePair);
+	});
+    }
+}
 
-        if (result) {
-            QByteArray data = deflatedFile->readAll();
-            deflatedFile->close();
+void FrameSender::sendFrame(const QString& url, QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair)
+{
+    QSharedPointer<QFile> inflatedFile = deflatedFilePair.first;
+    QSharedPointer<QFile> deflatedFile = deflatedFilePair.second;
 
-            std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "Sending frame, size: " << data.size() << " to " << url.toStdString() << std::endl;
-            RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/gzip", data.toStdString());
-            std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString() << "Frame sent: " << r.code << " - " <<  r.body << std::endl;
-            std::cout.flush();
-
-            // If the package was successfully sent, remove the pair that originated it from the buffer.
-            if (r.code == 200 && r.body == "OK") {
-                this->mutex.lock();
-
-		auto inflatedFilePairIterator = std::find_if(this->inflatedFilePairs.begin(), this->inflatedFilePairs.end(), [&](const QPair<QString, QSharedPointer<QFile>>& inflatedFilePair) {
-		    return inflatedFilePair.second == inflatedFile;
-		});
-
-		if (inflatedFilePairIterator == this->inflatedFilePairs.end()) {
-		    this->mutex.unlock();
-		    std::cout << "Something went wrong when searching for the inflatedFilePair (200)" << std::endl;
-		    continue;
-		}
-
-                this->inflatedFilePairs.erase(inflatedFilePairIterator);
-                this->deflatedFilePairs.removeFirst();
-                deflatedFile->remove();
-
-                this->mutex.unlock();
-            }
-
-            else {
-                this->sleep(1);
-            }
+    while (true) {
+        if (!deflatedFile->open(QIODevice::ReadOnly)) {
+            std::cout << "Failed to open deflated file. Retrying in 1s..." << std::endl;
+            QThread::sleep(1);
+            continue;
         }
 
-	else {
-	    std::cout << "Something went wrong when opening the deflated file" << std::endl;
-	    continue;
+	QByteArray data = deflatedFile->readAll();
+	deflatedFile->close();
+
+	std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
+		  << "Sending frame (" << data.size() << " bytes) to " << url.toStdString() << std::endl;
+
+	RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/gzip", data.toStdString());
+
+	if (r.code == 200 && r.body == "OK") {
+	    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
+		      << "Frame sent successfully." << std::endl;
+
+	    this->mutex.lock();
+
+	    // Remove from internal queues
+	    auto it = std::find_if(this->inflatedFilePairs.begin(), this->inflatedFilePairs.end(),
+				   [&](const QPair<QString, QSharedPointer<QFile>>& pair) {
+				       return pair.second == inflatedFile;
+				   });
+
+	    if (it != this->inflatedFilePairs.end())
+		this->inflatedFilePairs.erase(it);
+
+	    deflatedFile->remove();
+	    this->mutex.unlock();
+
+	    break; // Exit the retry loop
+	} else {
+	    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
+		      << "Failed to send frame. Retrying in 1s..." << std::endl;
+	    QThread::sleep(1);
 	}
     }
 }

@@ -49,6 +49,7 @@ class Simulation : public QThread
 
         double frameTime;
         double logTime;
+        ulong detailedFramesDiv;
 
         double calcNeighTimeInt;
         ulong  calcNeighStepsInt;
@@ -111,8 +112,8 @@ class Simulation : public QThread
         void selfDelete();
 
     signals:
-        void newFrame();
-        void newLog(QString message = QString());
+        void newFrame(bool isDetailed);
+        void newLog(QString message);
 };
 
 #endif // SIMULATION_H

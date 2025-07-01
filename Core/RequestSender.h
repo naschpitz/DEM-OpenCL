@@ -20,7 +20,7 @@ class RequestSender : public QObject
         static RequestSender& getInstance();
 
     public slots:
-        void newFrame();
+        void newFrame(bool detailed = true);
         void newLog(QString message = QString());
 
     private:
