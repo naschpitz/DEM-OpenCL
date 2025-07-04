@@ -51,7 +51,7 @@ class FrameSender : public QThread
         void run();
 
     public slots:
-        void fileDeflated(QPair<QSharedPointer<QFile>, QSharedPointer<QFile>>);
+        void fileDeflated(QSharedPointer<QFile> inflatedFile, QSharedPointer<QFile> deflatedFile);
 };
 
 #endif // FRAMESENDER_H

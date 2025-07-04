@@ -7,9 +7,23 @@ Deflater::Deflater() {
 
 }
 
-void Deflater::deflate(QSharedPointer<QFile> inflatedFile) {
+void Deflater::deflate(QSharedPointer<QFile> file) {
+    DeflationTask task;
+    task.type = FileData;
+    task.data = QVariant::fromValue(file);
+
     this->mutex.lock();
-    this->inflatedFiles.push_back(inflatedFile);
+    this->deflationQueue.push_back(task);
+    this->mutex.unlock();
+}
+
+void Deflater::deflate(QSharedPointer<QByteArray> data) {
+    DeflationTask task;
+    task.type = MemoryData;
+    task.data = QVariant::fromValue(data);
+
+    this->mutex.lock();
+    this->deflationQueue.push_back(task);
     this->mutex.unlock();
 }
 
@@ -17,52 +31,51 @@ void Deflater::run()
 {
     while (true) {
         this->mutex.lock();
-        bool isInflatedFilesEmpty = this->inflatedFiles.empty();
+        bool isQueueEmpty = this->deflationQueue.isEmpty();
         this->mutex.unlock();
 
-        QSharedPointer<QFile> inflatedFile;
+        if (isQueueEmpty) {
+            this->msleep(100);
+            continue;
+        }
 
-	if (!isInflatedFilesEmpty) {
-	    this->mutex.lock();
-	    inflatedFile = this->inflatedFiles.first();
-	    this->mutex.unlock();
-	}
+        this->mutex.lock();
+        DeflationTask task = this->deflationQueue.first();
+        this->deflationQueue.removeFirst();
+        this->mutex.unlock();
 
-	else {
-	    this->msleep(100);
-	    continue;
-	}
+        if (task.type == FileData) {
+            // Handle file deflation
+            QSharedPointer<QFile> inflatedFile = task.data.value<QSharedPointer<QFile>>();
 
-	bool result = inflatedFile->open(QIODevice::ReadOnly);
+            if (inflatedFile->open(QIODevice::ReadOnly)) {
+                QByteArray inflatedData = inflatedFile->readAll();
+                inflatedFile->close();
 
-	if (result) {
-	    QByteArray inflatedData = inflatedFile->readAll();
-	    inflatedFile->close();
+                QByteArray deflatedData = Pigz::deflate(inflatedData);
 
-	    QByteArray deflatedData = Pigz::deflate(inflatedData);
+                QString inflatedFilename = inflatedFile->fileName();
+                QString deflatedFilename = inflatedFilename;
+                deflatedFilename.chop(5); // Remove ".json"
+                deflatedFilename += ".gz";
 
-	    QString inflatedFilename = inflatedFile->fileName();
-	    QString defatedFilename = inflatedFilename;
-	    defatedFilename.chop(5); // Remove ".json"
-	    defatedFilename += ".gz";
+                QSharedPointer<QFile> deflatedFile = QSharedPointer<QFile>::create(deflatedFilename);
+                deflatedFile->open(QIODevice::WriteOnly | QIODevice::Truncate);
+                deflatedFile->write(deflatedData);
+                deflatedFile->flush();
+                deflatedFile->close();
 
-	    QSharedPointer<QFile> deflatedFile = QSharedPointer<QFile>::create(defatedFilename);
-	    deflatedFile->open(QIODevice::WriteOnly | QIODevice::Truncate);
-	    deflatedFile->write(deflatedData);
-	    deflatedFile->flush();
-	    deflatedFile->close();
+                emit this->fileDeflated(inflatedFile, deflatedFile);
+            } else {
+                std::cout << "Something went wrong when opening the inflated file" << std::endl;
+            }
+        } else if (task.type == MemoryData) {
+            // Handle memory deflation
+            QSharedPointer<QByteArray> inflatedData = task.data.value<QSharedPointer<QByteArray>>();
+            QByteArray deflatedDataRaw = Pigz::deflate(*inflatedData);
+            QSharedPointer<QByteArray> deflatedData = QSharedPointer<QByteArray>::create(deflatedDataRaw);
 
-	    QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair = qMakePair(inflatedFile, deflatedFile);
-
-	    emit this->fileDeflated(deflatedFilePair);
-
-	    // Remove from the list of files to be deflated
-	    this->inflatedFiles.removeFirst();
-	}
-
-	else {
-	    std::cout << "Something went wrong when opening the inflated file" << std::endl;
-	    continue;
-	}
+            emit this->dataDeflated(inflatedData, deflatedData);
+        }
     }
 }

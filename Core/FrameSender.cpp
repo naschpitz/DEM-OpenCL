@@ -14,7 +14,7 @@
 
 FrameSender::FrameSender()
 {
-    connect(&this->deflater, SIGNAL(fileDeflated(QPair<QSharedPointer<QFile>, QSharedPointer<QFile>>)), this, SLOT(fileDeflated(QPair<QSharedPointer<QFile>, QSharedPointer<QFile>>)), Qt::BlockingQueuedConnection);
+    connect(&this->deflater, SIGNAL(fileDeflated(QSharedPointer<QFile>, QSharedPointer<QFile>)), this, SLOT(fileDeflated(QSharedPointer<QFile>, QSharedPointer<QFile>)), Qt::BlockingQueuedConnection);
 }
 
 void FrameSender::setFramesDir(const QString &framesDir)
@@ -93,10 +93,8 @@ void FrameSender::send(const Simulation* simulation, QSharedPointer<QFile> file)
     this->start();
 }
 
-void FrameSender::fileDeflated(QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair)
+void FrameSender::fileDeflated(QSharedPointer<QFile> inflatedFile, QSharedPointer<QFile> deflatedFile)
 {
-    QSharedPointer<QFile> inflatedFile = deflatedFilePair.first;
-    QSharedPointer<QFile> deflatedFile = deflatedFilePair.second;
 
     // Remove the file immediately to free disk space, no need to keep it.
     inflatedFile->remove();
