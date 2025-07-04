@@ -29,7 +29,7 @@ void Deflater::run()
 	}
 
 	else {
-	    this->sleep(1);
+	    this->msleep(100);
 	    continue;
 	}
 

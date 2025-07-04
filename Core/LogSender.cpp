@@ -40,7 +40,7 @@ void LogSender::run()
         }
 
         else {
-            this->sleep(1);
+            this->msleep(100);
             continue;
         }
 
@@ -62,7 +62,7 @@ void LogSender::run()
         }
 
         else {
-            this->sleep(1);
+            this->msleep(100);
         }
     }
 }

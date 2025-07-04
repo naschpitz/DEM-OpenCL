@@ -130,7 +130,7 @@ void FrameSender::run()
         this->mutex.unlock();
 
         if (isDeflatedFramesEmpty) {
-            this->sleep(1);
+            this->msleep(100);
             continue;
         }
 
@@ -153,7 +153,7 @@ void FrameSender::sendFrame(const FrameData& frameData)
     while (true) {
         if (!deflatedFile->open(QIODevice::ReadOnly)) {
             std::cout << "Failed to open deflated file. Retrying in 1s..." << std::endl;
-            QThread::sleep(1);
+            QThread::msleep(100);
             continue;
         }
 
@@ -188,7 +188,7 @@ void FrameSender::sendFrame(const FrameData& frameData)
         } else {
             std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
                 << "Failed to send frame. Retrying in 1s..." << std::endl;
-            QThread::sleep(1);
+            QThread::msleep(100);
         }
     }
 }
