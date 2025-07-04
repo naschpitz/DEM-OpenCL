@@ -62,7 +62,7 @@ void LogSender::run()
         }
 
         else {
-            this->sleep(5);
+            this->sleep(1);
         }
     }
 }

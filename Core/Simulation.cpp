@@ -429,7 +429,6 @@ void Simulation::run()
 		isDetailed = this->currentStep % (frameSteps * this->detailedFramesDiv) == 0;
 	    }
 
-            emit this->newLog("New frame");
             emit this->newFrame(isDetailed);
         }
 
@@ -462,11 +461,19 @@ void Simulation::run()
         this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
         this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
+        // Wait for all frames to be sent before declaring simulation paused
+        emit this->newLog("Waiting for all frames to be sent...");
+        RequestSender::getInstance().waitForAllFramesSent(this);
+
         emit this->newLog("Simulation paused");
     }
 
     if(this->isStopped())
         emit this->newLog("Simulation stopped");
+
+    // Wait for all frames to be sent before declaring simulation ended
+    emit this->newLog("Waiting for all frames to be sent...");
+    RequestSender::getInstance().waitForAllFramesSent(this);
 
     emit this->newLog("Simulation ended");
 }

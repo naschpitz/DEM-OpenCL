@@ -48,17 +48,14 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
 
         case morse:
         {
-            if (internal)
-                distanceUnitary = -distanceUnitary;
-
             float de = material->coefficients[0];
             float ke = material->coefficients[1];
 
             float a = sqrt(ke / (2 * de));
-            float length = lengthDistance;
+            lengthDistance = internal ? -lengthDistance : lengthDistance;
 
             // https://en.wikipedia.org/wiki/Morse_potential
-            force = -2 * de * a * exp(-a * length) * (1 - exp(-a * length)) * distanceUnitary;
+            force = 2 * de * a * (1 - exp(a * lengthDistance)) * exp(-2 * a * lengthDistance) * distanceUnitary;
             break;
         }
 
@@ -66,6 +63,8 @@ float4 material_calculateForce(const Material* material, float4 distance, float4
         {
             float e = material->coefficients[0];
             float n = material->coefficients[1];
+
+            lengthDistance = internal ? originalLength - lengthDistance : originalLength + lengthDistance;
 
             // https://en.wikipedia.org/wiki/Lennard-Jones_potential (n-exp form)
             // https://www.wolframalpha.com/input/?i=d%2Fdr+-E*%28%28s%2Fr%29%5E%282*n%29+-+2*%28s%2Fr%29%5E%28n%29%29

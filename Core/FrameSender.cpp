@@ -1,9 +1,11 @@
 #include "EasyZLib.h"
 #include "FrameSender.h"
 #include "Sender.h"
+#include "Simulation.h"
 
 #include <QDateTime>
 #include <QFile>
+#include <QHostAddress>
 #include <QSharedPointer>
 #include <QtConcurrent/QtConcurrent>
 #include <iostream>
@@ -27,17 +29,65 @@ const QString& FrameSender::getFramesDir() const
     return this->framesDir;
 }
 
-void FrameSender::send(const QString& url, QSharedPointer<QFile> file)
+bool FrameSender::hasFramesToSend(const Simulation* simulation) const
 {
-    QPair<QString, QSharedPointer<QFile>> inflatedFilePair = qMakePair(url, file);
+    QMutexLocker locker(&this->mutex);
+
+    // Check inflated frames
+    for (const FrameData& frameData : this->inflatedFrames) {
+        if (frameData.simulation == simulation) {
+            return true;
+        }
+    }
+
+    // Check deflated frames
+    for (const FrameData& frameData : this->deflatedFrames) {
+        if (frameData.simulation == simulation) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void FrameSender::waitForAllFramesSent(const Simulation* simulation)
+{
+    while (this->hasFramesToSend(simulation)) {
+        // Sleep for a short time to avoid busy waiting
+        QThread::msleep(100);
+    }
+}
+
+QString FrameSender::getUrlForSimulation(const Simulation* simulation) const
+{
+    // For now, we'll need to access the RequestSender's logic
+    // This is a temporary solution - ideally we'd refactor this
+    QHostAddress interfaceAddress = simulation->getInterfaceAddress();
+    QString baseUrl;
+
+    // This logic is duplicated from RequestSender::getInterfaceAddress
+    // TODO: Refactor to avoid duplication
+    if(interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
+        baseUrl = "localhost:8000";
+    }
+    else if(QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
+        baseUrl = QHostAddress(interfaceAddress.toIPv4Address()).toString() + ":8000";
+    }
+
+    return baseUrl + "/api/frames";
+}
+
+void FrameSender::send(const Simulation* simulation, QSharedPointer<QFile> file)
+{
+    FrameData frameData;
+    frameData.simulation = simulation;
+    frameData.file = file;
 
     this->mutex.lock();
-    this->inflatedFilePairs.push_back(inflatedFilePair);
+    this->inflatedFrames.push_back(frameData);
     this->mutex.unlock();
 
-    QSharedPointer<QFile> inflatedFile = inflatedFilePair.second;
-
-    this->deflater.deflate(inflatedFile);
+    this->deflater.deflate(file);
     this->deflater.start();
 
     this->start();
@@ -46,11 +96,29 @@ void FrameSender::send(const QString& url, QSharedPointer<QFile> file)
 void FrameSender::fileDeflated(QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair)
 {
     QSharedPointer<QFile> inflatedFile = deflatedFilePair.first;
+    QSharedPointer<QFile> deflatedFile = deflatedFilePair.second;
+
     // Remove the file immediately to free disk space, no need to keep it.
     inflatedFile->remove();
 
     this->mutex.lock();
-    this->deflatedFilePairs.push_back(deflatedFilePair);
+
+    // Find the corresponding frame data
+    auto it = std::find_if(this->inflatedFrames.begin(), this->inflatedFrames.end(),
+                          [&](const FrameData& frameData) {
+                              return frameData.file == inflatedFile;
+                          });
+
+    if (it != this->inflatedFrames.end()) {
+        FrameData frameData = *it;
+        // Update the file reference to point to the deflated file
+        frameData.file = deflatedFile;
+        this->deflatedFrames.push_back(frameData);
+
+        // Remove from inflated frames since it's now deflated
+        this->inflatedFrames.erase(it);
+    }
+
     this->mutex.unlock();
 }
 
@@ -58,41 +126,29 @@ void FrameSender::run()
 {
     while (true) {
         this->mutex.lock();
-        bool isDeflatedFilePairsEmpty = this->deflatedFilePairs.isEmpty();
+        bool isDeflatedFramesEmpty = this->deflatedFrames.isEmpty();
         this->mutex.unlock();
 
-	if (isDeflatedFilePairsEmpty) {
-	    this->sleep(1);
-	    continue;
-	}
+        if (isDeflatedFramesEmpty) {
+            this->sleep(1);
+            continue;
+        }
 
-	this->mutex.lock();
+        this->mutex.lock();
+        FrameData frameData = this->deflatedFrames.first();
+        this->mutex.unlock();
 
-	QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair = this->deflatedFilePairs.takeFirst();
-
-	QString url;
-
-	auto it = std::find_if(this->inflatedFilePairs.begin(), this->inflatedFilePairs.end(), [&](const QPair<QString, QSharedPointer<QFile>>& pair) {
-	    return pair.second == deflatedFilePair.first;
-	});
-
-	if (it != this->inflatedFilePairs.end()) {
-	    url = it->first;
-	}
-
-	this->mutex.unlock();
-
-	// Dispatch to thread pool for concurrent sending
-	QtConcurrent::run([this, url, deflatedFilePair]() {
-	    sendFrame(url, deflatedFilePair);
-	});
+        // Dispatch to thread pool for concurrent sending
+        QtConcurrent::run([this, frameData]() {
+            sendFrame(frameData);
+        });
     }
 }
 
-void FrameSender::sendFrame(const QString& url, QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair)
+void FrameSender::sendFrame(const FrameData& frameData)
 {
-    QSharedPointer<QFile> inflatedFile = deflatedFilePair.first;
-    QSharedPointer<QFile> deflatedFile = deflatedFilePair.second;
+    QSharedPointer<QFile> deflatedFile = frameData.file;
+    QString url = this->getUrlForSimulation(frameData.simulation);
 
     while (true) {
         if (!deflatedFile->open(QIODevice::ReadOnly)) {
@@ -101,37 +157,38 @@ void FrameSender::sendFrame(const QString& url, QPair<QSharedPointer<QFile>, QSh
             continue;
         }
 
-	QByteArray data = deflatedFile->readAll();
-	deflatedFile->close();
+        QByteArray data = deflatedFile->readAll();
+        deflatedFile->close();
 
-	std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
-		  << "Sending frame (" << data.size() << " bytes) to " << url.toStdString() << std::endl;
+        std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
+            << "Sending frame (" << data.size() << " bytes) to " << url.toStdString() << std::endl;
 
-	RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/gzip", data.toStdString());
+        RestClient::Response r = Sender::getInstance().send(url.toStdString(), "application/gzip", data.toStdString());
 
-	if (r.code == 200 && r.body == "OK") {
-	    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
-		      << "Frame sent successfully." << std::endl;
+        if (r.code == 200 && r.body == "OK") {
+            std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
+                << "Frame sent successfully." << std::endl;
 
-	    this->mutex.lock();
+            this->mutex.lock();
 
-	    // Remove from internal queues
-	    auto it = std::find_if(this->inflatedFilePairs.begin(), this->inflatedFilePairs.end(),
-				   [&](const QPair<QString, QSharedPointer<QFile>>& pair) {
-				       return pair.second == inflatedFile;
-				   });
+            // Remove the frame from deflatedFrames now that it's actually sent
+            auto it = std::find_if(this->deflatedFrames.begin(), this->deflatedFrames.end(),
+                    [&](const FrameData& data) {
+                        return data.simulation == frameData.simulation && data.file == frameData.file;
+                    });
 
-	    if (it != this->inflatedFilePairs.end())
-		this->inflatedFilePairs.erase(it);
+            if (it != this->deflatedFrames.end())
+                this->deflatedFrames.erase(it);
 
-	    deflatedFile->remove();
-	    this->mutex.unlock();
+            // Clean up the deflated file
+            deflatedFile->remove();
 
-	    break; // Exit the retry loop
-	} else {
-	    std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
-		      << "Failed to send frame. Retrying in 1s..." << std::endl;
-	    QThread::sleep(1);
-	}
+            this->mutex.unlock();
+            break; // Exit the retry loop
+        } else {
+            std::cout << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz - ").toStdString()
+                << "Failed to send frame. Retrying in 1s..." << std::endl;
+            QThread::sleep(1);
+        }
     }
 }

@@ -23,6 +23,9 @@ class RequestSender : public QObject
         void newFrame(bool detailed = true);
         void newLog(QString message = QString());
 
+    public:
+        void waitForAllFramesSent(const Simulation* simulation);
+
     private:
         bool remoteInterface;
 

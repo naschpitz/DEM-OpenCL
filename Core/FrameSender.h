@@ -10,6 +10,9 @@
 
 #include "Deflater.h"
 
+// Forward declaration to avoid circular dependency
+class Simulation;
+
 class FrameSender : public QThread
 {
     Q_OBJECT
@@ -17,21 +20,32 @@ class FrameSender : public QThread
     public:
         FrameSender();
 
-        void send(const QString& url, QSharedPointer<QFile> file);
+        void send(const Simulation* simulation, QSharedPointer<QFile> file);
         void setFramesDir(const QString& framesDir);
 
         const QString& getFramesDir() const;
 
+        // Methods to check frame sending status per simulation
+        bool hasFramesToSend(const Simulation* simulation) const;
+        void waitForAllFramesSent(const Simulation* simulation);
+
     private:
-        QMutex mutex;
+        mutable QMutex mutex;
         QString framesDir;
 
-	QVector<QPair<QString, QSharedPointer<QFile>>> inflatedFilePairs;
-	QVector<QPair<QSharedPointer<QFile>, QSharedPointer<QFile>>> deflatedFilePairs;
+	// Structure to hold frame data with simulation reference
+	struct FrameData {
+	    const Simulation* simulation;
+	    QSharedPointer<QFile> file;
+	};
+
+	QVector<FrameData> inflatedFrames;
+	QVector<FrameData> deflatedFrames;
 
 	Deflater deflater;
 
-	void sendFrame(const QString& url, QPair<QSharedPointer<QFile>, QSharedPointer<QFile>> deflatedFilePair);
+	void sendFrame(const FrameData& frameData);
+	QString getUrlForSimulation(const Simulation* simulation) const;
 
     protected:
         void run();

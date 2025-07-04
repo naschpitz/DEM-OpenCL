@@ -63,9 +63,7 @@ void RequestSender::newFrame(bool detailed)
     file->flush();
     file->close();
 
-    QString url = this->getInterfaceAddress(simulation) + "/api/frames";
-
-    this->frameSender.send(url, file);
+    this->frameSender.send(simulation, file);
 }
 
 void RequestSender::newLog(QString message)
@@ -110,6 +108,11 @@ void RequestSender::newLog(QString message)
     QByteArray data = QByteArray::fromStdString(jsonObject.dump());
 
     this->logSender.send(url, data);
+}
+
+void RequestSender::waitForAllFramesSent(const Simulation* simulation)
+{
+    this->frameSender.waitForAllFramesSent(simulation);
 }
 
 QString RequestSender::getInterfaceAddress(const Simulation *simulation) const

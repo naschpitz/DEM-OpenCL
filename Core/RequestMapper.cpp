@@ -43,7 +43,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 	    if (simulation && simulation->getInstance() != instance) {
 		std::cout << "Different instance received, stopping the old one" << std::endl;
 		simulation->stop();
-		simulation = NULL; // Invalidate the lcoal pointer, as it is going to be destryoed soon be it own thread.
+		simulation = NULL; // Invalidate the local pointer, as it is going to be destryoed soon be its own thread.
 	    }
 
             try {
