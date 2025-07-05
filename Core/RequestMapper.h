@@ -6,6 +6,7 @@
 
 #include <QSet>
 #include <QTimer>
+#include <QThread>
 
 using namespace stefanfrings;
 
@@ -35,6 +36,7 @@ class RequestMapper : public HttpRequestHandler {
 
     public slots:
         void simulationDestroyed(QObject*);
+        void simulationFinished();
 
     private slots:
         void printStatus();

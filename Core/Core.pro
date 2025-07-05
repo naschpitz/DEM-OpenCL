@@ -29,6 +29,7 @@ HEADERS += \
     Material.h \
     Vertex.h \
     Simulation.h \
+    SimulationLogger.h \
     Scenery.h \
     MaterialsManager.h \
     Neighborhood.h \
@@ -55,6 +56,7 @@ SOURCES += \
     SolidObject.cpp \
     Material.cpp \
     Simulation.cpp \
+    SimulationLogger.cpp \
     Scenery.cpp \
     MaterialsManager.cpp \
     ObjectsManager.cpp \

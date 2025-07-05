@@ -63,7 +63,8 @@ void RequestSender::newFrame(bool detailed)
     file->flush();
     file->close();
 
-    this->frameSender.send(simulation, file);
+    QString url = this->getInterfaceAddress(simulation) + "/api/frames";
+    this->frameSender.send(url, simulation, file);
 }
 
 void RequestSender::newLog(QString message)

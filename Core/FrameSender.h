@@ -20,8 +20,9 @@ class FrameSender : public QThread
     public:
         FrameSender();
 
-        void send(const Simulation* simulation, QSharedPointer<QFile> file);
+        void send(const QString& url, const Simulation* simulation, QSharedPointer<QFile> file);
         void setFramesDir(const QString& framesDir);
+
 
         const QString& getFramesDir() const;
 
@@ -33,10 +34,12 @@ class FrameSender : public QThread
         mutable QMutex mutex;
         QString framesDir;
 
-	// Structure to hold frame data with simulation reference
+	// Structure to hold frame data with simulation reference and URL
 	struct FrameData {
 	    const Simulation* simulation;
+	    QString url;
 	    QSharedPointer<QFile> file;
+	    bool scheduled = false;
 	};
 
 	QVector<FrameData> inflatedFrames;
@@ -45,7 +48,6 @@ class FrameSender : public QThread
 	Deflater deflater;
 
 	void sendFrame(const FrameData& frameData);
-	QString getUrlForSimulation(const Simulation* simulation) const;
 
     protected:
         void run();

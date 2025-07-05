@@ -50,11 +50,22 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
                 simulation = simulation ? simulation : new Simulation(jsonObject);
 
                 connect(simulation, SIGNAL(destroyed(QObject*)), this, SLOT(simulationDestroyed(QObject*)));
+                connect(simulation, SIGNAL(finished()), this, SLOT(simulationFinished()));
 
                 this->simulations.insert(simulation);
 
                 simulation->setInterfaceAddress(request.getPeerAddress());
+
+                std::cout << "Starting simulation thread..." << std::endl;
                 simulation->start();
+
+                // Give the thread a moment to start and check if it's running
+                QThread::msleep(100);
+                if (simulation->isRunning()) {
+                    std::cout << "Simulation thread started successfully" << std::endl;
+                } else {
+                    std::cout << "WARNING: Simulation thread failed to start or exited immediately" << std::endl;
+                }
             }
 
             catch (const std::runtime_error& e) {
@@ -164,6 +175,12 @@ void RequestMapper::simulationDestroyed(QObject* obj)
     Simulation *simulation = (Simulation*)obj;
 
     this->simulations.remove(simulation);
+}
+
+void RequestMapper::simulationFinished()
+{
+    Simulation *simulation = (Simulation*)QObject::sender();
+    std::cout << "Simulation " << simulation->getId().toStdString() << " thread finished" << std::endl;
 }
 
 void RequestMapper::printStatus()

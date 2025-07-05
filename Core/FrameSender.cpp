@@ -5,9 +5,9 @@
 
 #include <QDateTime>
 #include <QFile>
-#include <QHostAddress>
 #include <QSharedPointer>
 #include <QtConcurrent/QtConcurrent>
+#include <algorithm>
 #include <iostream>
 
 #include "restclient-cpp/restclient.h"
@@ -23,6 +23,9 @@ void FrameSender::setFramesDir(const QString &framesDir)
     this->framesDir = framesDir;
     this->mutex.unlock();
 }
+
+
+
 
 const QString& FrameSender::getFramesDir() const
 {
@@ -58,29 +61,11 @@ void FrameSender::waitForAllFramesSent(const Simulation* simulation)
     }
 }
 
-QString FrameSender::getUrlForSimulation(const Simulation* simulation) const
-{
-    // For now, we'll need to access the RequestSender's logic
-    // This is a temporary solution - ideally we'd refactor this
-    QHostAddress interfaceAddress = simulation->getInterfaceAddress();
-    QString baseUrl;
-
-    // This logic is duplicated from RequestSender::getInterfaceAddress
-    // TODO: Refactor to avoid duplication
-    if(interfaceAddress.isEqual(QHostAddress("127.0.0.1"))) {
-        baseUrl = "localhost:8000";
-    }
-    else if(QHostAddress(interfaceAddress.toIPv4Address()).isInSubnet(QHostAddress("192.168.0.0"), 16)) {
-        baseUrl = QHostAddress(interfaceAddress.toIPv4Address()).toString() + ":8000";
-    }
-
-    return baseUrl + "/api/frames";
-}
-
-void FrameSender::send(const Simulation* simulation, QSharedPointer<QFile> file)
+void FrameSender::send(const QString& url, const Simulation* simulation, QSharedPointer<QFile> file)
 {
     FrameData frameData;
     frameData.simulation = simulation;
+    frameData.url = url;
     frameData.file = file;
 
     this->mutex.lock();
@@ -124,16 +109,23 @@ void FrameSender::run()
 {
     while (true) {
         this->mutex.lock();
-        bool isDeflatedFramesEmpty = this->deflatedFrames.isEmpty();
-        this->mutex.unlock();
 
-        if (isDeflatedFramesEmpty) {
+        // Look for frames that are not yet scheduled to be sent
+        auto it = std::find_if(this->deflatedFrames.begin(), this->deflatedFrames.end(),
+                              [](const FrameData& frameData) {
+                                  return !frameData.scheduled;
+                              });
+
+        if (it == this->deflatedFrames.end()) {
+            // No unscheduled frames found
+            this->mutex.unlock();
             this->msleep(100);
             continue;
         }
 
-        this->mutex.lock();
-        FrameData frameData = this->deflatedFrames.first();
+        // Mark this frame as scheduled before sending
+        it->scheduled = true;
+        FrameData frameData = *it;
         this->mutex.unlock();
 
         // Dispatch to thread pool for concurrent sending
@@ -146,7 +138,7 @@ void FrameSender::run()
 void FrameSender::sendFrame(const FrameData& frameData)
 {
     QSharedPointer<QFile> deflatedFile = frameData.file;
-    QString url = this->getUrlForSimulation(frameData.simulation);
+    const QString& url = frameData.url;
 
     while (true) {
         if (!deflatedFile->open(QIODevice::ReadOnly)) {
@@ -171,8 +163,8 @@ void FrameSender::sendFrame(const FrameData& frameData)
 
             // Remove the frame from deflatedFrames now that it's actually sent
             auto it = std::find_if(this->deflatedFrames.begin(), this->deflatedFrames.end(),
-                    [&](const FrameData& data) {
-                        return data.simulation == frameData.simulation && data.file == frameData.file;
+                    [&](const FrameData& bufferData) {
+                        return bufferData.simulation == frameData.simulation && bufferData.file == frameData.file;
                     });
 
             if (it != this->deflatedFrames.end())

@@ -59,16 +59,23 @@ void LogSender::run()
 {
     while (true) {
         this->mutex.lock();
-        bool isEmpty = this->deflatedLogs.isEmpty();
-        this->mutex.unlock();
 
-        if (isEmpty) {
+        // Look for logs that are not yet scheduled to be sent
+        auto it = std::find_if(this->deflatedLogs.begin(), this->deflatedLogs.end(),
+                              [](const LogData& logData) {
+                                  return !logData.scheduled;
+                              });
+
+        if (it == this->deflatedLogs.end()) {
+            // No unscheduled logs found
+            this->mutex.unlock();
             this->msleep(100);
             continue;
         }
 
-        this->mutex.lock();
-        LogData logData = this->deflatedLogs.first();
+        // Mark this log as scheduled before sending
+        it->scheduled = true;
+        LogData logData = *it;
         this->mutex.unlock();
 
         // Dispatch to thread pool for concurrent sending

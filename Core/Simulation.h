@@ -14,9 +14,13 @@
 #include "Vector3D.h"
 
 #include <CL/opencl.hpp>
+#include <QMutex>
 #include <QObject>
 #include <QThread>
 #include <QHostAddress>
+
+// Forward declaration
+class SimulationLogger;
 
 typedef struct
 {
@@ -62,6 +66,9 @@ class Simulation : public QThread
         ulong et;
 
         Scenery scenery;
+        SimulationLogger* logger;
+
+        mutable QMutex dataMutex;
 
         bool initialized;
         bool paused;
@@ -88,9 +95,17 @@ class Simulation : public QThread
         const double&  getCurrentTime() const;
         const ulong&   getCurrentStep() const;
 
+        void setCurrentTime(double currentTime);
+        void setCurrentStep(ulong currentStep);
+        void incrementCurrentStep();
+        void decrementCurrentStep();
+        void setStepsPerSecond(double stepsPerSecond);
+        void setEt(ulong et);
+
         const double& getTimeStep()   const;
         const double& getTotalTime()  const;
         const ulong&  getTotalSteps() const;
+        const double& getLogTime()    const;
 
         const double& getStepsPerSecond() const;
         ulong getEta() const;
@@ -101,6 +116,11 @@ class Simulation : public QThread
         bool isPaused() const;
         bool isStopped() const;
         bool isPrimary() const;
+        bool isInitialized() const;
+
+        void setPaused(bool paused);
+        void setStopped(bool stopped);
+        void setInitialized(bool initialized);
 
         void pause();
         void stop();

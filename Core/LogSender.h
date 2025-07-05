@@ -22,6 +22,7 @@ class LogSender : public QThread
         struct LogData {
             QString url;
             QSharedPointer<QByteArray> data;
+            bool scheduled = false;
         };
 
         QMutex mutex;
