@@ -471,7 +471,7 @@ void Simulation::run()
     if(this->isStopped())
         emit this->newLog("Simulation stopped");
 
-    // Wait for all frames to be sent before declaring simulation ended
+    // Wait for all frames to be sent before ending the thread
     emit this->newLog("Waiting for all frames to be sent...");
     RequestSender::getInstance().waitForAllFramesSent(this);
 
