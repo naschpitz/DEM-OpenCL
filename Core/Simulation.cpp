@@ -1,9 +1,7 @@
 #include "Simulation.h"
-#include "SimulationLogger.h"
 
 #include <QDateTime>
 #include <QFile>
-#include <QMutexLocker>
 #include <QString>
 #include <QTextStream>
 #include <iostream>
@@ -18,7 +16,6 @@ Simulation::Simulation()
     this->initialized = false;
     this->paused = false;
     this->stoped = false;
-    this->logger = nullptr;
 }
 
 Simulation::Simulation(const nlohmann::json& jsonObject)
@@ -26,7 +23,6 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
     this->initialized = false;
     this->paused = false;
     this->stoped = false;
-    this->logger = nullptr;
 
     try {
         this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
@@ -143,19 +139,12 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 
     connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(newFrame(bool)), &(RequestSender::getInstance()), SLOT(newFrame(bool)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
-
-    this->logger = new SimulationLogger(this, this);
 }
 
 Simulation::~Simulation()
 {
-    if (this->logger) {
-        this->logger->stop();
-        delete this->logger;
-        this->logger = nullptr;
-    }
-
     std::cout << "Simulation destroyed!" << std::endl;
     std::cout.flush();
 }
@@ -167,8 +156,6 @@ void Simulation::initialize()
 
 SimulationCL Simulation::getCL() const
 {
-    QMutexLocker locker(&this->dataMutex);
-
     SimulationCL simulationCL;
 
     simulationCL.currentTime = this->currentTime;
@@ -205,71 +192,55 @@ void Simulation::setInterfaceUrl(const QString& serverUrl)
 
 const QString& Simulation::getId() const
 {
-    // No mutex needed - id is constant throughout simulation lifecycle
     return this->id;
 }
 
 const QString& Simulation::getInstance() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->instance;
 }
 
 const ulong& Simulation::getCurrentStep() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->currentStep;
 }
 
 const double& Simulation::getCurrentTime() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->currentTime;
 }
 
 const Scenery& Simulation::getScenery() const
 {
-    // No mutex needed - scenery object is not modified during simulation run loop
     return this->scenery;
 }
 
 const double& Simulation::getTimeStep() const
 {
-    // No mutex needed - timeStep is read-only during simulation execution
     return this->timeStep;
 }
 
 const double& Simulation::getTotalTime() const
 {
-    // No mutex needed - totalTime is read-only during simulation execution
     return this->totalTime;
 }
 
 const ulong& Simulation::getTotalSteps() const
 {
-    // No mutex needed - totalSteps is read-only during simulation execution
     return this->totalSteps;
-}
-
-const double& Simulation::getLogTime() const
-{
-    // No mutex needed - logTime is read-only during simulation execution
-    return this->logTime;
 }
 
 const double& Simulation::getStepsPerSecond() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->stepsPerSecond;
 }
 
 ulong Simulation::getEta() const
 {
-    QMutexLocker locker(&this->dataMutex);
-    ulong remaningSteps = this->totalSteps - this->currentStep;
+    ulong remaningSteps = this->getTotalSteps() - this->getCurrentStep();
 
-    if(this->stepsPerSecond > 0) {
-        return remaningSteps / this->stepsPerSecond;
+    if(this->getStepsPerSecond() > 0) {
+        return remaningSteps / this->getStepsPerSecond();
     }
     else {
         return 0;
@@ -278,45 +249,31 @@ ulong Simulation::getEta() const
 
 ulong Simulation::getEt() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->et / 1000;
 }
 
 bool Simulation::isPaused() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->paused;
 }
 
 bool Simulation::isStopped() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->stoped;
 }
 
 bool Simulation::isPrimary() const
 {
-    QMutexLocker locker(&this->dataMutex);
     return this->primary;
-}
-
-bool Simulation::isInitialized() const
-{
-    QMutexLocker locker(&this->dataMutex);
-    return this->initialized;
 }
 
 void Simulation::run()
 {
-    try {
-        std::cout << "Simulation::run() started for simulation " << this->getId().toStdString() << std::endl;
-
-        if(!this->isInitialized()) {
-            emit this->newLog("Initilizing simulation's scenery");
-            this->initialize();
-            this->setInitialized(true);
-            emit this->newLog("Simulation's scenery initialized");
-        }
+    if(!this->initialized) {
+        emit this->newLog("Initilizing simulation's scenery");
+        this->initialize();
+        emit this->newLog("Simulation's scenery initialized");
+    }
 
     const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
 
@@ -438,57 +395,64 @@ void Simulation::run()
         openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
     }
 
-    this->setPaused(false);
-    this->setStopped(false);
+    this->paused = this->stoped = false;
 
     uint frameSteps = this->frameTime / this->timeStep;
 
+    QDateTime dateTime = QDateTime::currentDateTime();
+
     bool ran = false;
+    double previousStep = this->currentStep;
 
     emit this->newLog("Simulation began");
 
-    // Start the logger thread
-    if (this->logger) {
-        this->logger->start();
-    }
-
-    while ((this->getCurrentStep() <= this->totalSteps) && !this->isPaused() && !this->isStopped())
+    while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stoped)
     {
         ran = true;
-        this->setCurrentTime(this->timeStep * this->getCurrentStep());
+        this->currentTime = this->timeStep * this->currentStep;
 
         simulationsCL = { this->getCL() };
         openClCore.writeBuffer(simulationsCL);
 
-        ulong currentStep = this->getCurrentStep();
-
-        if(this->multiGPU || currentStep % frameSteps == 0) {
+        if(this->multiGPU || this->currentStep % frameSteps == 0) {
             openClCore.syncDevicesBuffers(particlesCL);
             openClCore.syncDevicesBuffers(facesCL);
         }
 
-        if(currentStep % frameSteps == 0) {
+        if(this->currentStep % frameSteps == 0) {
             this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
             this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
             bool isDetailed = false;
 
 	    if (this->isPrimary()) {
-		isDetailed = currentStep % (frameSteps * this->detailedFramesDiv) == 0;
+		isDetailed = this->currentStep % (frameSteps * this->detailedFramesDiv) == 0;
 	    }
 
             emit this->newFrame(isDetailed);
         }
 
+        ulong mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());
+
+        if(mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
+            ulong numSteps = this->currentStep - previousStep;
+            this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
+            this->et += mSecElapsed;
+
+            previousStep = this->currentStep;
+            dateTime = QDateTime::currentDateTime();
+
+            emit this->newLog("New log message");
+        }
+
         openClCore.run();
 
-        this->incrementCurrentStep();
+        this->currentStep++;
     }
 
     // Decrement because the last loop dosen't happen.
-    if(ran && !this->isPaused()) {
-        this->decrementCurrentStep();
-    }
+    if(ran && !this->isPaused())
+        this->currentStep--;
 
     if(this->isPaused()) {
         openClCore.syncDevicesBuffers(particlesCL);
@@ -512,26 +476,16 @@ void Simulation::run()
     RequestSender::getInstance().waitForAllFramesSent(this);
 
     emit this->newLog("Simulation ended");
-
-    } catch (const std::exception& e) {
-        std::cout << "Exception in Simulation::run(): " << e.what() << std::endl;
-        emit this->newLog(QString("Simulation error: %1").arg(e.what()));
-    } catch (...) {
-        std::cout << "Unknown exception in Simulation::run()" << std::endl;
-        emit this->newLog("Simulation error: Unknown exception occurred");
-    }
-
-    std::cout << "Simulation::run() finished for simulation " << this->getId().toStdString() << std::endl;
 }
 
 void Simulation::pause()
 {
-    this->setPaused(true);
+    this->paused = true;
 }
 
 void Simulation::stop()
 {
-    this->setStopped(true);
+    this->stoped = true;
 
     // TODO: Correct error when stopping a paused simulation, deadlock involved.
     /*
@@ -546,59 +500,3 @@ void Simulation::selfDelete()
         this->deleteLater();
     }
 }
-
-void Simulation::setCurrentTime(double currentTime)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->currentTime = currentTime;
-}
-
-void Simulation::setCurrentStep(ulong currentStep)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->currentStep = currentStep;
-}
-
-void Simulation::incrementCurrentStep()
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->currentStep++;
-}
-
-void Simulation::decrementCurrentStep()
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->currentStep--;
-}
-
-void Simulation::setStepsPerSecond(double stepsPerSecond)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->stepsPerSecond = stepsPerSecond;
-}
-
-void Simulation::setEt(ulong et)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->et = et;
-}
-
-void Simulation::setPaused(bool paused)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->paused = paused;
-}
-
-void Simulation::setStopped(bool stopped)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->stoped = stopped;
-}
-
-void Simulation::setInitialized(bool initialized)
-{
-    QMutexLocker locker(&this->dataMutex);
-    this->initialized = initialized;
-}
-
-
