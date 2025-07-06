@@ -16,6 +16,12 @@ void face_addCurrentForce(Face* face, const float4* force, const float4* pointOf
     face->currentTorque += cross(r, (*force));
 }
 
+void face_divideCurrentForce(Face* face, float divider)
+{
+    face->currentForce /= divider;
+    face->currentTorque /= divider;
+}
+
 void face_getBox(const Face* face, float4* min, float4* max)
 {
     float minX, maxX;
@@ -116,6 +122,17 @@ void face_calculateCurrentVelocity(Face* face)
 float4 face_getCurrentAcceleration(Face* face)
 {
     return face->currentForce / face->mass;
+}
+
+float4 face_getNormal(Face* face)
+{
+    float4 e1 = face->vertexes[1].currentPosition - face->vertexes[0].currentPosition;
+    float4 e2 = face->vertexes[2].currentPosition - face->vertexes[0].currentPosition;
+
+    float4 normal = cross(e1, e2);
+    normal = vector_getUnitary(normal); 
+
+    return normal;
 }
 
 void face_integrate(Face* face, float timeStep)
