@@ -135,6 +135,18 @@ float4 face_getNormal(Face* face)
     return normal;
 }
 
+void face_sumForces(Face* face, global FaceNeighborhood* facesNeighborhood)
+{
+    uint thisFaceIndex = face->index;
+
+    global FaceNeighborhood* thisFaceNeighborhood = &facesNeighborhood[thisFaceIndex];
+
+    for(ulong i = 0; i < thisFaceNeighborhood->numParticles; i++) {
+        face->currentForce += thisFaceNeighborhood->particles[i].currentForce;
+        face->currentTorque += thisFaceNeighborhood->particles[i].currentTorque;
+    }
+}
+
 void face_integrate(Face* face, float timeStep)
 {
     float4 currentAcceleration = face_getCurrentAcceleration(face);
