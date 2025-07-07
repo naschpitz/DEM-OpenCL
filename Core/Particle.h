@@ -34,8 +34,6 @@ typedef struct
     cl_float4 oldTorque;
 
     VertexCL vertex;
-
-    ParticleNeighborhoodCL neighborhood;
 } ParticleCL;
 
 class Particle : public Vertex

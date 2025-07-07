@@ -3,6 +3,7 @@
 
 #include "../Face.h.cl"
 #include "../Particle.h.cl"
+#include "../Neighborhood.h.cl"
 
 #include "../Edge.cpp.cl"
 #include "../Vector.cpp.cl"
@@ -135,15 +136,15 @@ float4 face_getNormal(Face* face)
     return normal;
 }
 
-void face_sumForces(Face* face, global FaceNeighborhood* facesNeighborhood)
+void face_sumForces(Face* face, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
 {
     uint thisFaceIndex = face->index;
 
-    global FaceNeighborhood* thisFaceNeighborhood = &facesNeighborhood[thisFaceIndex];
-
-    for(ulong i = 0; i < thisFaceNeighborhood->numParticles; i++) {
-        face->currentForce += thisFaceNeighborhood->particles[i].currentForce;
-        face->currentTorque += thisFaceNeighborhood->particles[i].currentTorque;
+    uint numParticles = particlesToFacesNeighborhoodNum[thisFaceIndex];
+    for(ulong i = 0; i < numParticles; i++) {
+        uint neighborIndex = thisFaceIndex * MAX_PARTICLES_TO_FACES + i;
+        face->currentForce += particlesToFacesNeighborhood[neighborIndex].currentForce;
+        face->currentTorque += particlesToFacesNeighborhood[neighborIndex].currentTorque;
     }
 }
 

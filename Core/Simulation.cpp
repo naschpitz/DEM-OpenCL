@@ -304,8 +304,15 @@ void Simulation::run()
     openClCore.writeBuffer<SimulationCL>(simulationsCL);
     openClCore.writeBuffer<SceneryCL>(sceneriesCL);
 
-    openClCore.allocateBuffer<ParticleNeighborhoodCL>("particlesNeighborhood", particlesCL.size());
-    openClCore.allocateBuffer<FaceNeighborhoodCL>("facesNeighborhood", facesCL.size());
+    openClCore.allocateBuffer<cl_uint>("particlesToParticlesNeighborhoodNum", particlesCL.size());
+    openClCore.allocateBuffer<cl_uint>("facesToParticlesNeighborhoodNum", particlesCL.size());
+
+    openClCore.allocateBuffer<cl_uint>("particlesToFacesNeighborhoodNum", facesCL.size());
+
+    openClCore.allocateBuffer<ForceTorqueCL>("particlesToParticlesNeighborhood", particlesCL.size() * MAX_PARTICLES_TO_PARTICLES);
+    openClCore.allocateBuffer<ForceTorqueCL>("facesToParticlesNeighborhood", particlesCL.size() * MAX_FACES_TO_PARTICLES);
+
+    openClCore.allocateBuffer<ForceTorqueCL>("particlesToFacesNeighborhood", facesCL.size() * MAX_PARTICLES_TO_FACES);
     emit this->newLog("Objects copy to GPU's memory done");
 
     bool hasParticles = particlesCL.size();
@@ -327,8 +334,8 @@ void Simulation::run()
         openClCore.run();
         openClCore.clearKernels();
 
-	openClCore.syncDevicesBuffers(particlesCL);
-	openClCore.syncDevicesBuffers<FaceCL>(facesCL);
+	    openClCore.syncDevicesBuffers<ParticleCL>(particlesCL);
+	    openClCore.syncDevicesBuffers<FaceCL>(facesCL);
     }
 
     if(hasParticles) {
@@ -348,12 +355,16 @@ void Simulation::run()
         openClCore.addArgument<MaterialsManagerCL>("calculate_particles_neighborhood", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
         openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
-        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_particles_neighborhood", "particlesNeighborhood");
+        openClCore.addArgument<ForceTorqueCL>("calculate_particles_neighborhood", "particlesToParticlesNeighborhood");
+        openClCore.addArgument<cl_uint>("calculate_particles_neighborhood", "particlesToParticlesNeighborhoodNum");
+        openClCore.addArgument<ForceTorqueCL>("calculate_particles_neighborhood", "facesToParticlesNeighborhood");
+        openClCore.addArgument<cl_uint>("calculate_particles_neighborhood", "facesToParticlesNeighborhoodNum");
 
         openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
-        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_particle_to_particle", "particlesNeighborhood");
+        openClCore.addArgument<ForceTorqueCL>("calculate_particle_to_particle", "particlesToParticlesNeighborhood");
+        openClCore.addArgument<cl_uint>("calculate_particle_to_particle", "particlesToParticlesNeighborhoodNum");
     }
 
     if(hasParticles && hasFaces) {
@@ -363,14 +374,17 @@ void Simulation::run()
         openClCore.addArgument<MaterialsManagerCL>("calculate_faces_neighborhood", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
         openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
-        openClCore.addArgument<FaceNeighborhoodCL>("calculate_faces_neighborhood", "facesNeighborhood");
+        openClCore.addArgument<ForceTorqueCL>("calculate_faces_neighborhood", "particlesToFacesNeighborhood");
+        openClCore.addArgument<cl_uint>("calculate_faces_neighborhood", "particlesToFacesNeighborhoodNum");
 
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
         openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
         openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
-        openClCore.addArgument<ParticleNeighborhoodCL>("calculate_particle_to_face", "particlesNeighborhood");
-        openClCore.addArgument<FaceNeighborhoodCL>("calculate_particle_to_face", "facesNeighborhood");
+        openClCore.addArgument<ForceTorqueCL>("calculate_particle_to_face", "facesToParticlesNeighborhood");
+        openClCore.addArgument<cl_uint>("calculate_particle_to_face", "facesToParticlesNeighborhoodNum");
+        openClCore.addArgument<ForceTorqueCL>("calculate_particle_to_face", "particlesToFacesNeighborhood");
+        openClCore.addArgument<cl_uint>("calculate_particle_to_face", "particlesToFacesNeighborhoodNum");
     }
 
     if(hasParticles) {
@@ -389,14 +403,16 @@ void Simulation::run()
     if(hasParticles) {
         openClCore.addKernel("integrate_particles", particlesCL.size());
         openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
-        openClCore.addArgument<ParticleNeighborhoodCL>("integrate_particles", "particlesNeighborhood");
+        openClCore.addArgument<ForceTorqueCL>("integrate_particles", "particlesToParticlesNeighborhood");
+        openClCore.addArgument<cl_uint>("integrate_particles", "particlesToParticlesNeighborhoodNum");
         openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
     }
 
     if(hasFaces) {
         openClCore.addKernel("integrate_faces", facesCL.size());
         openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
-        openClCore.addArgument<FaceNeighborhoodCL>("integrate_faces", "facesNeighborhood");
+        openClCore.addArgument<ForceTorqueCL>("integrate_faces", "particlesToFacesNeighborhood");
+        openClCore.addArgument<cl_uint>("integrate_faces", "particlesToFacesNeighborhoodNum");
         openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
     }
 
@@ -420,8 +436,8 @@ void Simulation::run()
         openClCore.writeBuffer(simulationsCL);
 
         if(this->multiGPU || this->currentStep % frameSteps == 0) {
-            openClCore.syncDevicesBuffers(particlesCL);
-            openClCore.syncDevicesBuffers(facesCL);
+            openClCore.syncDevicesBuffers<ParticleCL>(particlesCL);
+            openClCore.syncDevicesBuffers<FaceCL>(facesCL);
         }
 
         if(this->currentStep % frameSteps == 0) {

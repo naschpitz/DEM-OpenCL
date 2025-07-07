@@ -5,7 +5,7 @@
 #include "../Material.cpp.cl"
 #include "../Particle.cpp.cl"
 
-void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material, global ParticleNeighborhood* particlesNeighborhood)
+void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum)
 {
     float4 closestOnThisParticle, closestOnOtherParticle;
 
@@ -37,10 +37,10 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
 
     float4 totalForce = - (force + dragForce);
 
-    particle_addCurrentForceToParticle(thisParticle, otherParticle, &totalForce, &closestOnThisParticle, &closestOnOtherParticle, particlesNeighborhood);
+    particle_addCurrentForceToParticle(thisParticle, otherParticle, &totalForce, &closestOnThisParticle, &closestOnOtherParticle, particlesToParticlesNeighborhood, particlesToParticlesNeighborhoodNum);
 }
 
-bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material, uint numFaces, global FaceNeighborhood* facesNeighborhood)
+bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
 {
     float4 closestOnThisParticle, closestOnOtherFace;
 
@@ -69,9 +69,9 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
     float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    float4 totalForce = - (force + dragForce) / numFaces;
-
-    particle_addCurrentForceToFace(thisParticle, otherFace, &totalForce, &closestOnThisParticle, &closestOnOtherFace, facesNeighborhood);
+    // uint numFaces = particlesToFacesNeighborhoodNum[otherFace->index];
+    float4 totalForce = - (force + dragForce);
+    particle_addCurrentForceToFace(thisParticle, otherFace, &totalForce, &closestOnThisParticle, &closestOnOtherFace, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
 
     return true;
 }

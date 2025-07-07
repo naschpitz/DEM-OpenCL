@@ -2,11 +2,12 @@
 #define PARTICLE_CL
 
 #include "../Particle.h.cl"
+#include "../Neighborhood.h.cl"
 
 #include "../Vector.cpp.cl"
 #include "../Vertex.cpp.cl"
 
-void particle_addCurrentForceToParticle(Particle* thisParticle, const Particle* otherParticle, const float4* force, const float4* pointOfForceThisParticle, const float4* pointOfForceOtherParticle, global ParticleNeighborhood* particlesNeighborhood)
+void particle_addCurrentForceToParticle(Particle* thisParticle, const Particle* otherParticle, const float4* force, const float4* pointOfForceThisParticle, const float4* pointOfForceOtherParticle, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum)
 {
     uint thisParticleIndex = thisParticle->index;
     uint otherParticleIndex = otherParticle->index;
@@ -23,19 +24,20 @@ void particle_addCurrentForceToParticle(Particle* thisParticle, const Particle* 
     float4 otherR = (*pointOfForceOtherParticle) - otherParticle->vertex.currentPosition;
     float4 otherTorque = cross(otherR, (*force));
 
-    global ParticleNeighborhood* otherParticleNeighborhood = &particlesNeighborhood[otherParticleIndex];
+    // Find thisParticle in otherParticle's neighborhood and store the reaction force
+    uint numParticles = particlesToParticlesNeighborhoodNum[otherParticleIndex];
+    for(ulong i = 0; i < numParticles; i++) {
+        uint neighborIndex = otherParticleIndex * MAX_PARTICLES_TO_PARTICLES + i;
 
-    // Add the contribution of this force to the other particle neighborhood.
-    for(ulong i = 0; i < otherParticleNeighborhood->numParticles; i++) {
-        if(otherParticleNeighborhood->particles[i].index == thisParticleIndex) {
-            otherParticleNeighborhood->particles[i].currentForce = otherForce;
-            otherParticleNeighborhood->particles[i].currentTorque = otherTorque;
+        if(particlesToParticlesNeighborhood[neighborIndex].index == thisParticleIndex) {
+            particlesToParticlesNeighborhood[neighborIndex].currentForce = otherForce;
+            particlesToParticlesNeighborhood[neighborIndex].currentTorque = otherTorque;
             break;
         }
     }
 }
 
-void particle_addCurrentForceToFace(Particle* thisParticle, const Face* otherFace, const float4* force, const float4* pointOfForceThisParticle, const float4* pointOfForceOtherFace, global FaceNeighborhood* facesNeighborhood)
+void particle_addCurrentForceToFace(Particle* thisParticle, const Face* otherFace, const float4* force, const float4* pointOfForceThisParticle, const float4* pointOfForceOtherFace, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
 {
     uint thisParticleIndex = thisParticle->index;
     uint otherFaceIndex = otherFace->index;
@@ -52,13 +54,14 @@ void particle_addCurrentForceToFace(Particle* thisParticle, const Face* otherFac
     float4 otherR = (*pointOfForceOtherFace) - otherFace->currentPosition;
     float4 otherTorque = cross(otherR, (*force));
 
-    global FaceNeighborhood* otherFaceNeighborhood = &facesNeighborhood[otherFaceIndex];
-
-    // Add the contribution of this force to the other face neighborhood.
-    for(ulong i = 0; i < otherFaceNeighborhood->numParticles; i++) {
-        if(otherFaceNeighborhood->particles[i].index == thisParticleIndex) {
-            otherFaceNeighborhood->particles[i].currentForce = otherForce;
-            otherFaceNeighborhood->particles[i].currentTorque = otherTorque;
+    // Find thisParticle in otherFace's neighborhood and store the reaction force
+    uint numParticles = particlesToFacesNeighborhoodNum[otherFaceIndex];
+    for(ulong i = 0; i < numParticles; i++) {
+        uint neighborIndex = otherFaceIndex * MAX_PARTICLES_TO_FACES + i;
+        
+        if(particlesToFacesNeighborhood[neighborIndex].index == thisParticleIndex) {
+            particlesToFacesNeighborhood[neighborIndex].currentForce = otherForce;
+            particlesToFacesNeighborhood[neighborIndex].currentTorque = otherTorque;
             break;
         }
     }
@@ -93,15 +96,16 @@ bool particle_isInternal(const Particle* particle, const float4 vector)
     return false;
 }
 
-void particle_sumForces(Particle* particle, global ParticleNeighborhood* particlesNeighborhood)
+void particle_sumForces(Particle* particle, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum)
 {
     uint thisParticleIndex = particle->index;
 
-    global ParticleNeighborhood* thisParticleNeighborhood = &particlesNeighborhood[thisParticleIndex];
+    uint numParticles = particlesToParticlesNeighborhoodNum[thisParticleIndex];
 
-    for(ulong i = 0; i < thisParticleNeighborhood->numParticles; i++) {
-        particle->currentForce += thisParticleNeighborhood->particles[i].currentForce;
-        particle->currentTorque += thisParticleNeighborhood->particles[i].currentTorque;
+    for(ulong i = 0; i < numParticles; i++) {
+        uint neighborIndex = thisParticleIndex * MAX_PARTICLES_TO_PARTICLES + i;
+        particle->currentForce += particlesToParticlesNeighborhood[neighborIndex].currentForce;
+        particle->currentTorque += particlesToParticlesNeighborhood[neighborIndex].currentTorque;
     }
 }
 

@@ -36,8 +36,6 @@ typedef struct
     cl_float4 oldTorque;
 
     VertexCL vertexes[3];
-
-    FaceNeighborhoodCL neighborhood;
 } FaceCL;
 
 class Face

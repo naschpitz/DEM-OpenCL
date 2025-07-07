@@ -66,7 +66,7 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
     faces[idx] = thisFace;
 }
 
-kernel void calculate_particles_neighborhood(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global ParticleNeighborhood* particlesNeighborhood)
+kernel void calculate_particles_neighborhood(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum, global ForceTorque* facesToParticlesNeighborhood, global uint* facesToParticlesNeighborhoodNum)
 {
     Simulation simulation = ptrSimulation[0];
 
@@ -79,7 +79,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
-    neighborhood_resetParticleNeighborhood(&thisParticle, particlesNeighborhood);
+    neighborhood_resetParticleNeighborhood(&thisParticle, particlesToParticlesNeighborhoodNum, facesToParticlesNeighborhoodNum);
 
     for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];
@@ -95,7 +95,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
         if(!testBox_particleToParticle(&thisParticle, &otherParticle, material->distanceThreshold * simulation.neighDistThresMult))
             continue;
 
-        neighborhood_addParticleToParticleNeighborhood(&thisParticle, &otherParticle, particlesNeighborhood);
+        neighborhood_addParticleToParticleNeighborhood(&thisParticle, &otherParticle, particlesToParticlesNeighborhood, particlesToParticlesNeighborhoodNum);
     }
 
     for(ulong i = 0; i < scenery.numFaces; i++) {
@@ -109,13 +109,13 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
         if(!testBox_particleToFace(&thisParticle, &otherFace, material->distanceThreshold))
             continue;
 
-        neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace, particlesNeighborhood);
+        neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace, facesToParticlesNeighborhood, facesToParticlesNeighborhoodNum);
     }
 
     particles[idx] = thisParticle;
 }
 
-kernel void calculate_faces_neighborhood(global Face* faces, global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global FaceNeighborhood* facesNeighborhood)
+kernel void calculate_faces_neighborhood(global Face* faces, global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
 {
     Simulation simulation = ptrSimulation[0];
 
@@ -128,7 +128,7 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
-    neighborhood_resetFaceNeighborhood(&thisFace, facesNeighborhood);
+    neighborhood_resetFaceNeighborhood(&thisFace, particlesToFacesNeighborhoodNum);
 
     for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];
@@ -141,25 +141,24 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
         if(!testBox_particleToFace(&otherParticle, &thisFace, material->distanceThreshold * simulation.neighDistThresMult))
             continue;
 
-        neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle, facesNeighborhood);
+        neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
     }
 
     faces[idx] = thisFace;
 }
 
-kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager, global ParticleNeighborhood* particlesNeighborhood)
+kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum)
 {
     size_t thisParticleIndex = get_global_id(0);
 
     Particle thisParticle = particles[thisParticleIndex];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
 
-    global ParticleNeighborhood* thisParticleNeighborhood = &particlesNeighborhood[thisParticleIndex];
-
-    uint numParticles = thisParticle.neighborhood.numParticles;
+    uint numParticles = particlesToParticlesNeighborhoodNum[thisParticleIndex];
 
     for(ulong i = 0; i < numParticles; i++) {
-        size_t otherParticleIndex = thisParticleNeighborhood->particles[i].index;
+        uint neighborIndex = thisParticleIndex * MAX_PARTICLES_TO_PARTICLES + i;
+        size_t otherParticleIndex = particlesToParticlesNeighborhood[neighborIndex].index;
 
         Particle otherParticle = particles[otherParticleIndex];
 
@@ -171,25 +170,24 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        particleToParticleWorker_run(&thisParticle, &otherParticle, material, particlesNeighborhood);
+        particleToParticleWorker_run(&thisParticle, &otherParticle, material, particlesToParticlesNeighborhood, particlesToParticlesNeighborhoodNum);
     }
 
     particles[thisParticleIndex] = thisParticle;
 }
 
-kernel void calculate_particle_to_face(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, global ParticleNeighborhood* particlesNeighborhood, global FaceNeighborhood* facesNeighborhood)
+kernel void calculate_particle_to_face(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, global ForceTorque* facesToParticlesNeighborhood, global uint* facesToParticlesNeighborhoodNum, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
 {
     size_t thisParticleIndex  = get_global_id(0);
 
     Particle thisParticle = particles[thisParticleIndex];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
 
-    global ParticleNeighborhood* thisParticleNeighborhood = &particlesNeighborhood[thisParticleIndex];
-
-    uint numFaces = thisParticle.neighborhood.numFaces;
+    uint numFaces = facesToParticlesNeighborhoodNum[thisParticleIndex];
 
     for(ulong i = 0; i < numFaces; i++) {
-        size_t otherFaceIndex = thisParticleNeighborhood->faces[i].index;
+        uint neighborIndex = thisParticleIndex * MAX_FACES_TO_PARTICLES + i;
+        size_t otherFaceIndex = facesToParticlesNeighborhood[neighborIndex].index;
 
         Face otherFace = faces[otherFaceIndex];
 
@@ -198,7 +196,7 @@ kernel void calculate_particle_to_face(global Particle* particles, global Face* 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        particleToFaceWorker_run(&thisParticle, &otherFace, material, numFaces, facesNeighborhood);
+        particleToFaceWorker_run(&thisParticle, &otherFace, material, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
     }
 
     particles[thisParticleIndex] = thisParticle;
@@ -228,27 +226,27 @@ kernel void apply_faces_gravity(global Face* faces, constant Scenery* ptrScenery
     faces[idx] = face;
 }
 
-kernel void integrate_particles(global Particle* particles, global ParticleNeighborhood* particlesNeighborhood, constant Simulation* ptrSimulation)
+kernel void integrate_particles(global Particle* particles, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum, constant Simulation* ptrSimulation)
 {
     size_t idx = get_global_id(0);
 
     Particle particle = particles[idx];
     Simulation simulation = ptrSimulation[0];
 
-    particle_sumForces(&particle, particlesNeighborhood);
+    particle_sumForces(&particle, particlesToParticlesNeighborhood, particlesToParticlesNeighborhoodNum);
     particle_integrate(&particle, simulation.timeStep);
 
     particles[idx] = particle;
 }
 
-kernel void integrate_faces(global Face* faces, global FaceNeighborhood* facesNeighborhood, constant Simulation* ptrSimulation)
+kernel void integrate_faces(global Face* faces, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum, constant Simulation* ptrSimulation)
 {
     size_t idx = get_global_id(0);
 
     Face face = faces[idx];
     Simulation simulation = ptrSimulation[0];
 
-    face_sumForces(&face, facesNeighborhood);
+    face_sumForces(&face, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
     face_integrate(&face, simulation.timeStep);
 
     faces[idx] = face;

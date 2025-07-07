@@ -1,7 +1,6 @@
 #ifndef PARTICLE_H_CL
 #define PARTICLE_H_CL
 
-#include "../Neighborhood.h.cl"
 #include "../Vertex.h.cl"
 
 typedef struct
@@ -23,8 +22,6 @@ typedef struct
     float4 oldTorque;
 
     Vertex vertex;
-
-    ParticleNeighborhood neighborhood;
 } Particle;
 
 #endif // PARTICLE_H_CL

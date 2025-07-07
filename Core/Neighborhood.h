@@ -23,22 +23,7 @@ typedef struct {
     cl_float4 currentTorque;
 } ForceTorqueCL;
 
-typedef struct
-{
-    cl_uint numParticles;
-    cl_uint numFaces;
-
-    ForceTorqueCL particles[MAX_PARTICLES_TO_PARTICLES];
-    ForceTorqueCL faces[MAX_FACES_TO_PARTICLES];
-} ParticleNeighborhoodCL;
-
-typedef struct
-{
-    cl_uint numParticles;
-    cl_uint numFaces;
-
-    ForceTorqueCL particles[MAX_PARTICLES_TO_FACES];
-    ForceTorqueCL faces[MAX_FACES_TO_FACES];
-} FaceNeighborhoodCL;
+// ParticleNeighborhoodCL and FaceNeighborhoodCL structs removed
+// Now using separate buffers for better memory management
 
 #endif // NEIGHBORHOOD_H

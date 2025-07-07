@@ -5,77 +5,70 @@
 #include "../Neighborhood.h.cl"
 #include "../Particle.h.cl"
 
-void neighborhood_addParticleToParticleNeighborhood(Particle* thisParticle, const Particle* otherParticle, global ParticleNeighborhood* particlesNeighborhood)
+void neighborhood_addParticleToParticleNeighborhood(Particle* thisParticle, const Particle* otherParticle, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum)
 {
     uint thisParticleIndex = thisParticle->index;
     uint otherParticleIndex = otherParticle->index;
 
-    global ParticleNeighborhood* thisParticleNeighborhood = &particlesNeighborhood[thisParticleIndex];
+    uint numParticles = particlesToParticlesNeighborhoodNum[thisParticleIndex];
 
-    uint numParticles = thisParticleNeighborhood->numParticles;
-
-    if(numParticles == MAX_PARTICLES_TO_PARTICLES) {
+    if(numParticles >= MAX_PARTICLES_TO_PARTICLES) {
         printf("MAX_PARTICLES_TO_PARTICLES reached!\n");
         return;
     }
 
-    thisParticleNeighborhood->particles[numParticles].index = otherParticleIndex;
-    thisParticleNeighborhood->numParticles++;
+    uint neighborIndex = thisParticleIndex * MAX_PARTICLES_TO_PARTICLES + numParticles;
+    particlesToParticlesNeighborhood[neighborIndex].index = otherParticleIndex;
+    particlesToParticlesNeighborhoodNum[thisParticleIndex]++;
 }
 
-void neighborhood_addFaceToParticleNeighborhood(Particle* thisParticle, const Face* otherFace, global ParticleNeighborhood* particlesNeighborhood)
+void neighborhood_addFaceToParticleNeighborhood(Particle* thisParticle, const Face* otherFace, global ForceTorque* facesToParticlesNeighborhood, global uint* facesToParticlesNeighborhoodNum)
 {
     uint thisParticleIndex = thisParticle->index;
     uint otherFaceIndex = otherFace->index;
 
-    global ParticleNeighborhood* thisParticleNeighborhood = &particlesNeighborhood[thisParticleIndex];
+    uint numFaces = facesToParticlesNeighborhoodNum[thisParticleIndex];
 
-    uint numFaces = thisParticleNeighborhood->numFaces;
-
-    if(numFaces == MAX_FACES_TO_PARTICLES) {
+    if(numFaces >= MAX_FACES_TO_PARTICLES) {
         printf("MAX_FACES_TO_PARTICLES reached!\n");
         return;
     }
 
-    thisParticleNeighborhood->faces[numFaces].index = otherFaceIndex;
-    thisParticleNeighborhood->numFaces++;
+    uint neighborIndex = thisParticleIndex * MAX_FACES_TO_PARTICLES + numFaces;
+    facesToParticlesNeighborhood[neighborIndex].index = otherFaceIndex;
+    facesToParticlesNeighborhoodNum[thisParticleIndex]++;
 }
 
-void neighborhood_addParticleToFaceNeighborhood(Face* thisFace, const Particle* otherParticle, global FaceNeighborhood* facesNeighborhood)
+void neighborhood_addParticleToFaceNeighborhood(Face* thisFace, const Particle* otherParticle, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
 {
     uint thisFaceIndex = thisFace->index;
     uint otherParticleIndex = otherParticle->index;
 
-    global FaceNeighborhood* thisFaceNeighborhood = &facesNeighborhood[thisFaceIndex];
+    uint numParticles = particlesToFacesNeighborhoodNum[thisFaceIndex];
 
-    uint numParticles = thisFaceNeighborhood->numParticles;
-
-    if(numParticles == MAX_PARTICLES_TO_FACES) {
+    if(numParticles >= MAX_PARTICLES_TO_FACES) {
         printf("MAX_PARTICLES_TO_FACES reached!\n");
         return;
     }
 
-    thisFaceNeighborhood->particles[numParticles].index = otherParticleIndex;
-    thisFaceNeighborhood->numParticles++;
+    uint neighborIndex = thisFaceIndex * MAX_PARTICLES_TO_FACES + numParticles;
+    particlesToFacesNeighborhood[neighborIndex].index = otherParticleIndex;
+    particlesToFacesNeighborhoodNum[thisFaceIndex]++;
 }
 
-void neighborhood_resetParticleNeighborhood(Particle* thisParticle, global ParticleNeighborhood* particlesNeighborhood)
-{ 
+void neighborhood_resetParticleNeighborhood(Particle* thisParticle, global uint* particlesToParticlesNeighborhoodNum, global uint* facesToParticlesNeighborhoodNum)
+{
     uint thisParticleIndex = thisParticle->index;
 
-    global ParticleNeighborhood* thisParticleNeighborhood = &particlesNeighborhood[thisParticleIndex];
-
-    thisParticleNeighborhood->numParticles = 0;
-    thisParticleNeighborhood->numFaces = 0;
+    particlesToParticlesNeighborhoodNum[thisParticleIndex] = 0;
+    facesToParticlesNeighborhoodNum[thisParticleIndex] = 0;
 }
 
-void neighborhood_resetFaceNeighborhood(Face* thisFace, global FaceNeighborhood* facesNeighborhood)
+void neighborhood_resetFaceNeighborhood(Face* thisFace, global uint* particlesToFacesNeighborhoodNum)
 {
     uint thisFaceIndex = thisFace->index;
 
-    global FaceNeighborhood* thisFaceNeighborhood = &facesNeighborhood[thisFaceIndex];
-
-    thisFaceNeighborhood->numParticles = 0;
+    particlesToFacesNeighborhoodNum[thisFaceIndex] = 0;
 }
 
 #endif // NEIGHBORHOOD_CPP_CL

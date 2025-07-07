@@ -1,7 +1,6 @@
 #ifndef FACE_H_CL
 #define FACE_H_CL
 
-#include "../Neighborhood.h.cl"
 #include "../Vertex.h.cl"
 
 typedef struct
@@ -22,8 +21,6 @@ typedef struct
     float4 oldTorque;
 
     Vertex vertexes[3];
-
-    FaceNeighborhood neighborhood;
 } Face;
 
 #endif // FACE_H_CL
