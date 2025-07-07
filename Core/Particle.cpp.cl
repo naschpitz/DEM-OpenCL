@@ -22,7 +22,7 @@ void particle_addCurrentForceToParticle(Particle* thisParticle, const Particle* 
     float4 otherForce = -(*force);
 
     float4 otherR = (*pointOfForceOtherParticle) - otherParticle->vertex.currentPosition;
-    float4 otherTorque = cross(otherR, (*force));
+    float4 otherTorque = cross(otherR, otherForce);
 
     // Find thisParticle in otherParticle's neighborhood and store the reaction force
     uint numParticles = particlesToParticlesNeighborhoodNum[otherParticleIndex];
@@ -52,7 +52,7 @@ void particle_addCurrentForceToFace(Particle* thisParticle, const Face* otherFac
     float4 otherForce = -(*force);
 
     float4 otherR = (*pointOfForceOtherFace) - otherFace->currentPosition;
-    float4 otherTorque = cross(otherR, (*force));
+    float4 otherTorque = cross(otherR, otherForce);
 
     // Find thisParticle in otherFace's neighborhood and store the reaction force
     uint numParticles = particlesToFacesNeighborhoodNum[otherFaceIndex];

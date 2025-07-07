@@ -40,7 +40,7 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
     particle_addCurrentForceToParticle(thisParticle, otherParticle, &totalForce, &closestOnThisParticle, &closestOnOtherParticle, particlesToParticlesNeighborhood, particlesToParticlesNeighborhoodNum);
 }
 
-bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
+bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum, global uint* facesToParticlesNeighborhoodNum)
 {
     float4 closestOnThisParticle, closestOnOtherFace;
 
@@ -69,8 +69,12 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
     float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    // uint numFaces = particlesToFacesNeighborhoodNum[otherFace->index];
-    float4 totalForce = - (force + dragForce);
+    uint numFaces = facesToParticlesNeighborhoodNum[thisParticle->index];
+
+
+        printf("numFaces: %d\n", numFaces);
+
+    float4 totalForce = - (force + dragForce) / numFaces;
     particle_addCurrentForceToFace(thisParticle, otherFace, &totalForce, &closestOnThisParticle, &closestOnOtherFace, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
 
     return true;

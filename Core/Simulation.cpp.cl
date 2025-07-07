@@ -73,9 +73,9 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
     if((simulation.currentStep % simulation.calcNeighStepsInt) != 0 && simulation.currentStep != 0)
         return;
 
-    size_t idx = get_global_id(0);
+    size_t thisParticleIndex = get_global_id(0);
 
-    Particle thisParticle = particles[idx];
+    Particle thisParticle = particles[thisParticleIndex];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
@@ -84,6 +84,8 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
     for(ulong i = 0; i < scenery.numParticles; i++) {
         Particle otherParticle = particles[i];
 
+        // If thisParticleIndex is above otherParticleIndex, skip.
+        // Ex: will calculate 0-1, 0-2, 0-3, 1-2, 1-3, 2-3, but not 1-0, 2-0, 2-1, 3-0, 3-1, 3-2.
         if(thisParticle.index >= otherParticle.index)
             continue;
 
@@ -112,7 +114,26 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
         neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace, facesToParticlesNeighborhood, facesToParticlesNeighborhoodNum);
     }
 
-    particles[idx] = thisParticle;
+    if (particlesToParticlesNeighborhoodNum[thisParticleIndex] != 0) {
+        // Print the particle's neighborhood
+        printf("Particle %d particles neighborhood:", thisParticle.index);
+        for(ulong i = 0; i < particlesToParticlesNeighborhoodNum[thisParticleIndex]; i++) {
+            uint neighborIndex = thisParticleIndex * MAX_PARTICLES_TO_PARTICLES + i;
+            printf(" %d", particlesToParticlesNeighborhood[neighborIndex].index);
+        }
+        printf("\n");
+    }
+
+    if (facesToParticlesNeighborhoodNum[thisParticleIndex] != 0) {
+        printf("Particle %d faces neighborhood:", thisParticle.index);
+        for(ulong i = 0; i < facesToParticlesNeighborhoodNum[thisParticleIndex]; i++) {
+            uint neighborIndex = thisParticleIndex * MAX_FACES_TO_PARTICLES + i;
+            printf(" %d", facesToParticlesNeighborhood[neighborIndex].index);
+        }
+        printf("\n");
+    }
+
+    particles[thisParticleIndex] = thisParticle;
 }
 
 kernel void calculate_faces_neighborhood(global Face* faces, global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global ForceTorque* particlesToFacesNeighborhood, global uint* particlesToFacesNeighborhoodNum)
@@ -122,9 +143,9 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
     if((simulation.currentStep % simulation.calcNeighStepsInt) != 0 && simulation.currentStep != 0)
         return;
 
-    size_t idx = get_global_id(0);
+    size_t thisFaceIndex = get_global_id(0);
 
-    Face thisFace = faces[idx];
+    Face thisFace = faces[thisFaceIndex];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
     Scenery scenery = ptrScenery[0];
 
@@ -144,7 +165,17 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
         neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
     }
 
-    faces[idx] = thisFace;
+    // Print the face's neighborhood
+    if (particlesToFacesNeighborhoodNum[thisFaceIndex] != 0) {
+        printf("Face %d particles neighborhood:", thisFace.index);
+        for(ulong i = 0; i < particlesToFacesNeighborhoodNum[thisFaceIndex]; i++) {
+            uint neighborIndex = thisFaceIndex * MAX_PARTICLES_TO_FACES + i;
+            printf(" %d", particlesToFacesNeighborhood[neighborIndex].index);
+        }
+        printf("\n");
+    }
+
+    faces[thisFaceIndex] = thisFace;
 }
 
 kernel void calculate_particle_to_particle(global Particle* particles, constant MaterialsManager* ptrMaterialsManager, global ForceTorque* particlesToParticlesNeighborhood, global uint* particlesToParticlesNeighborhoodNum)
@@ -161,9 +192,6 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
         size_t otherParticleIndex = particlesToParticlesNeighborhood[neighborIndex].index;
 
         Particle otherParticle = particles[otherParticleIndex];
-
-        if(thisParticleIndex >= otherParticleIndex)
-            continue;
 
         int thisMaterialIndex = thisParticle.materialIndex;
         int otherMateriaIndex = otherParticle.materialIndex;
@@ -196,7 +224,7 @@ kernel void calculate_particle_to_face(global Particle* particles, global Face* 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        particleToFaceWorker_run(&thisParticle, &otherFace, material, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
+        particleToFaceWorker_run(&thisParticle, &otherFace, material, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum, facesToParticlesNeighborhoodNum);
     }
 
     particles[thisParticleIndex] = thisParticle;
