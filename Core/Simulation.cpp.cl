@@ -114,25 +114,6 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
         neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace, facesToParticlesNeighborhood, facesToParticlesNeighborhoodNum);
     }
 
-    if (particlesToParticlesNeighborhoodNum[thisParticleIndex] != 0) {
-        // Print the particle's neighborhood
-        printf("Particle %d particles neighborhood:", thisParticle.index);
-        for(ulong i = 0; i < particlesToParticlesNeighborhoodNum[thisParticleIndex]; i++) {
-            uint neighborIndex = thisParticleIndex * MAX_PARTICLES_TO_PARTICLES + i;
-            printf(" %d", particlesToParticlesNeighborhood[neighborIndex].index);
-        }
-        printf("\n");
-    }
-
-    if (facesToParticlesNeighborhoodNum[thisParticleIndex] != 0) {
-        printf("Particle %d faces neighborhood:", thisParticle.index);
-        for(ulong i = 0; i < facesToParticlesNeighborhoodNum[thisParticleIndex]; i++) {
-            uint neighborIndex = thisParticleIndex * MAX_FACES_TO_PARTICLES + i;
-            printf(" %d", facesToParticlesNeighborhood[neighborIndex].index);
-        }
-        printf("\n");
-    }
-
     particles[thisParticleIndex] = thisParticle;
 }
 
@@ -163,16 +144,6 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
             continue;
 
         neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
-    }
-
-    // Print the face's neighborhood
-    if (particlesToFacesNeighborhoodNum[thisFaceIndex] != 0) {
-        printf("Face %d particles neighborhood:", thisFace.index);
-        for(ulong i = 0; i < particlesToFacesNeighborhoodNum[thisFaceIndex]; i++) {
-            uint neighborIndex = thisFaceIndex * MAX_PARTICLES_TO_FACES + i;
-            printf(" %d", particlesToFacesNeighborhood[neighborIndex].index);
-        }
-        printf("\n");
     }
 
     faces[thisFaceIndex] = thisFace;

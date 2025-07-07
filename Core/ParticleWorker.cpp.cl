@@ -71,9 +71,6 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
 
     uint numFaces = facesToParticlesNeighborhoodNum[thisParticle->index];
 
-
-        printf("numFaces: %d\n", numFaces);
-
     float4 totalForce = - (force + dragForce) / numFaces;
     particle_addCurrentForceToFace(thisParticle, otherFace, &totalForce, &closestOnThisParticle, &closestOnOtherFace, particlesToFacesNeighborhood, particlesToFacesNeighborhoodNum);
 
