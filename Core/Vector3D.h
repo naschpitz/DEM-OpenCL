@@ -9,6 +9,7 @@ class Vector3D
     public:
         Vector3D();
         Vector3D(const float &x, const float &y, const float &z);
+        Vector3D(const Vector3D &other);  // Copy constructor
 
         virtual void setX(const float &x) { this->x = x; }
         virtual void setY(const float &y) { this->y = y; }

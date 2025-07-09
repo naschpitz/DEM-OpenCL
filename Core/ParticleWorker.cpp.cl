@@ -37,10 +37,15 @@ void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherP
 
     float4 totalForce = - (force + dragForce);
 
-    particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+    thisParticle->currentForce += totalForce;
+
+    float4 r = closestOnThisParticle - thisParticle->vertex.currentPosition;
+    float4 torque = cross(r, totalForce);
+
+    thisParticle->currentTorque += torque;
 }
 
-bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
+void particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Material* material)
 {
     float4 closestOnThisParticle, closestOnOtherFace;
 
@@ -52,7 +57,7 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     bool internal = particle_isInternal(thisParticle, closestOnOtherFace);
 
     if((length(distance) > material->distanceThreshold) && !internal)
-        return false;
+        return;
 
     float4 velocity = otherFace->currentVelocity - thisParticle->vertex.currentVelocity;
 
@@ -69,11 +74,16 @@ bool particleToFaceWorker_run(Particle* thisParticle, Face* otherFace, const Mat
     float4 force     = material_calculateForce(material, distance, distanceUnitary, internal, minContactArea, originalLength, oldForce);
     float4 dragForce = material_calculateDragForce(material, velocity, rotationVelocity, force);
 
-    float4 totalForce = - (force + dragForce);
+    uint numFaces = thisParticle->neighborhood.numFaces;
 
-    particle_addCurrentForce(thisParticle, &totalForce, &closestOnThisParticle);
+    float4 totalForce = - (force + dragForce) / numFaces;
 
-    return true;
+    thisParticle->currentForce += totalForce;
+
+    float4 r = closestOnThisParticle - thisParticle->vertex.currentPosition;
+    float4 torque = cross(r, totalForce) / numFaces;
+
+    thisParticle->currentTorque += torque;
 }
 
 #endif // PARTICLEWORKER_CPP_CL

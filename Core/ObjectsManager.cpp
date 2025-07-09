@@ -10,7 +10,7 @@ ObjectsManager::ObjectsManager(const nlohmann::json& jsonValue)
     try {
         const nlohmann::json& nonSolidObjectsArray = jsonValue.at("nonSolidObjects");
 
-        foreach(nlohmann::json nonSolidObjectValue, nonSolidObjectsArray) {
+        for(const auto& nonSolidObjectValue : nonSolidObjectsArray) {
             NonSolidObject nonSolidObject(nonSolidObjectValue);
 
             this->nonSolidObjects.push_back(nonSolidObject);
@@ -22,7 +22,7 @@ ObjectsManager::ObjectsManager(const nlohmann::json& jsonValue)
     try {
         const nlohmann::json& solidObjectsArray = jsonValue.at("solidObjects");
 
-        foreach(nlohmann::json solidObjectValue, solidObjectsArray) {
+        for(const auto& solidObjectValue : solidObjectsArray) {
             SolidObject solidObject(solidObjectValue);
 
             this->solidObjects.push_back(solidObject);
@@ -59,12 +59,12 @@ QVector<ParticleCL> ObjectsManager::getParticlesCL(const MaterialsManager& mater
 
     QVector<ParticleCL> particlesCL;
 
-    foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
+    for(const NonSolidObject& nonSolidObject : this->nonSolidObjects) {
         uint materialIndex = materialsManager.getMaterialIndex(nonSolidObject.getMaterial());
 
         const QVector<Particle>& particles = nonSolidObject.getParticles();
 
-        foreach(const Particle& particle, particles) {
+        for(const Particle& particle : particles) {
             ParticleCL particleCL = particle.getCL(particleIndex, materialIndex);
             particleIndex++;
 
@@ -81,12 +81,12 @@ QVector<FaceCL> ObjectsManager::getFacesCL(const MaterialsManager &materialsMana
 
     QVector<FaceCL> facesCL;
 
-    foreach(const SolidObject& solidObject, this->solidObjects) {
+    for(const SolidObject& solidObject : this->solidObjects) {
         uint materialIndex = materialsManager.getMaterialIndex(solidObject.getMaterial());
 
         const QVector<Face>& faces = solidObject.getFaces();
 
-        foreach(const Face& face, faces) {
+        for(const Face& face : faces) {
             FaceCL faceCL = face.getCL(faceIndex, materialIndex);
             faceIndex++;
 
@@ -139,7 +139,7 @@ nlohmann::json ObjectsManager::getJson(bool detailed = true) const
     nlohmann::json solidObjectsArray;
 
     if(!this->nonSolidObjects.isEmpty()) {
-        foreach(const NonSolidObject& nonSolidObject, this->nonSolidObjects) {
+        for(const NonSolidObject& nonSolidObject : this->nonSolidObjects) {
             nonSolidObjectsArray.push_back(nonSolidObject.getJson(detailed));
         }
 
@@ -147,7 +147,7 @@ nlohmann::json ObjectsManager::getJson(bool detailed = true) const
     }
 
     if(!this->solidObjects.isEmpty()) {
-        foreach(const SolidObject& solidObject, this->solidObjects) {
+        for(const SolidObject& solidObject : this->solidObjects) {
             solidObjectsArray.push_back(solidObject.getJson(detailed));
         }
 

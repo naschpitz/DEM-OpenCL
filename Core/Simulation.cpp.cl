@@ -154,7 +154,9 @@ kernel void calculate_particle_to_particle(global Particle* particles, constant 
     Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
 
-    for(ulong i = 0; i < thisParticle.neighborhood.numParticles; i++) {
+    uint numParticles = thisParticle.neighborhood.numParticles;
+
+    for(ulong i = 0; i < numParticles; i++) {
         Particle otherParticle = particles[thisParticle.neighborhood.particles[i]];
 
         int thisMaterialIndex = thisParticle.materialIndex;
@@ -175,9 +177,9 @@ kernel void calculate_particle_to_face(global Particle* particles, global Face* 
     Particle thisParticle = particles[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
 
-    uint hitCount = 0;
+    uint numFaces = thisParticle.neighborhood.numFaces;
 
-    for(ulong i = 0; i < thisParticle.neighborhood.numFaces; i++) {
+    for(ulong i = 0; i < numFaces; i++) {
         Face otherFace = faces[thisParticle.neighborhood.faces[i]];
 
         int thisMaterialIndex = thisParticle.materialIndex;
@@ -185,14 +187,8 @@ kernel void calculate_particle_to_face(global Particle* particles, global Face* 
 
         const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMateriaIndex, &materialsManager);
 
-        bool isHit = particleToFaceWorker_run(&thisParticle, &otherFace, material);
-
-        if(isHit)
-            hitCount++;
+        particleToFaceWorker_run(&thisParticle, &otherFace, material);
     }
-
-    if(hitCount)
-        particle_divideCurrentForce(&thisParticle, hitCount);
 
     particles[idx] = thisParticle;
 }
@@ -204,7 +200,9 @@ kernel void calculate_face_to_particle(global Face* faces, global Particle* part
     Face thisFace = faces[idx];
     MaterialsManager materialsManager = ptrMaterialsManager[0];
 
-    for(ulong i = 0; i < thisFace.neighborhood.numParticles; i++) {
+    uint numParticles = thisFace.neighborhood.numParticles;
+
+    for(ulong i = 0; i < numParticles; i++) {
         Particle otherParticle = particles[thisFace.neighborhood.particles[i]];
 
         int thisMaterialIndex = thisFace.materialIndex;

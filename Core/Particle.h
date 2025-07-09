@@ -58,6 +58,8 @@ class Particle : public Vertex
 
     public:
         Particle();
+        Particle(const Particle& other);  // Copy constructor
+        Particle& operator=(const Particle& other);  // Copy assignment operator
         Particle(const double& x, const double& y, const double& z, const double& radius);
         Particle(const Vector3D& vector, const double& radius);
 

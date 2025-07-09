@@ -37,7 +37,14 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
 
     float4 totalForce = -(force + dragForce);
 
-    face_addCurrentForce(thisFace, &totalForce, &closestOnThisFace);
+    uint numFaces = otherParticle->neighborhood.numFaces;
+
+    thisFace->currentForce += totalForce / numFaces;
+
+    float4 r = closestOnThisFace - thisFace->currentPosition;
+    float4 torque = cross(r, totalForce) / numFaces;
+
+    thisFace->currentTorque += torque;
 }
 
 #endif // FACEWORKER_CPP_CL

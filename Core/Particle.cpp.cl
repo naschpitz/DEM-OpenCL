@@ -16,6 +16,9 @@ void particle_addCurrentForce(Particle* particle, const float4* force, const flo
 
 void particle_divideCurrentForce(Particle* particle, float divider)
 {
+    if(divider == 0)
+        return;
+
     particle->currentForce /= divider;
     particle->currentTorque /= divider;
 }

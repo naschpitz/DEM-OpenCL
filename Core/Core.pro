@@ -38,7 +38,6 @@ HEADERS += \
     Face.h \
     RequestMapper.h \
     RequestSender.h \
-    OpenCLKernel.h \
     LogSender.h \
     FrameSender.h \
     EasyZLib.h \

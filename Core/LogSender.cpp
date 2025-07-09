@@ -79,9 +79,10 @@ void LogSender::run()
         this->mutex.unlock();
 
         // Dispatch to thread pool for concurrent sending
-        QtConcurrent::run([this, logData]() {
+        auto future = QtConcurrent::run([this, logData]() {
             sendLog(logData);
         });
+        Q_UNUSED(future);
     }
 }
 

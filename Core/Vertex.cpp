@@ -21,10 +21,36 @@ Vertex::Vertex(const Vertex& other)
     this->oldVelocity      = other.oldVelocity;
     this->originalVelocity = other.originalVelocity;
 
+    this->acceleration = other.acceleration;
+    this->angularAcceleration = other.angularAcceleration;
+
     this->currentAngularVelocity = other.currentAngularVelocity;
     this->oldAngularVelocity     = other.oldAngularVelocity;
 
     this->fixed = other.fixed;
+}
+
+Vertex& Vertex::operator=(const Vertex& other)
+{
+    if (this != &other)
+    {
+        this->currentPosition  = other.currentPosition;
+        this->oldPosition      = other.oldPosition;
+        this->originalPosition = other.originalPosition;
+
+        this->currentVelocity  = other.currentVelocity;
+        this->oldVelocity      = other.oldVelocity;
+        this->originalVelocity = other.originalVelocity;
+
+        this->acceleration = other.acceleration;
+        this->angularAcceleration = other.angularAcceleration;
+
+        this->currentAngularVelocity = other.currentAngularVelocity;
+        this->oldAngularVelocity     = other.oldAngularVelocity;
+
+        this->fixed = other.fixed;
+    }
+    return *this;
 }
 
 Vertex::Vertex(const Vector3D& vector)

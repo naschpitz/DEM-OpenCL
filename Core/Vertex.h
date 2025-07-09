@@ -60,6 +60,7 @@ class Vertex
     public:
         Vertex();
         Vertex(const Vertex& other);
+        Vertex& operator=(const Vertex& other);  // Copy assignment operator
         Vertex(const Vector3D& vector);
         Vertex(const double& x, const double& y, const double& z);
 

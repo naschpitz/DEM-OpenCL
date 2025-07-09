@@ -8,6 +8,41 @@ Particle::Particle()
 
 }
 
+Particle::Particle(const Particle& other) : Vertex(other)
+{
+    this->materialName = other.materialName;
+    this->radius = other.radius;
+    this->density = other.density;
+    this->mass = other.mass;
+    this->area = other.area;
+    this->volume = other.volume;
+    this->inertiaMomentum = other.inertiaMomentum;
+    this->currentForce = other.currentForce;
+    this->oldForce = other.oldForce;
+    this->currentTorque = other.currentTorque;
+    this->oldTorque = other.oldTorque;
+}
+
+Particle& Particle::operator=(const Particle& other)
+{
+    if (this != &other)
+    {
+        Vertex::operator=(other);  // Call base class assignment
+        this->materialName = other.materialName;
+        this->radius = other.radius;
+        this->density = other.density;
+        this->mass = other.mass;
+        this->area = other.area;
+        this->volume = other.volume;
+        this->inertiaMomentum = other.inertiaMomentum;
+        this->currentForce = other.currentForce;
+        this->oldForce = other.oldForce;
+        this->currentTorque = other.currentTorque;
+        this->oldTorque = other.oldTorque;
+    }
+    return *this;
+}
+
 Particle::Particle(const double& x, const double& y, const double& z, const double& radius) : Vertex(x, y, z)
 {
     this->radius = radius;

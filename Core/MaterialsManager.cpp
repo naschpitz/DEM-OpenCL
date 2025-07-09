@@ -7,7 +7,7 @@ MaterialsManager::MaterialsManager()
 
 MaterialsManager::MaterialsManager(const nlohmann::json& materialsArray)
 {
-    foreach(nlohmann::json materialValue, materialsArray) {
+    for(const auto& materialValue : materialsArray) {
         Material material(materialValue);
 
         this->idsMap[material.getId()] = this->materials.count();

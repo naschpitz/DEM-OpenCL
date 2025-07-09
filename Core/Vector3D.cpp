@@ -15,6 +15,13 @@ Vector3D::Vector3D(const float &x, const float &y, const float &z)
     this->z = z;
 }
 
+Vector3D::Vector3D(const Vector3D &other)
+{
+    this->x = other.x;
+    this->y = other.y;
+    this->z = other.z;
+}
+
 float Vector3D::dotProduct(const Vector3D &v1, const Vector3D &v2)
 {
     return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);

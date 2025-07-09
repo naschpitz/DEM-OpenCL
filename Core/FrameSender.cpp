@@ -129,9 +129,10 @@ void FrameSender::run()
         this->mutex.unlock();
 
         // Dispatch to thread pool for concurrent sending
-        QtConcurrent::run([this, frameData]() {
+        auto future = QtConcurrent::run([this, frameData]() {
             sendFrame(frameData);
         });
+        Q_UNUSED(future);
     }
 }
 

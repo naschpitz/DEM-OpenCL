@@ -48,7 +48,7 @@ Material::Material(const nlohmann::json& jsonObject)
     try {
         const nlohmann::json& coefficients = jsonObject.at("coefficients");
 
-        foreach(nlohmann::json value, coefficients)
+        for(const auto& value : coefficients)
             this->addCoefficient(value.get<double>());
     }
 
@@ -57,7 +57,7 @@ Material::Material(const nlohmann::json& jsonObject)
     try {
         const nlohmann::json& dragCoefficients = jsonObject.at("dragCoefficients");
 
-        foreach(nlohmann::json value, dragCoefficients)
+        for(const auto& value : dragCoefficients)
             this->addDragCoefficient(value.get<double>());
     }
 

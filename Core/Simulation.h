@@ -75,6 +75,10 @@ class Simulation : public QThread
         Simulation(const nlohmann::json& jsonObject);
         ~Simulation();
 
+        // Delete copy constructor and assignment operator to prevent copying
+        Simulation(const Simulation&) = delete;
+        Simulation& operator=(const Simulation&) = delete;
+
         SimulationCL getCL() const;
 
         const QHostAddress& getInterfaceAddress() const;
