@@ -52,15 +52,38 @@ bool particle_isInternal(const Particle* particle, const float4 vector)
     return false;
 }
 
-void particle_integrate(Particle* particle, float timeStep)
+void particle_integrate(Particle* particle, const Simulation* simulation)
 {
+    uint stepsPerFrame = simulation->frameTime / simulation->timeStep;
+
+    particle->meanForce  += (particle->currentForce / stepsPerFrame);
+    particle->meanTorque += (particle->currentTorque / stepsPerFrame);
+
     particle->vertex.acceleration = particle_getCurrentAcceleration(particle);
     particle->vertex.angularAcceleration = particle_getCurrentAngularAcceleration(particle);
 
-    vertex_integrate(&(particle->vertex), timeStep);
+    vertex_integrate(&(particle->vertex), simulation);
 
     particle->oldForce = particle->currentForce;
     particle->oldTorque = particle->currentTorque;
+}
+
+void particle_reset(Particle* particle, const Simulation* simulation)
+{
+    particle->currentForce = (0, 0, 0, 0);
+    particle->oldForce     = (0, 0, 0, 0);
+
+    particle->currentTorque = (0, 0, 0, 0);
+    particle->oldTorque     = (0, 0, 0, 0);
+
+    uint stepsPerFrame = simulation->frameTime / simulation->timeStep;
+
+    if (simulation->currentStep % stepsPerFrame == 0) {
+        particle->meanForce  = (0, 0, 0, 0);
+        particle->meanTorque = (0, 0, 0, 0);
+
+        vertex_reset(&(particle->vertex));
+    }  
 }
 
 #endif // PARTICLE_CL

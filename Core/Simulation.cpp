@@ -164,6 +164,8 @@ SimulationCL Simulation::getCL() const
     simulationCL.timeStep = this->timeStep;
     simulationCL.totalTime = this->totalTime;
 
+    simulationCL.frameTime = this->frameTime;
+
     simulationCL.calcNeighStepsInt = this->calcNeighStepsInt;
     simulationCL.neighDistThresMult = this->neighDistThresMult;
 
@@ -329,13 +331,15 @@ void Simulation::run()
     }
 
     if(hasParticles) {
-        openClCore.addKernel("reset_particles_forces", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("reset_particles_forces", particlesCL);
+        openClCore.addKernel("reset_particles", particlesCL.size());
+        openClCore.addArgument<ParticleCL>("reset_particles", particlesCL);
+        openClCore.addArgument<SimulationCL>("reset_particles", simulationsCL);
     }
 
     if(hasFaces) {
-        openClCore.addKernel("reset_faces_forces", facesCL.size());
-        openClCore.addArgument<FaceCL>("reset_faces_forces", facesCL);
+        openClCore.addKernel("reset_faces", facesCL.size());
+        openClCore.addArgument<FaceCL>("reset_faces", facesCL);
+        openClCore.addArgument<SimulationCL>("reset_faces", simulationsCL);
     }
 
     if(hasParticles) {
@@ -397,7 +401,7 @@ void Simulation::run()
 
     this->paused = this->stoped = false;
 
-    uint frameSteps = this->frameTime / this->timeStep;
+    uint stepsPerFrame = this->frameTime / this->timeStep;
 
     QDateTime dateTime = QDateTime::currentDateTime();
 
@@ -414,20 +418,20 @@ void Simulation::run()
         simulationsCL = { this->getCL() };
         openClCore.writeBuffer(simulationsCL);
 
-        if(this->multiGPU || this->currentStep % frameSteps == 0) {
+        if(this->multiGPU || this->currentStep % stepsPerFrame == 0) {
             openClCore.syncDevicesBuffers(particlesCL);
             openClCore.syncDevicesBuffers(facesCL);
         }
 
-        if(this->currentStep % frameSteps == 0) {
+        if(this->currentStep % stepsPerFrame == 0) {
             this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
             this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
             bool isDetailed = false;
 
-	    if (this->isPrimary()) {
-		isDetailed = this->currentStep % (frameSteps * this->detailedFramesDiv) == 0;
-	    }
+            if (this->isPrimary()) {
+                isDetailed = this->currentStep % (stepsPerFrame * this->detailedFramesDiv) == 0;
+            }
 
             emit this->newFrame(isDetailed);
         }

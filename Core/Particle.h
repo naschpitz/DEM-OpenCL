@@ -28,9 +28,11 @@ typedef struct
     cl_float inertiaMomentum;
 
     cl_float4 currentForce;
+    cl_float4 meanForce;
     cl_float4 oldForce;
 
     cl_float4 currentTorque;
+    cl_float4 meanTorque;
     cl_float4 oldTorque;
 
     VertexCL vertex;
@@ -51,15 +53,15 @@ class Particle : public Vertex
         double inertiaMomentum;
 
         Vector3D currentForce;
+        Vector3D meanForce;
         Vector3D oldForce;
 
         Vector3D currentTorque;
+        Vector3D meanTorque;
         Vector3D oldTorque;
 
     public:
         Particle();
-        Particle(const Particle& other);  // Copy constructor
-        Particle& operator=(const Particle& other);  // Copy assignment operator
         Particle(const double& x, const double& y, const double& z, const double& radius);
         Particle(const Vector3D& vector, const double& radius);
 
@@ -77,14 +79,25 @@ class Particle : public Vertex
         const double& getVolume() const;
 
         const Vector3D& getCurrentForce() const;
+        const Vector3D& getMeanForce()    const;
 
-        const Vector3D& getCurrentTorque()   const;
-        Vector3D getCurrentMomentum()        const;
+        const Vector3D& getCurrentTorque() const;
+        const Vector3D& getMeanTorque()    const;
+
+        Vector3D getCurrentMomentum() const;
+        Vector3D getMeanMomentum()    const;
+
         Vector3D getCurrentAngularMomentum() const;
+        Vector3D getMeanAngularMomentum()    const;
 
         double getCurrentKineticEnergyTotal()    const;
+        double getMeanKineticEnergyTotal()       const;
+
         double getCurrentKineticEnergyExternal() const;
+        double getMeanKineticEnergyExternal()   const;
+
         double getCurrentKineticEnergyInternal() const;
+        double getMeanKineticEnergyInternal() const;
 
         nlohmann::json getJson() const;
 

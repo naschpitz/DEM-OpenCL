@@ -3,6 +3,8 @@
 #include "Vertex.h"
 
 #include <QFile>
+
+#define TETLIBRARY
 #include <tetgen1.5.1/tetgen.h>
 
 SolidObject::SolidObject()
@@ -184,26 +186,6 @@ const QString& SolidObject::getMaterial() const
     return this->material;
 }
 
-Vector3D SolidObject::getCurrentPosition() const
-{
-    Vector3D position;
-
-    foreach (const Face& face, this->faces)
-        position += face.getCurrentPosition() * face.getArea();
-
-    return position / this->getArea();
-}
-
-Vector3D SolidObject::getCurrentVelocity() const
-{
-    Vector3D velocity;
-
-    foreach (const Face& face, this->faces)
-        velocity += face.getCurrentVelocity() * face.getArea();
-
-    return velocity / this->getArea();
-}
-
 const double& SolidObject::getMass() const
 {
     return this->mass;
@@ -255,12 +237,52 @@ double SolidObject::getArea() const
     return area;
 }
 
+Vector3D SolidObject::getCurrentPosition() const
+{
+    Vector3D position;
+
+    foreach (const Face& face, this->faces)
+        position += face.getCurrentPosition() * face.getArea();
+
+    return position / this->getArea();
+}
+
+Vector3D SolidObject::getCurrentVelocity() const
+{
+    Vector3D velocity;
+
+    foreach (const Face& face, this->faces)
+        velocity += face.getCurrentVelocity() * face.getArea();
+
+    return velocity / this->getArea();
+}
+
+Vector3D SolidObject::getMeanVelocity() const
+{
+    Vector3D velocity;
+
+    foreach (const Face& face, this->faces)
+        velocity += face.getMeanVelocity() * face.getArea();
+
+    return velocity / this->getArea();
+}
+
 Vector3D SolidObject::getCurrentMomentum() const
 {
     Vector3D momentum;
 
     foreach (const Face& face, this->faces)
         momentum += face.getCurrentMomentum();
+
+    return momentum;
+}
+
+Vector3D SolidObject::getMeanMomentum() const
+{
+    Vector3D momentum;
+
+    foreach (const Face& face, this->faces)
+        momentum += face.getMeanMomentum();
 
     return momentum;
 }
@@ -275,12 +297,32 @@ Vector3D SolidObject::getCurrentForce() const
     return force;
 }
 
+Vector3D SolidObject::getMeanForce() const
+{
+    Vector3D force;
+
+    foreach (const Face& face, this->faces)
+        force += face.getMeanForce();
+
+    return force;
+}
+
 double SolidObject::getCurrentKineticEnergyTotal() const
 {
     double kineticEnergy = 0;
 
     foreach (const Face& face, this->faces)
         kineticEnergy += face.getCurrentKineticEnergy();
+
+    return kineticEnergy;
+}
+
+double SolidObject::getMeanKineticEnergyTotal() const
+{
+    double kineticEnergy = 0;
+
+    foreach (const Face& face, this->faces)
+        kineticEnergy += face.getMeanKineticEnergy();
 
     return kineticEnergy;
 }
@@ -303,7 +345,7 @@ nlohmann::json SolidObject::getJson(bool detailed = true) const
 
     jsonObject["_id"] = this->id.toStdString();
 
-    // -- currentPosition
+    // -- position
     Vector3D currentPosition = this->getCurrentPosition();
 
     nlohmann::json currentPositionArray;
@@ -314,26 +356,26 @@ nlohmann::json SolidObject::getJson(bool detailed = true) const
     jsonObject["position"] = currentPositionArray;
     //
 
-    // -- currentVelocity
-    Vector3D currentVelocity = this->getCurrentVelocity();
+    // -- velocity
+    Vector3D meanVelocity = this->getMeanVelocity();
 
-    nlohmann::json currentVelocityArray;
-    currentVelocityArray.push_back(currentVelocity.getX());
-    currentVelocityArray.push_back(currentVelocity.getY());
-    currentVelocityArray.push_back(currentVelocity.getZ());
+    nlohmann::json meanVelocityArray;
+    meanVelocityArray.push_back(meanVelocity.getX());
+    meanVelocityArray.push_back(meanVelocity.getY());
+    meanVelocityArray.push_back(meanVelocity.getZ());
 
-    jsonObject["velocity"] = currentVelocityArray;
+    jsonObject["velocity"] = meanVelocityArray;
     //
 
-    // -- currentForce
-    Vector3D currentForce = this->getCurrentForce();
+    // -- force
+    Vector3D meanForce = this->getMeanForce();
 
-    nlohmann::json currentForceArray;
-    currentForceArray.push_back(currentForce.getX());
-    currentForceArray.push_back(currentForce.getY());
-    currentForceArray.push_back(currentForce.getZ());
+    nlohmann::json meanForceArray;
+    meanForceArray.push_back(meanForce.getX());
+    meanForceArray.push_back(meanForce.getY());
+    meanForceArray.push_back(meanForce.getZ());
 
-    jsonObject["force"] = currentForceArray;
+    jsonObject["force"] = meanForceArray;
     //
 
     // -- faces

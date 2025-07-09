@@ -247,7 +247,7 @@ kernel void integrate_particles(global Particle* particles, constant Simulation*
     Particle particle = particles[idx];
     Simulation simulation = ptrSimulation[0];
 
-    particle_integrate(&particle, simulation.timeStep);
+    particle_integrate(&particle, &simulation);
 
     particles[idx] = particle;
 }
@@ -259,37 +259,31 @@ kernel void integrate_faces(global Face* faces, constant Simulation* ptrSimulati
     Face face = faces[idx];
     Simulation simulation = ptrSimulation[0];
 
-    face_integrate(&face, simulation.timeStep);
+    face_integrate(&face, &simulation);
 
     faces[idx] = face;
 }
 
-kernel void reset_particles_forces(global Particle* particles)
+kernel void reset_particles(global Particle* particles, constant Simulation* ptrSimulation)
 {
     size_t idx = get_global_id(0);
 
     Particle thisParticle = particles[idx];
+    Simulation simulation = ptrSimulation[0];
 
-    thisParticle.currentForce = (0, 0, 0, 0);
-    thisParticle.oldForce     = (0, 0, 0, 0);
-
-    thisParticle.currentTorque = (0, 0, 0, 0);
-    thisParticle.oldTorque     = (0, 0, 0, 0);
+    particle_reset(&thisParticle, &simulation);
 
     particles[idx] = thisParticle;
 }
 
-kernel void reset_faces_forces(global Face* faces)
+kernel void reset_faces(global Face* faces, constant Simulation* ptrSimulation)
 {
     size_t idx = get_global_id(0);
 
     Face thisFace = faces[idx];
+    Simulation simulation = ptrSimulation[0];
 
-    thisFace.currentForce = (0, 0, 0, 0);
-    thisFace.oldForce     = (0, 0, 0, 0);
-
-    thisFace.currentTorque = (0, 0, 0, 0);
-    thisFace.oldTorque     = (0, 0, 0, 0);
+    face_reset(&thisFace, &simulation);
 
     faces[idx] = thisFace;
 }

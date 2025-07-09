@@ -119,12 +119,17 @@ void face_calculateCurrentVelocity(Face* face)
     face->currentVelocity = (face->vertexes[0].currentVelocity + face->vertexes[1].currentVelocity + face->vertexes[2].currentVelocity) / 3;
 }
 
-float4 face_getCurrentAcceleration(Face* face)
+void face_calculateMeanVelocity(Face* face)
+{
+    face->meanVelocity = (face->vertexes[0].meanVelocity + face->vertexes[1].meanVelocity + face->vertexes[2].meanVelocity) / 3;
+}
+
+float4 face_getCurrentAcceleration(const Face* face)
 {
     return face->currentForce / face->mass;
 }
 
-float4 face_getNormal(Face* face)
+float4 face_getNormal(const Face* face)
 {
     float4 e1 = face->vertexes[1].currentPosition - face->vertexes[0].currentPosition;
     float4 e2 = face->vertexes[2].currentPosition - face->vertexes[0].currentPosition;
@@ -135,13 +140,18 @@ float4 face_getNormal(Face* face)
     return normal;
 }
 
-void face_integrate(Face* face, float timeStep)
+void face_integrate(Face* face, const Simulation* simulation)
 {
+    uint stepsPerFrame = simulation->frameTime / simulation->timeStep;
+
+    face->meanForce += (face->currentForce / stepsPerFrame);
+    face->meanTorque += (face->currentTorque / stepsPerFrame);
+
     float4 currentAcceleration = face_getCurrentAcceleration(face);
 
     for(int i = 0; i < 3; i++) {
         face->vertexes[i].acceleration = currentAcceleration;
-        vertex_integrate(face->vertexes + i, timeStep);
+        vertex_integrate(face->vertexes + i, simulation);
     }
 
     face->oldForce = face->currentForce;
@@ -149,6 +159,27 @@ void face_integrate(Face* face, float timeStep)
 
     face_calculateCurrentPosition(face);
     face_calculateCurrentVelocity(face);
+    face_calculateMeanVelocity(face);
+}
+
+void face_reset(Face* face, const Simulation* simulation)
+{
+    face->currentForce = (0, 0, 0, 0);
+    face->oldForce     = (0, 0, 0, 0);
+
+    face->currentTorque = (0, 0, 0, 0);
+    face->oldTorque     = (0, 0, 0, 0);
+
+    uint stepsPerFrame = simulation->frameTime / simulation->timeStep;
+
+    if (simulation->currentStep % stepsPerFrame == 0) {
+        face->meanForce  = (0, 0, 0, 0);
+        face->meanTorque = (0, 0, 0, 0);
+
+        for(int i = 0; i < 3; i++) {
+            vertex_reset(&(face->vertexes[i]));
+        }
+    }
 }
 
 #endif // FACE_CPP_CL

@@ -13,12 +13,16 @@ typedef struct
     float mass;
 
     float4 currentPosition;
+
     float4 currentVelocity;
+    float4 meanVelocity;
 
     float4 currentForce;
+    float4 meanForce;
     float4 oldForce;
 
     float4 currentTorque;
+    float4 meanTorque;
     float4 oldTorque;
 
     Vertex vertexes[3];

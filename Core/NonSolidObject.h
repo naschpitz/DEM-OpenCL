@@ -42,20 +42,35 @@ class NonSolidObject
 
         const QString& getId()       const;
         const QString& getMaterial() const;
-
-        Vector3D getCurrentPosition() const;
-        Vector3D getCurrentVelocity() const;
+        
         double   getCurrentMass()     const;
         double   getCurrentVolume()   const;
 
         void getBox(Vector3D& min, Vector3D& max);
 
-        Vector3D getCurrentMomentum()              const;
-        Vector3D getCurrentAngularMomentum()       const;
-        Vector3D getCurrentForce()                 const;
-        double   getCurrentKineticEnergyTotal()    const;
-        double   getCurrentKineticEnergyExternal() const;
-        double   getCurrentKineticEnergyInternal() const;
+        Vector3D getCurrentPosition() const;
+        
+        Vector3D getCurrentVelocity() const;
+        Vector3D getMeanVelocity()    const;
+
+        Vector3D getCurrentMomentum() const;
+        Vector3D getMeanMomentum()    const;
+
+        Vector3D getCurrentAngularMomentum() const;
+        Vector3D getMeanAngularMomentum()    const;
+        
+        Vector3D getCurrentForce() const;
+        Vector3D getMeanForce()    const;
+        
+        double getCurrentKineticEnergyTotal() const;
+        double getMeanKineticEnergyTotal()    const;
+
+        double getCurrentKineticEnergyExternal() const;
+        double getMeanKineticEnergyExternal()    const;
+
+        double getCurrentKineticEnergyInternal() const;
+        double getMeanKineticEnergyInternal()    const;
+
 
         const QVector<Particle>& getParticles() const;
         void setParticlesCL(const QVector<ParticleCL>& particlesCL);

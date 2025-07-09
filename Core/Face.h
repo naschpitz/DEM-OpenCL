@@ -27,12 +27,16 @@ typedef struct
     cl_float mass;
 
     cl_float4 currentPosition;
+
     cl_float4 currentVelocity;
+    cl_float4 meanVelocity;
 
     cl_float4 currentForce;
+    cl_float4 meanForce;
     cl_float4 oldForce;
 
     cl_float4 currentTorque;
+    cl_float4 meanTorque;
     cl_float4 oldTorque;
 
     VertexCL vertexes[3];
@@ -49,12 +53,16 @@ class Face
         double mass;
 
         Vector3D currentPosition;
+
         Vector3D currentVelocity;
+        Vector3D meanVelocity;
 
         Vector3D currentForce;
+        Vector3D meanForce;
         Vector3D oldForce;
 
         Vector3D currentTorque;
+        Vector3D meanTorque;
         Vector3D oldTorque;
 
         QVector<Vertex> vertexes;
@@ -77,13 +85,22 @@ class Face
         Vector3D      getNormal() const;
         const double& getArea()   const;
 
-        Vector3D getCurrentMomentum() const;
-        double   getCurrentKineticEnergy() const;
-
         const Vector3D& getCurrentPosition() const;
+
         const Vector3D& getCurrentVelocity() const;
+        const Vector3D& getMeanVelocity()    const;
+
         const Vector3D& getCurrentForce() const;
+        const Vector3D& getMeanForce()    const;
+        
         const Vector3D& getCurrentTorque() const;
+        const Vector3D& getMeanTorque()    const;
+
+        Vector3D getCurrentMomentum() const;
+        Vector3D getMeanMomentum()    const;
+
+        double getCurrentKineticEnergy() const;
+        double getMeanKineticEnergy()    const;
 
         nlohmann::json getJson() const;
 

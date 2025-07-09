@@ -26,6 +26,8 @@ typedef struct
     cl_float timeStep;
     cl_float totalTime;
 
+    cl_float frameTime;
+
     cl_ulong  calcNeighStepsInt;
     cl_double neighDistThresMult;
 } SimulationCL;

@@ -163,26 +163,6 @@ const QString& NonSolidObject::getMaterial() const
     return this->material;
 }
 
-Vector3D NonSolidObject::getCurrentPosition() const
-{
-    Vector3D position;
-
-    foreach(const Particle& particle, this->particles)
-        position += particle.getCurrentPosition() * particle.getVolume();
-
-    return position / this->getCurrentVolume();
-}
-
-Vector3D NonSolidObject::getCurrentVelocity() const
-{
-    Vector3D velocity;
-
-    foreach(const Particle& particle, this->particles)
-        velocity += particle.getCurrentVelocity() * particle.getVolume();
-
-    return velocity / this->getCurrentVolume();
-}
-
 double NonSolidObject::getCurrentMass() const
 {
     double mass = 0;
@@ -245,12 +225,52 @@ void NonSolidObject::getBox(Vector3D &min, Vector3D &max)
     max.setZ(maxZ);
 }
 
+Vector3D NonSolidObject::getCurrentPosition() const
+{
+    Vector3D position;
+
+    foreach(const Particle& particle, this->particles)
+        position += particle.getCurrentPosition() * particle.getVolume();
+
+    return position / this->getCurrentVolume();
+}
+
+Vector3D NonSolidObject::getCurrentVelocity() const
+{
+    Vector3D velocity;
+
+    foreach(const Particle& particle, this->particles)
+        velocity += particle.getCurrentVelocity() * particle.getVolume();
+
+    return velocity / this->getCurrentVolume();
+}
+
+Vector3D NonSolidObject::getMeanVelocity() const
+{
+    Vector3D velocity;
+
+    foreach(const Particle& particle, this->particles)
+        velocity += particle.getMeanVelocity() * particle.getVolume();
+
+    return velocity / this->getCurrentVolume();
+}
+
 Vector3D NonSolidObject::getCurrentMomentum() const
 {
     Vector3D momentum;
 
     foreach(const Particle& particle, this->particles)
         momentum += particle.getCurrentMomentum();
+
+    return momentum;
+}
+
+Vector3D NonSolidObject::getMeanMomentum() const
+{
+    Vector3D momentum;
+
+    foreach(const Particle& particle, this->particles)
+        momentum += particle.getMeanMomentum();
 
     return momentum;
 }
@@ -270,12 +290,32 @@ Vector3D NonSolidObject::getCurrentForce() const
     return force;
 }
 
+Vector3D NonSolidObject::getMeanForce() const
+{
+    Vector3D force;
+
+    foreach(const Particle& particle, this->particles)
+        force += particle.getMeanForce();
+
+    return force;
+}
+
 double NonSolidObject::getCurrentKineticEnergyTotal() const
 {
     double kineticEnergyTotal = 0;
 
     foreach(const Particle& particle, this->particles)
         kineticEnergyTotal += particle.getCurrentKineticEnergyTotal();
+
+    return kineticEnergyTotal;
+}
+
+double NonSolidObject::getMeanKineticEnergyTotal() const
+{
+    double kineticEnergyTotal = 0;
+
+    foreach(const Particle& particle, this->particles)
+        kineticEnergyTotal += particle.getMeanKineticEnergyTotal();
 
     return kineticEnergyTotal;
 }
@@ -288,9 +328,22 @@ double NonSolidObject::getCurrentKineticEnergyExternal() const
     return momentum.getModuleSquared() / (2.0 * mass);
 }
 
+double NonSolidObject::getMeanKineticEnergyExternal() const
+{
+    Vector3D momentum = this->getMeanMomentum();
+    double   mass     = this->getCurrentMass();
+
+    return momentum.getModuleSquared() / (2.0 * mass);
+}
+
 double NonSolidObject::getCurrentKineticEnergyInternal() const
 {
     return this->getCurrentKineticEnergyTotal() - this->getCurrentKineticEnergyExternal();
+}
+
+double NonSolidObject::getMeanKineticEnergyInternal() const
+{
+    return this->getMeanKineticEnergyTotal() - this->getMeanKineticEnergyExternal();
 }
 
 const QVector<Particle>& NonSolidObject::getParticles() const
@@ -311,7 +364,7 @@ nlohmann::json NonSolidObject::getJson(bool detailed = true) const
 
     jsonObject["_id"] = this->id.toStdString();
 
-    // -- currentPosition
+    // -- position
     Vector3D currentPosition = this->getCurrentPosition();
 
     nlohmann::json currentPositionArray;
@@ -322,7 +375,7 @@ nlohmann::json NonSolidObject::getJson(bool detailed = true) const
     jsonObject["position"] = currentPositionArray;
     //
 
-    // -- currentVelocity
+    // -- velocity
     Vector3D currentVelocity = this->getCurrentVelocity();
 
     nlohmann::json currentVelocityArray;
@@ -333,33 +386,33 @@ nlohmann::json NonSolidObject::getJson(bool detailed = true) const
     jsonObject["velocity"] = currentVelocityArray;
     //
 
-    // -- currentForce
-    Vector3D currentForce = this->getCurrentForce();
+    // -- force
+    Vector3D meanForce = this->getMeanForce();
 
-    nlohmann::json currentForceArray;
-    currentForceArray.push_back(currentForce.getX());
-    currentForceArray.push_back(currentForce.getY());
-    currentForceArray.push_back(currentForce.getZ());
+    nlohmann::json meanForceArray;
+    meanForceArray.push_back(meanForce.getX());
+    meanForceArray.push_back(meanForce.getY());
+    meanForceArray.push_back(meanForce.getZ());
 
-    jsonObject["force"] = currentForceArray;
+    jsonObject["force"] = meanForceArray;
     //
 
     // -- kineticEnergyTotal
-    double currentKineticEnergyTotal = this->getCurrentKineticEnergyTotal();
+    double meanKineticEnergyTotal = this->getMeanKineticEnergyTotal();
 
-    jsonObject["kineticEnergyTotal"] = currentKineticEnergyTotal;
+    jsonObject["kineticEnergyTotal"] = meanKineticEnergyTotal;
     //
 
     // -- kineticEnergyInternal
-    double currentKineticEnergyInternal = this->getCurrentKineticEnergyInternal();
+    double meanKineticEnergyInternal = this->getMeanKineticEnergyInternal();
 
-    jsonObject["kineticEnergyInternal"] = currentKineticEnergyInternal;
+    jsonObject["kineticEnergyInternal"] = meanKineticEnergyInternal;
     //
 
     // -- kineticEnergyExternal
-    double currentKineticEnergyExternal = this->getCurrentKineticEnergyExternal();
+    double meanKineticEnergyExternal = this->getMeanKineticEnergyExternal();
 
-    jsonObject["kineticEnergyExternal"] = currentKineticEnergyExternal;
+    jsonObject["kineticEnergyExternal"] = meanKineticEnergyExternal;
     //
 
     // -- particles

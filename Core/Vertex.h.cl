@@ -16,11 +16,13 @@ typedef struct
     double4 preciseOldPosition;
 
     float4 currentVelocity;
+    float4 meanVelocity;
     float4 oldVelocity;
 
     float4 angularAcceleration;
 
     float4 currentAngularVelocity;
+    float4 meanAngularVelocity;
     float4 oldAngularVelocity;
 } Vertex;
 

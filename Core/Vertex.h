@@ -29,11 +29,13 @@ typedef struct
     cl_double4 preciseOldPosition;
 
     cl_float4 currentVelocity;
+    cl_float4 meanVelocity;
     cl_float4 oldVelocity;
 
     cl_float4 angularAcceleration;
 
     cl_float4 currentAngularVelocity;
+    cl_float4 meanAngularVelocity;
     cl_float4 oldAngularVelocity;
 } VertexCL;
 
@@ -50,11 +52,13 @@ class Vertex
         Vector3D oldPosition;
 
         Vector3D currentVelocity;
+        Vector3D meanVelocity;
         Vector3D oldVelocity;
 
         Vector3D angularAcceleration;
 
         Vector3D currentAngularVelocity;
+        Vector3D meanAngularVelocity;
         Vector3D oldAngularVelocity;
 
     public:
@@ -74,7 +78,9 @@ class Vertex
         virtual void displaceBy(const Vector3D& displacement);
 
         virtual const Vector3D& getCurrentPosition() const;
+
         virtual const Vector3D& getCurrentVelocity() const;
+        virtual const Vector3D& getMeanVelocity()    const;
 
         nlohmann::json getJson() const;
 };

@@ -30,12 +30,16 @@ FaceCL Face::getCL(uint index, uint materialIndex) const
     faceCL.mass = this->mass;
 
     faceCL.currentPosition = {this->currentPosition.getX(), this->currentPosition.getY(), this->currentPosition.getZ(), 0};
+
     faceCL.currentVelocity = {this->currentVelocity.getX(), this->currentVelocity.getY(), this->currentVelocity.getZ(), 0};
+    faceCL.meanVelocity    = {this->meanVelocity.getX(), this->meanVelocity.getY(), this->meanVelocity.getZ(), 0};
 
     faceCL.currentForce = {this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0};
+    faceCL.meanForce    = {this->meanForce.getX(), this->meanForce.getY(), this->meanForce.getZ(), 0};
     faceCL.oldForce     = {this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0};
 
     faceCL.currentTorque = {this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0};
+    faceCL.meanForce     = {this->meanTorque.getX(), this->meanTorque.getY(), meanTorque.getZ(), 0};
     faceCL.oldTorque     = {this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0};
 
     for(int i = 0; i < 3; i++) {
@@ -48,12 +52,16 @@ FaceCL Face::getCL(uint index, uint materialIndex) const
 void Face::setCL(const FaceCL& faceCL)
 {
     this->currentPosition = Vector3D(faceCL.currentPosition.x, faceCL.currentPosition.y, faceCL.currentPosition.z);
+
     this->currentVelocity = Vector3D(faceCL.currentVelocity.x, faceCL.currentVelocity.y, faceCL.currentVelocity.z);
+    this->meanVelocity    = Vector3D(faceCL.meanVelocity.x, faceCL.meanVelocity.y, faceCL.meanVelocity.z);
 
     this->currentForce = Vector3D(faceCL.currentForce.x, faceCL.currentForce.y, faceCL.currentForce.z);
+    this->meanForce    = Vector3D(faceCL.meanForce.x, faceCL.meanForce.y, faceCL.meanForce.z);
     this->oldForce     = Vector3D(faceCL.oldForce.x, faceCL.oldForce.y, faceCL.oldForce.z);
 
     this->currentTorque = Vector3D(faceCL.currentTorque.x, faceCL.currentTorque.y, faceCL.currentTorque.z);
+    this->meanTorque    = Vector3D(faceCL.meanTorque.x, faceCL.meanTorque.y, faceCL.meanTorque.z);
     this->oldTorque     = Vector3D(faceCL.oldTorque.x, faceCL.oldTorque.y, faceCL.oldTorque.z);
 
     for(int i = 0; i < 3; i++) {
@@ -107,16 +115,6 @@ const double& Face::getArea() const
     return this->area;
 }
 
-Vector3D Face::getCurrentMomentum() const
-{
-    return this->mass * this->currentVelocity;
-}
-
-double Face::getCurrentKineticEnergy() const
-{
-    return this->mass * this->currentVelocity.getModuleSquared() / 2;
-}
-
 const Vector3D& Face::getCurrentPosition() const
 {
     return this->currentPosition;
@@ -127,9 +125,19 @@ const Vector3D& Face::getCurrentVelocity() const
     return this->currentVelocity;
 }
 
+const Vector3D& Face::getMeanVelocity() const
+{
+    return this->meanVelocity;
+}
+
 const Vector3D& Face::getCurrentForce() const
 {
     return this->currentForce;
+}
+
+const Vector3D& Face::getMeanForce() const
+{
+    return this->meanForce;
 }
 
 const Vector3D& Face::getCurrentTorque() const
@@ -137,11 +145,36 @@ const Vector3D& Face::getCurrentTorque() const
     return this->currentTorque;
 }
 
+const Vector3D& Face::getMeanTorque() const
+{
+    return this->meanTorque;
+}
+
+Vector3D Face::getCurrentMomentum() const
+{
+    return this->mass * this->currentVelocity;
+}
+
+Vector3D Face::getMeanMomentum() const
+{
+    return this->mass * this->meanVelocity;
+}
+
+double Face::getCurrentKineticEnergy() const
+{
+    return this->mass * this->currentVelocity.getModuleSquared() / 2;
+}
+
+double Face::getMeanKineticEnergy() const
+{
+    return this->mass * this->meanVelocity.getModuleSquared() / 2;
+}
+
 nlohmann::json Face::getJson() const
 {
     nlohmann::json jsonObject;
 
-    // -- currentPosition
+    // -- position
     Vector3D currentPosition = this->getCurrentPosition();
 
     nlohmann::json currentPositionArray;
@@ -149,29 +182,29 @@ nlohmann::json Face::getJson() const
     currentPositionArray.push_back(currentPosition.getY());
     currentPositionArray.push_back(currentPosition.getZ());
 
-    jsonObject["currentPosition"] = currentPositionArray;
+    jsonObject["position"] = currentPositionArray;
     //
 
-    // -- currentVelocity
-    Vector3D currentVelocity = this->getCurrentVelocity();
+    // -- velocity
+    Vector3D meanVelocity = this->getMeanVelocity();
 
-    nlohmann::json currentVelocityArray;
-    currentVelocityArray.push_back(currentVelocity.getX());
-    currentVelocityArray.push_back(currentVelocity.getY());
-    currentVelocityArray.push_back(currentVelocity.getZ());
+    nlohmann::json meanVelocityArray;
+    meanVelocityArray.push_back(meanVelocity.getX());
+    meanVelocityArray.push_back(meanVelocity.getY());
+    meanVelocityArray.push_back(meanVelocity.getZ());
 
-    jsonObject["currentVelocity"] = currentVelocityArray;
+    jsonObject["velocity"] = meanVelocityArray;
     //
 
-    // -- currentForce
-    Vector3D currentForce = this->getCurrentForce();
+    // -- force
+    Vector3D meanForce = this->getMeanForce();
 
-    nlohmann::json currentForceArray;
-    currentForceArray.push_back(currentForce.getX());
-    currentForceArray.push_back(currentForce.getY());
-    currentForceArray.push_back(currentForce.getZ());
+    nlohmann::json meanForceArray;
+    meanForceArray.push_back(meanForce.getX());
+    meanForceArray.push_back(meanForce.getY());
+    meanForceArray.push_back(meanForce.getZ());
 
-    jsonObject["currentForce"] = currentForceArray;
+    jsonObject["force"] = meanForceArray;
     //
 
     // -- vertexes

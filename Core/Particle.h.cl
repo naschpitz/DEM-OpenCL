@@ -17,9 +17,11 @@ typedef struct
     float inertiaMomentum;
 
     float4 currentForce;
+    float4 meanForce;
     float4 oldForce;
 
     float4 currentTorque;
+    float4 meanTorque;
     float4 oldTorque;
 
     Vertex vertex;

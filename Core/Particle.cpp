@@ -8,41 +8,6 @@ Particle::Particle()
 
 }
 
-Particle::Particle(const Particle& other) : Vertex(other)
-{
-    this->materialName = other.materialName;
-    this->radius = other.radius;
-    this->density = other.density;
-    this->mass = other.mass;
-    this->area = other.area;
-    this->volume = other.volume;
-    this->inertiaMomentum = other.inertiaMomentum;
-    this->currentForce = other.currentForce;
-    this->oldForce = other.oldForce;
-    this->currentTorque = other.currentTorque;
-    this->oldTorque = other.oldTorque;
-}
-
-Particle& Particle::operator=(const Particle& other)
-{
-    if (this != &other)
-    {
-        Vertex::operator=(other);  // Call base class assignment
-        this->materialName = other.materialName;
-        this->radius = other.radius;
-        this->density = other.density;
-        this->mass = other.mass;
-        this->area = other.area;
-        this->volume = other.volume;
-        this->inertiaMomentum = other.inertiaMomentum;
-        this->currentForce = other.currentForce;
-        this->oldForce = other.oldForce;
-        this->currentTorque = other.currentTorque;
-        this->oldTorque = other.oldTorque;
-    }
-    return *this;
-}
-
 Particle::Particle(const double& x, const double& y, const double& z, const double& radius) : Vertex(x, y, z)
 {
     this->radius = radius;
@@ -80,9 +45,11 @@ ParticleCL Particle::getCL(uint index, uint materialIndex) const
     particleCL.inertiaMomentum = this->inertiaMomentum;
 
     particleCL.currentForce = {this->currentForce.getX(), this->currentForce.getY(), this->currentForce.getZ(), 0};
+    particleCL.meanForce    = {this->meanForce.getX(), this->meanForce.getY(), this->meanForce.getZ(), 0};
     particleCL.oldForce     = {this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0};
 
     particleCL.currentTorque = {this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0};
+    particleCL.meanTorque    = {this->meanTorque.getX(), this->meanTorque.getY(), this->meanTorque.getZ(), 0};
     particleCL.oldTorque     = {this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0};
 
     Vertex vertex = (*this);
@@ -94,9 +61,11 @@ ParticleCL Particle::getCL(uint index, uint materialIndex) const
 void Particle::setCL(const ParticleCL& particleCL)
 {
     this->currentForce = Vector3D(particleCL.currentForce.x, particleCL.currentForce.y, particleCL.currentForce.z);
+    this->meanForce    = Vector3D(particleCL.meanForce.x, particleCL.meanForce.y, particleCL.meanForce.z);
     this->oldForce     = Vector3D(particleCL.oldForce.x, particleCL.oldForce.y, particleCL.oldForce.z);
 
     this->currentTorque = Vector3D(particleCL.currentTorque.x, particleCL.currentTorque.y, particleCL.currentTorque.z);
+    this->meanTorque    = Vector3D(particleCL.meanTorque.x, particleCL.meanTorque.y, particleCL.meanTorque.z);
     this->oldTorque     = Vector3D(particleCL.oldTorque.x, particleCL.oldTorque.y, particleCL.oldTorque.z);
 
     ((Vertex *)(this))->setCL(particleCL.vertex);
@@ -139,9 +108,19 @@ const Vector3D& Particle::getCurrentForce() const
     return this->currentForce;
 }
 
+const Vector3D& Particle::getMeanForce() const
+{
+    return this->meanForce;
+}
+
 const Vector3D& Particle::getCurrentTorque() const
 {
     return this->currentTorque;
+}
+
+const Vector3D& Particle::getMeanTorque() const
+{
+    return this->meanTorque;
 }
 
 Vector3D Particle::getCurrentMomentum() const
@@ -149,9 +128,19 @@ Vector3D Particle::getCurrentMomentum() const
     return this->mass * this->currentVelocity;
 }
 
+Vector3D Particle::getMeanMomentum() const
+{
+    return this->mass * this->meanVelocity;
+}
+
 Vector3D Particle::getCurrentAngularMomentum() const
 {
     return this->inertiaMomentum * this->currentAngularVelocity;
+}
+
+Vector3D Particle::getMeanAngularMomentum() const
+{
+    return this->inertiaMomentum * this->meanAngularVelocity;
 }
 
 double Particle::getCurrentKineticEnergyTotal() const
@@ -159,9 +148,19 @@ double Particle::getCurrentKineticEnergyTotal() const
     return this->getCurrentKineticEnergyExternal() + this->getCurrentKineticEnergyInternal();
 }
 
+double Particle::getMeanKineticEnergyTotal() const
+{
+    return this->getMeanKineticEnergyExternal() + this->getMeanKineticEnergyInternal();
+}
+
 double Particle::getCurrentKineticEnergyExternal() const
 {
     return this->mass * this->currentVelocity.getModuleSquared() / 2.0;
+}
+
+double Particle::getMeanKineticEnergyExternal() const
+{
+    return this->mass * this->meanVelocity.getModuleSquared() / 2.0;
 }
 
 double Particle::getCurrentKineticEnergyInternal() const
@@ -169,21 +168,27 @@ double Particle::getCurrentKineticEnergyInternal() const
     return this->inertiaMomentum * this->currentAngularVelocity.getModuleSquared() / 2.0;
 }
 
+double Particle::getMeanKineticEnergyInternal() const
+{
+    return this->inertiaMomentum * this->meanAngularVelocity.getModuleSquared() / 2.0;
+}
+
+
 nlohmann::json Particle::getJson() const
 {
     nlohmann::json jsonObject;
 
     jsonObject["radius"] = this->getRadius();
 
-    // -- currentForce
-    Vector3D currentForce = this->getCurrentForce();
+    // -- force
+    Vector3D meanForce = this->getMeanForce();
 
-    nlohmann::json currentForceArray;
-    currentForceArray.push_back(currentForce.getX());
-    currentForceArray.push_back(currentForce.getY());
-    currentForceArray.push_back(currentForce.getZ());
+    nlohmann::json meanForceArray;
+    meanForceArray.push_back(currentForce.getX());
+    meanForceArray.push_back(currentForce.getY());
+    meanForceArray.push_back(currentForce.getZ());
 
-    jsonObject["currentForce"] = currentForceArray;
+    jsonObject["force"] = meanForceArray;
     //
 
     // -- vertex

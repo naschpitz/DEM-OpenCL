@@ -18,6 +18,7 @@ Vertex::Vertex(const Vertex& other)
     this->originalPosition = other.originalPosition;
 
     this->currentVelocity  = other.currentVelocity;
+    this->meanVelocity     = other.meanVelocity;
     this->oldVelocity      = other.oldVelocity;
     this->originalVelocity = other.originalVelocity;
 
@@ -25,6 +26,7 @@ Vertex::Vertex(const Vertex& other)
     this->angularAcceleration = other.angularAcceleration;
 
     this->currentAngularVelocity = other.currentAngularVelocity;
+    this->meanAngularVelocity    = other.meanAngularVelocity;
     this->oldAngularVelocity     = other.oldAngularVelocity;
 
     this->fixed = other.fixed;
@@ -39,6 +41,7 @@ Vertex& Vertex::operator=(const Vertex& other)
         this->originalPosition = other.originalPosition;
 
         this->currentVelocity  = other.currentVelocity;
+        this->meanVelocity     = other.meanVelocity;
         this->oldVelocity      = other.oldVelocity;
         this->originalVelocity = other.originalVelocity;
 
@@ -46,6 +49,7 @@ Vertex& Vertex::operator=(const Vertex& other)
         this->angularAcceleration = other.angularAcceleration;
 
         this->currentAngularVelocity = other.currentAngularVelocity;
+        this->meanAngularVelocity    = other.meanAngularVelocity;
         this->oldAngularVelocity     = other.oldAngularVelocity;
 
         this->fixed = other.fixed;
@@ -82,10 +86,12 @@ VertexCL Vertex::getCL() const
     vertexCL.originalPosition = {this->originalPosition.getX(), this->originalPosition.getY(), this->originalPosition.getZ(), 0};
 
     vertexCL.currentVelocity = {this->currentVelocity.getX(), this->currentVelocity.getY(), this->currentVelocity.getZ(), 0};
+    vertexCL.meanVelocity = {this->meanVelocity.getX(), this->meanVelocity.getY(), this->meanVelocity.getZ(), 0};
     vertexCL.oldVelocity = {this->oldVelocity.getX(), this->oldVelocity.getY(), this->oldVelocity.getZ(), 0};
     vertexCL.originalVelocity = {this->originalVelocity.getX(), this->originalVelocity.getY(), this->originalVelocity.getZ(), 0};
 
     vertexCL.currentAngularVelocity = {this->currentAngularVelocity.getX(), this->currentAngularVelocity.getY(), this->currentAngularVelocity.getZ(), 0};
+    vertexCL.meanAngularVelocity = {this->meanAngularVelocity.getX(), this->meanAngularVelocity.getY(), this->meanAngularVelocity.getZ(), 0};
     vertexCL.oldAngularVelocity = {this->oldAngularVelocity.getX(), this->oldAngularVelocity.getY(), this->oldAngularVelocity.getZ(), 0};
 
     vertexCL.fixed = this->fixed;
@@ -100,10 +106,12 @@ void Vertex::setCL(const VertexCL& vertexCL)
     this->originalPosition = Vector3D(vertexCL.originalPosition.x, vertexCL.originalPosition.y, vertexCL.originalPosition.z);
 
     this->currentVelocity  = Vector3D(vertexCL.currentVelocity.x, vertexCL.currentVelocity.y, vertexCL.currentVelocity.z);
+    this->meanVelocity     = Vector3D(vertexCL.meanVelocity.x, vertexCL.meanVelocity.y, vertexCL.meanVelocity.z);
     this->oldVelocity      = Vector3D(vertexCL.oldVelocity.x, vertexCL.oldVelocity.y, vertexCL.oldVelocity.z);
     this->originalVelocity = Vector3D(vertexCL.originalVelocity.x, vertexCL.originalVelocity.y, vertexCL.originalVelocity.z);
 
     this->currentAngularVelocity = Vector3D(vertexCL.currentAngularVelocity.x, vertexCL.currentAngularVelocity.y, vertexCL.currentAngularVelocity.z);
+    this->meanAngularVelocity    = Vector3D(vertexCL.meanAngularVelocity.x, vertexCL.meanAngularVelocity.y, vertexCL.meanAngularVelocity.z);
     this->oldAngularVelocity     = Vector3D(vertexCL.oldAngularVelocity.x, vertexCL.oldAngularVelocity.y, vertexCL.oldAngularVelocity.z);
 }
 
@@ -143,6 +151,11 @@ const Vector3D& Vertex::getCurrentVelocity() const
     return this->currentVelocity;
 }
 
+const Vector3D& Vertex::getMeanVelocity() const
+{
+    return this->meanVelocity;
+}
+
 nlohmann::json Vertex::getJson() const
 {
     nlohmann::json jsonObject;
@@ -155,18 +168,18 @@ nlohmann::json Vertex::getJson() const
     currentPositionArray.push_back(currentPosition.getY());
     currentPositionArray.push_back(currentPosition.getZ());
 
-    jsonObject["currentPosition"] = currentPositionArray;
+    jsonObject["position"] = currentPositionArray;
     //
 
-    // -- currentVelocity
-    Vector3D currentVelocity = this->getCurrentVelocity();
+    // -- meanVelocity
+    Vector3D meanVelocity = this->getCurrentVelocity();
 
-    nlohmann::json currentVelocityArray;
-    currentVelocityArray.push_back(currentVelocity.getX());
-    currentVelocityArray.push_back(currentVelocity.getY());
-    currentVelocityArray.push_back(currentVelocity.getZ());
+    nlohmann::json meanVelocityArray;
+    meanVelocityArray.push_back(currentVelocity.getX());
+    meanVelocityArray.push_back(currentVelocity.getY());
+    meanVelocityArray.push_back(currentVelocity.getZ());
 
-    jsonObject["currentVelocity"] = currentVelocityArray;
+    jsonObject["velocity"] = meanVelocityArray;
     //
 
     return jsonObject;
