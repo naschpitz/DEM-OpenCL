@@ -67,7 +67,7 @@ class Simulation : public QThread
 
         bool initialized;
         bool paused;
-        bool stoped;
+        bool stopped;
         bool primary;
 
         void initialize();
@@ -104,8 +104,10 @@ class Simulation : public QThread
 
         const Scenery& getScenery() const;
 
+        bool isRunning() const;
         bool isPaused() const;
         bool isStopped() const;
+        bool isDone() const;
         bool isPrimary() const;
 
         void pause();

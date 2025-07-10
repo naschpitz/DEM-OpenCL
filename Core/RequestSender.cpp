@@ -89,7 +89,7 @@ void RequestSender::newLog(QString message)
         state = "paused";
     }
 
-    else {
+    else if(simulation->isDone()) {
         state = "done";
     }
 

@@ -15,14 +15,14 @@ Simulation::Simulation()
 {
     this->initialized = false;
     this->paused = false;
-    this->stoped = false;
+    this->stopped = false;
 }
 
 Simulation::Simulation(const nlohmann::json& jsonObject)
 {
     this->initialized = false;
     this->paused = false;
-    this->stoped = false;
+    this->stopped = false;
 
     try {
         this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
@@ -139,7 +139,6 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
 
     connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(newFrame(bool)), &(RequestSender::getInstance()), SLOT(newFrame(bool)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(finished()), &(RequestSender::getInstance()), SLOT(newLog()), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
 
@@ -254,6 +253,11 @@ ulong Simulation::getEt() const
     return this->et / 1000;
 }
 
+bool Simulation::isRunning() const
+{
+    return !this->isPaused() && !this->isStopped() && !this->isDone();
+}
+
 bool Simulation::isPaused() const
 {
     return this->paused;
@@ -261,7 +265,12 @@ bool Simulation::isPaused() const
 
 bool Simulation::isStopped() const
 {
-    return this->stoped;
+    return this->stopped;
+}
+
+bool Simulation::isDone() const
+{
+    return this->getCurrentStep() == this->getTotalSteps();
 }
 
 bool Simulation::isPrimary() const
@@ -399,7 +408,7 @@ void Simulation::run()
         openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
     }
 
-    this->paused = this->stoped = false;
+    this->paused = this->stopped = false;
 
     uint stepsPerFrame = this->frameTime / this->timeStep;
 
@@ -410,7 +419,7 @@ void Simulation::run()
 
     emit this->newLog("Simulation began");
 
-    while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stoped)
+    while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stopped)
     {
         ran = true;
         this->currentTime = this->timeStep * this->currentStep;
@@ -489,7 +498,7 @@ void Simulation::pause()
 
 void Simulation::stop()
 {
-    this->stoped = true;
+    this->stopped = true;
 
     // TODO: Correct error when stopping a paused simulation, deadlock involved.
     /*
