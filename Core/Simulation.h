@@ -10,6 +10,7 @@
 #define SIMULATION_H
 
 #include "nlohmann/json.hpp"
+#include "Error.h"
 #include "Scenery.h"
 #include "Vector3D.h"
 
@@ -115,6 +116,9 @@ class Simulation : public QThread
 
     protected:
         void run();
+
+    private:
+        void checkForErrors(const std::vector<ErrorCL>& errorCL);
 
     public slots:
         void selfDelete();

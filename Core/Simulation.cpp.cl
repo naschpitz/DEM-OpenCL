@@ -1,6 +1,7 @@
 #ifndef SIMULATION_CPP_CL
 #define SIMULATION_CPP_CL
 
+#include "Error.h.cl"
 #include "../Scenery.h.cl"
 #include "../Simulation.h.cl"
 
@@ -66,7 +67,7 @@ kernel void initialize_faces(global Face* faces, constant Simulation* ptrSimulat
     faces[idx] = thisFace;
 }
 
-kernel void calculate_particles_neighborhood(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation)
+kernel void calculate_particles_neighborhood(global Particle* particles, global Face* faces, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global Error* error)
 {
     Simulation simulation = ptrSimulation[0];
 
@@ -95,7 +96,7 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
         if(!testBox_particleToParticle(&thisParticle, &otherParticle, material->distanceThreshold * simulation.neighDistThresMult))
             continue;
 
-        neighborhood_addParticleToParticleNeighborhood(&thisParticle, &otherParticle);
+        neighborhood_addParticleToParticleNeighborhood(&thisParticle, &otherParticle, error);
     }
 
     for(ulong i = 0; i < scenery.numFaces; i++) {
@@ -109,13 +110,13 @@ kernel void calculate_particles_neighborhood(global Particle* particles, global 
         if(!testBox_particleToFace(&thisParticle, &otherFace, material->distanceThreshold))
             continue;
 
-        neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace);
+        neighborhood_addFaceToParticleNeighborhood(&thisParticle, &otherFace, error);
     }
 
     particles[idx] = thisParticle;
 }
 
-kernel void calculate_faces_neighborhood(global Face* faces, global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation)
+kernel void calculate_faces_neighborhood(global Face* faces, global Particle* particles, constant MaterialsManager* ptrMaterialsManager, constant Scenery* ptrScenery, constant Simulation* ptrSimulation, global Error* error)
 {
     Simulation simulation = ptrSimulation[0];
 
@@ -141,7 +142,7 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
         if(!testBox_particleToFace(&otherParticle, &thisFace, material->distanceThreshold * simulation.neighDistThresMult))
             continue;
 
-        neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle);
+        neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle, error);
     }
 
     faces[idx] = thisFace;

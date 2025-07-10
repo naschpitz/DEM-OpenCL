@@ -8,6 +8,7 @@
 
 #include <OpenCLWrapper/OCLW_Core.hpp>
 
+#include "Error.h"
 #include "RequestSender.h"
 #include "Particle.h"
 
@@ -299,6 +300,9 @@ void Simulation::run()
 
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
 
+    // Initialize error tracking
+    std::vector<ErrorCL> errorCL = { {ERROR_NONE} };
+
     OpenCLWrapper::Core openClCore(this->multiGPU);
 
     emit this->newLog("Loading OpenCL kernel");
@@ -314,6 +318,7 @@ void Simulation::run()
     openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
     openClCore.writeBuffer<SimulationCL>(simulationsCL);
     openClCore.writeBuffer<SceneryCL>(sceneriesCL);
+    openClCore.writeBuffer<ErrorCL>(errorCL);
     emit this->newLog("Objects copy to GPU's memory done");
 
     bool hasParticles = particlesCL.size();
@@ -358,6 +363,7 @@ void Simulation::run()
         openClCore.addArgument<MaterialsManagerCL>("calculate_particles_neighborhood", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
         openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
+        openClCore.addArgument<ErrorCL>("calculate_particles_neighborhood", errorCL);
 
         openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
@@ -371,6 +377,7 @@ void Simulation::run()
         openClCore.addArgument<MaterialsManagerCL>("calculate_faces_neighborhood", materialsManagerCL);
         openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
         openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
+        openClCore.addArgument<ErrorCL>("calculate_faces_neighborhood", errorCL);
 
         openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
         openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
@@ -428,8 +435,15 @@ void Simulation::run()
         openClCore.writeBuffer(simulationsCL);
 
         if(this->multiGPU || this->currentStep % stepsPerFrame == 0) {
-            openClCore.syncDevicesBuffers(particlesCL);
-            openClCore.syncDevicesBuffers(facesCL);
+            if(this->multiGPU) {
+                openClCore.syncDevicesBuffers(particlesCL);
+                openClCore.syncDevicesBuffers(facesCL);
+            }
+
+            else {
+                openClCore.readBuffer<ParticleCL>(particlesCL);
+                openClCore.readBuffer<FaceCL>(facesCL);
+            }
         }
 
         if(this->currentStep % stepsPerFrame == 0) {
@@ -459,6 +473,10 @@ void Simulation::run()
         }
 
         openClCore.run();
+
+        // Check for errors from the GPU
+        openClCore.readBuffer<ErrorCL>(errorCL);
+        this->checkForErrors(errorCL);
 
         this->currentStep++;
     }
@@ -511,5 +529,14 @@ void Simulation::selfDelete()
 {
     if(this->isStopped() || !this->isPaused()) {
         this->deleteLater();
+    }
+}
+
+void Simulation::checkForErrors(const std::vector<ErrorCL>& errorCL)
+{
+    if(errorCL[0].errorCode != ERROR_NONE) {
+        QString errorMessage = Error::getErrorMessage(errorCL[0].errorCode);
+        emit this->newLog(errorMessage);
+        this->stop();
     }
 }

@@ -23,6 +23,7 @@ MOC_DIR = moc
 
 HEADERS += \
     Deflater.h \
+    Error.h \
     NonSolidObject.h \
     Pigz.h \
     SolidObject.h \
@@ -46,6 +47,7 @@ HEADERS += \
 
 SOURCES += \
     Deflater.cpp \
+    Error.cpp \
     Pigz.cpp \
     main.cpp \
     Vertex.cpp \
