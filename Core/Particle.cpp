@@ -173,7 +173,6 @@ double Particle::getMeanKineticEnergyInternal() const
     return this->inertiaMomentum * this->meanAngularVelocity.getModuleSquared() / 2.0;
 }
 
-
 nlohmann::json Particle::getJson() const
 {
     nlohmann::json jsonObject;

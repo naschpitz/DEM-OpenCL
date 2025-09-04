@@ -1,7 +1,7 @@
 #ifndef NEIGHBORHOOD_CPP_CL
 #define NEIGHBORHOOD_CPP_CL
 
-#include "Error.h.cl"
+#include "../Error.h.cl"
 #include "../Face.h.cl"
 #include "../Neighborhood.h.cl"
 #include "../Particle.h.cl"

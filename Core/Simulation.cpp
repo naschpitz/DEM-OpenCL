@@ -300,8 +300,9 @@ void Simulation::run()
 
     std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
 
-    // Initialize error tracking
-    std::vector<ErrorCL> errorCL = { {ERROR_NONE} };
+    // Initialize error tracking - size buffer to number of GPUs
+    size_t numGPUs = this->multiGPU ? OpenCLWrapper::Core::getDevicesUsage().size() : 1;
+    std::vector<ErrorCL> errorCL(numGPUs, {ERROR_NONE});
 
     OpenCLWrapper::Core openClCore(this->multiGPU);
 
@@ -534,9 +535,28 @@ void Simulation::selfDelete()
 
 void Simulation::checkForErrors(const std::vector<ErrorCL>& errorCL)
 {
-    if(errorCL[0].errorCode != ERROR_NONE) {
-        QString errorMessage = Error::getErrorMessage(errorCL[0].errorCode);
-        emit this->newLog(errorMessage);
+    bool hasError = false;
+
+    for(size_t gpuIndex = 0; gpuIndex < errorCL.size(); ++gpuIndex) {
+        if(errorCL[gpuIndex].errorCode != ERROR_NONE) {
+            QString baseMessage = Error::getErrorMessage(errorCL[gpuIndex].errorCode);
+            QString errorMessage;
+
+            if(errorCL.size() > 1) {
+                // Multi-GPU: include GPU information
+                errorMessage = QString("GPU %1: %2").arg(gpuIndex).arg(baseMessage);
+            }
+            else {
+                // Single GPU: use base message
+                errorMessage = baseMessage;
+            }
+
+            emit this->newLog(errorMessage);
+            hasError = true;
+        }
+    }
+
+    if(hasError) {
         this->stop();
     }
 }

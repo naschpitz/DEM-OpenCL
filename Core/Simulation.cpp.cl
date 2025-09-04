@@ -1,7 +1,7 @@
 #ifndef SIMULATION_CPP_CL
 #define SIMULATION_CPP_CL
 
-#include "Error.h.cl"
+#include "../Error.h.cl"
 #include "../Scenery.h.cl"
 #include "../Simulation.h.cl"
 

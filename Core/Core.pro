@@ -77,6 +77,7 @@ DISTFILES += \
     Face.cpp.cl \
     Face.h.cl \
     FaceWorker.cpp.cl \
+    LICENSE.md \
     Material.cpp.cl \
     Material.h.cl \
     MaterialsManager.cpp.cl \
