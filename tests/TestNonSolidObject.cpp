@@ -2,13 +2,23 @@
 
 #include <QTest>
 #include <QtGlobal>
-#include <fstream>
 #include <math.h>
 
 TestNonSolidObject::TestNonSolidObject()
 {
-    std::ifstream file("../NonSolidObjectWireframe.json");
-    this->nonSolidObjectWireframeJsonValue = nlohmann::json::parse(file);
+    this->nonSolidObjectWireframeJsonValue = nlohmann::json::parse(R"({
+        "_id": "TestNonSolidObjectWireframe",
+        "material": "6pwfsYxGumpgZzAfP",
+        "type": "wireframe",
+        "density": 7.07,
+        "dimensions": {
+            "length": [10, 10, 10],
+            "spacing": 1
+        },
+        "fixed": false,
+        "position": [0, 0, 0],
+        "velocity": [4.04, 5.05, 6.06]
+    })");
 }
 
 // All NonSolidObject queries iterate this->particles, which are only built by

@@ -62,10 +62,12 @@ change behavior, add or update the corresponding test. Do not leave the suite br
 
 The `Test` target is **OFF by default** (`BUILD_TEST` CMake option). It uses a unity build:
 `tests/main.cpp` `#include`s the `.cpp` sources directly (no linking of domain objects), so it
-compiles fast but only covers code that has no OpenCL dependency. Fixtures live beside the tests
-as `*.json` and are loaded with `std::ifstream` + `nlohmann::json::parse` (the domain constructors
-take `nlohmann::json`, NOT `QJsonObject`). The binary runs from `tests/bin/`, so fixtures are
-referenced as `"../Foo.json"` (resolving to `tests/`).
+compiles fast but only covers code that has no OpenCL dependency. Fixtures are **inlined in each
+test's constructor** — either as `nlohmann::json::parse(R"(...)")` raw-string literals (the small
+domain-object contracts) or built procedurally (`SolidObject` via `makeBoxSTL()` in
+`tests/TestHelpers.h`, so the embedded ASCII-STL no longer lives in a checked-in `.json`). The
+domain constructors take `nlohmann::json`, NOT `QJsonObject`. The binary runs from `tests/bin/`
+(pure output dir — `temp.stl` is written there during the SolidObject test).
 
 ```bash
 cmake --preset static -B build -DBUILD_TEST=ON

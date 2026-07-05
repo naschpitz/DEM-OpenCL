@@ -1,12 +1,19 @@
 #include "TestMaterial.h"
 
-#include <fstream>
 #include <QtTest>
 
 TestMaterial::TestMaterial()
 {
-    std::ifstream file("../Material.json");
-    this->jsonValue = nlohmann::json::parse(file);
+    this->jsonValue = nlohmann::json::parse(R"({
+        "_id": "TestMaterial",
+        "material1": "TestMaterialA",
+        "material2": "TestMaterialB",
+        "distanceThreshold": 4.56,
+        "forceType": "inverse_quadratic",
+        "dragForceType": "quadratic",
+        "coefficients": [1.23, 3.45, 6.78, 9.10, 11.12, 13.14],
+        "dragCoefficients": [15.16, 17.18, 19.20, 21.22, 23.24, 25.26]
+    })");
 }
 
 void TestMaterial::constructor()
