@@ -1,13 +1,27 @@
 #include "TestSolidObject.h"
+#include "TestHelpers.h"
 
 #include <QTest>
-#include <fstream>
 #include <math.h>
 
 TestSolidObject::TestSolidObject()
 {
-    std::ifstream file("../SolidObject.json");
-    this->solidObjectJsonValue = nlohmann::json::parse(file);
+    // Hand-authored fixture: a clean 60 x 2 x 10 box (origin at 0,0,0) plus the
+    // same scalar fields the old SolidObject.json carried. The "stl" field is
+    // generated procedurally so the SolidObject(nlohmann::json) -> loadStl() ->
+    // tetgen pipeline is still exercised end-to-end, without a hand-written
+    // ASCII-STL blob embedded in a JSON file. initialize() -> setPosition()
+    // displaces every vertex by this->position, so getBox() bounds are
+    // boxMin + position / boxMax + position.
+    this->solidObjectJsonValue = nlohmann::json{
+        {"_id", "TestSolidObject"},
+        {"material", "6pwfsYxGumpgZzAfP"},
+        {"mass", 7.07},
+        {"fixed", false},
+        {"position", nlohmann::json::array_t{1.01, 2.02, 3.03}},
+        {"velocity", nlohmann::json::array_t{4.04, 5.05, 6.06}},
+        {"stl", makeBoxSTL(0.0, 0.0, 0.0, 60.0, 2.0, 10.0)}
+    };
 }
 
 void TestSolidObject::constructor()
@@ -39,17 +53,17 @@ void TestSolidObject::getBox()
     solidObject.getBox(min, max);
 
     // initialize() -> setPosition() displaces every vertex by this->position
-    // ([1.01, 2.02, 3.03]). The tetgen mesh is a clean (0,-1,-5)->(60,1,5) box,
-    // so after displacement the bounds are as below. Vector3D stores float;
-    // QCOMPARE(Vector3D) uses exact ==, so compare each component with a small
-    // absolute tolerance instead.
+    // ([1.01, 2.02, 3.03]). The box mesh is a clean (0,0,0)->(60,2,10), so after
+    // displacement the bounds are (1.01,2.02,3.03)->(61.01,4.02,13.03). Vector3D
+    // stores float; QCOMPARE(Vector3D) uses exact ==, so compare each component
+    // with a small absolute tolerance instead.
     QVERIFY(qAbs(min.getX() - 1.01f) < 1e-3f);
-    QVERIFY(qAbs(min.getY() - 1.02f) < 1e-3f);
-    QVERIFY(qAbs(min.getZ() - (-1.97f)) < 1e-3f);
+    QVERIFY(qAbs(min.getY() - 2.02f) < 1e-3f);
+    QVERIFY(qAbs(min.getZ() - 3.03f) < 1e-3f);
 
     QVERIFY(qAbs(max.getX() - 61.01f) < 1e-3f);
-    QVERIFY(qAbs(max.getY() - 3.02f) < 1e-3f);
-    QVERIFY(qAbs(max.getZ() - 8.03f) < 1e-3f);
+    QVERIFY(qAbs(max.getY() - 4.02f) < 1e-3f);
+    QVERIFY(qAbs(max.getZ() - 13.03f) < 1e-3f);
 }
 
 void TestSolidObject::getCurrentMomentum()
