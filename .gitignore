@@ -9,7 +9,7 @@
 
 # Generated files
 Makefile
-*.pro.user
+*.pro.user*
 *.qbs.user
 *.qmake.cache
 *.qmake.stash
@@ -20,6 +20,10 @@ Makefile
 *.creator.*
 *.gcno
 *.gcda
+
+# Editor / IDE local config
+/.vscode/
+/.qtc_clangd
 
 # Generated documentation
 *.qch
@@ -36,16 +40,13 @@ Makefile
 *.d
 *.pyc
 
-/.qtc_clangd
-
 /bin
 /moc
 /obj
-/.qtc_clangd
 
-/Test/bin
-/Test/moc
-/Test/obj
+/tests/bin
+/tests/moc
+/tests/obj
 
 # CMake
 /build
@@ -55,8 +56,5 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 *.cmake.user
-
-# Qt6 static-plugin auto-generated imports (regenerated per build)
-# (kept under Core/ only if needed)
 
 
