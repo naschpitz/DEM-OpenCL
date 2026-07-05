@@ -26,6 +26,7 @@ add_executable(TestIntegration
     FakeSimulationSink.cpp        FakeSimulationSink.h
     SimulationTestHarness.cpp     SimulationTestHarness.h
     TestSimulationConfig.cpp      TestSimulationConfig.h
+    TestSimulationPhysics.cpp     TestSimulationPhysics.h
     ${DEM_CORE_SOURCES_ABS}
 )
 
