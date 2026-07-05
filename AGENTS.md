@@ -135,11 +135,13 @@ values, never a C++ reference implementation. Float32 GPU math varies by vendor;
 component-wise `QCOMPARE(float_f, float_f)` (qFuzzyCompare) for normal cases, with documented
 loosening where needed. Literals are `f`-suffixed (same rule as the domain tests above).
 
-**Suites (49 cases across 6 suites).** `TestSmoke` (harness sanity), `TestVector`
+**Suites (52 cases across 6 suites).** `TestSmoke` (harness sanity), `TestVector`
 (`getUnitary` incl. zero→0), `TestEdge` (`getClosestTo` all regions incl. degenerate edge),
 `TestParticle` (particle-particle aligned/3D/overlapping + `isInternal` outside/inside/boundary),
-`TestFace` (`face_getClosestTo` inside-triangle / three edge regions / three vertices / coplanar /
-radius-offset), `TestObject` (unit cube, 12 triangles), `TestNonConvexObject` (L-shape, 20 triangles,
+`TestFace` (`face_getClosestTo` inside-triangle / three edge regions / three region seams
+(the `u=0`/`v=0`/`u+v=1` branch boundaries, which fall through to the interior formula and must
+yield the same on-edge point the edge branch would) / three vertices / coplanar / radius-offset),
+`TestObject` (unit cube, 12 triangles), `TestNonConvexObject` (L-shape, 20 triangles,
 including the concave-pocket case where the closest surface is an inner wall — the prime
 silent-failure scenario for non-convex geometry).
 

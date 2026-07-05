@@ -22,6 +22,9 @@ class TestFace : public QObject
         void getClosestToEdgeVNegative();
         void getClosestToEdgeUNegative();
         void getClosestToEdgeUVOverflow();
+        void getClosestToSeamVZero();
+        void getClosestToSeamUZero();
+        void getClosestToSeamUVSumOne();
         void getClosestToNearVertexV0();
         void getClosestToNearVertexV1();
         void getClosestToNearVertexV2();

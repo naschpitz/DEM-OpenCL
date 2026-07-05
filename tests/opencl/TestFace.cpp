@@ -101,6 +101,63 @@ void TestFace::getClosestToEdgeUVOverflow()
     QCOMPARE(outFace[0].z, 0.0f);
 }
 
+void TestFace::getClosestToSeamVZero()
+{
+    cl_float4 v0 = {0.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 v1 = {10.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 v2 = {0.0f, 10.0f, 0.0f, 0.0f};
+
+    std::vector<FaceCL> faces = { makeFaceCL(v0, v1, v2) };
+    std::vector<ParticleCL> particles = { makeParticleCL(5.0f, 0.0f, 1.0f, 0.0f) };
+
+    std::vector<cl_float4> outFace;
+    std::vector<cl_float4> outParticle;
+
+    this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+
+    QCOMPARE(outFace[0].x, 5.0f);
+    QCOMPARE(outFace[0].y, 0.0f);
+    QCOMPARE(outFace[0].z, 0.0f);
+}
+
+void TestFace::getClosestToSeamUZero()
+{
+    cl_float4 v0 = {0.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 v1 = {10.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 v2 = {0.0f, 10.0f, 0.0f, 0.0f};
+
+    std::vector<FaceCL> faces = { makeFaceCL(v0, v1, v2) };
+    std::vector<ParticleCL> particles = { makeParticleCL(0.0f, 5.0f, 1.0f, 0.0f) };
+
+    std::vector<cl_float4> outFace;
+    std::vector<cl_float4> outParticle;
+
+    this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+
+    QCOMPARE(outFace[0].x, 0.0f);
+    QCOMPARE(outFace[0].y, 5.0f);
+    QCOMPARE(outFace[0].z, 0.0f);
+}
+
+void TestFace::getClosestToSeamUVSumOne()
+{
+    cl_float4 v0 = {0.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 v1 = {10.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 v2 = {0.0f, 10.0f, 0.0f, 0.0f};
+
+    std::vector<FaceCL> faces = { makeFaceCL(v0, v1, v2) };
+    std::vector<ParticleCL> particles = { makeParticleCL(5.0f, 5.0f, 1.0f, 0.0f) };
+
+    std::vector<cl_float4> outFace;
+    std::vector<cl_float4> outParticle;
+
+    this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+
+    QCOMPARE(outFace[0].x, 5.0f);
+    QCOMPARE(outFace[0].y, 5.0f);
+    QCOMPARE(outFace[0].z, 0.0f);
+}
+
 void TestFace::getClosestToNearVertexV0()
 {
     cl_float4 v0 = {0.0f, 0.0f, 0.0f, 0.0f};
