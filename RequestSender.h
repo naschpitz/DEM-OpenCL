@@ -11,20 +11,21 @@
 #include "FrameSender.h"
 #include "LogSender.h"
 #include "Simulation.h"
+#include "SimulationSink.h"
 
-class RequestSender : public QObject
+class RequestSender : public QObject, public SimulationSink
 {        
     Q_OBJECT
 
     public:
         static RequestSender& getInstance();
 
-    public slots:
-        void newFrame(bool detailed = true);
-        void newLog(QString message = QString());
-
     public:
-        void waitForAllFramesSent(const Simulation* simulation);
+        // SimulationSink interface — the originating Simulation is passed
+        // explicitly (no QObject::sender()).
+        void onNewFrame(const Simulation* simulation, bool detailed) override;
+        void onNewLog(const Simulation* simulation, const QString& message) override;
+        void onWaitForAllFramesSent(const Simulation* simulation) override;
 
     private:
         bool remoteInterface;

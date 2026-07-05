@@ -17,13 +17,15 @@ Simulation::Simulation()
     this->initialized = false;
     this->paused = false;
     this->stopped = false;
+    this->sink = nullptr;
 }
 
-Simulation::Simulation(const nlohmann::json& jsonObject)
+Simulation::Simulation(const nlohmann::json& jsonObject, SimulationSink* sink)
 {
     this->initialized = false;
     this->paused = false;
     this->stopped = false;
+    this->sink = sink;
 
     try {
         this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
@@ -138,8 +140,8 @@ Simulation::Simulation(const nlohmann::json& jsonObject)
         throw std::runtime_error("Missing 'scenery' field in Simulation");
     }
 
-    connect(this, SIGNAL(newLog(QString)), &(RequestSender::getInstance()), SLOT(newLog(QString)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(newFrame(bool)), &(RequestSender::getInstance()), SLOT(newFrame(bool)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newLog(QString)), this, SLOT(handleLog(QString)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(newFrame(bool)), this, SLOT(handleFrame(bool)), Qt::BlockingQueuedConnection);
     connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
 
@@ -152,6 +154,21 @@ Simulation::~Simulation()
 void Simulation::initialize()
 {
     this->scenery.initialize();
+}
+
+SimulationSink* Simulation::resolveSink() const
+{
+    return this->sink ? this->sink : &RequestSender::getInstance();
+}
+
+void Simulation::handleFrame(bool isDetailed)
+{
+    this->resolveSink()->onNewFrame(this, isDetailed);
+}
+
+void Simulation::handleLog(QString message)
+{
+    this->resolveSink()->onNewLog(this, message);
 }
 
 SimulationCL Simulation::getCL() const
@@ -495,7 +512,7 @@ void Simulation::run()
 
         // Wait for all frames to be sent before declaring simulation paused
         emit this->newLog("Waiting for all frames to be sent...");
-        RequestSender::getInstance().waitForAllFramesSent(this);
+        this->resolveSink()->onWaitForAllFramesSent(this);
 
         emit this->newLog("Simulation paused");
     }
@@ -505,7 +522,7 @@ void Simulation::run()
 
     // Wait for all frames to be sent before ending the thread
     emit this->newLog("Waiting for all frames to be sent...");
-    RequestSender::getInstance().waitForAllFramesSent(this);
+    this->resolveSink()->onWaitForAllFramesSent(this);
 
     emit this->newLog("Simulation ended");
 }

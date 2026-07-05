@@ -12,6 +12,7 @@
 #include "nlohmann/json.hpp"
 #include "Error.h"
 #include "Scenery.h"
+#include "SimulationSink.h"
 #include "Vector3D.h"
 
 #include <CL/opencl.hpp>
@@ -66,6 +67,8 @@ class Simulation : public QThread
 
         Scenery scenery;
 
+        SimulationSink* sink;
+
         bool initialized;
         bool paused;
         bool stopped;
@@ -73,9 +76,11 @@ class Simulation : public QThread
 
         void initialize();
 
+        SimulationSink* resolveSink() const;
+
     public:
         Simulation();
-        Simulation(const nlohmann::json& jsonObject);
+        Simulation(const nlohmann::json& jsonObject, SimulationSink* sink = nullptr);
         ~Simulation();
 
         // Delete copy constructor and assignment operator to prevent copying
@@ -126,6 +131,10 @@ class Simulation : public QThread
     signals:
         void newFrame(bool isDetailed);
         void newLog(QString message);
+
+    private slots:
+        void handleFrame(bool isDetailed);
+        void handleLog(QString message);
 };
 
 #endif // SIMULATION_H

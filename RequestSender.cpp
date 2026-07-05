@@ -38,10 +38,8 @@ RequestSender& RequestSender::getInstance()
     return instance;
 }
 
-void RequestSender::newFrame(bool detailed)
-{    
-    Simulation *simulation = (Simulation*)QObject::sender();
-
+void RequestSender::onNewFrame(const Simulation* simulation, bool detailed)
+{
     nlohmann::json jsonObject;
 
     jsonObject["owner"]    = simulation->getScenery().getId().toStdString();
@@ -67,10 +65,8 @@ void RequestSender::newFrame(bool detailed)
     this->frameSender.send(url, simulation, file);
 }
 
-void RequestSender::newLog(QString message)
+void RequestSender::onNewLog(const Simulation* simulation, const QString& message)
 {
-    Simulation *simulation = (Simulation*)QObject::sender();
-
     nlohmann::json jsonObject;
 
     jsonObject["owner"] = simulation->getId().toStdString();
@@ -111,7 +107,7 @@ void RequestSender::newLog(QString message)
     this->logSender.send(url, data);
 }
 
-void RequestSender::waitForAllFramesSent(const Simulation* simulation)
+void RequestSender::onWaitForAllFramesSent(const Simulation* simulation)
 {
     this->frameSender.waitForAllFramesSent(simulation);
 }
