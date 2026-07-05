@@ -10,6 +10,7 @@
 #include "TestEdge.h"
 #include "TestParticle.h"
 #include "TestFace.h"
+#include "TestObject.h"
 
 int main(int argc, char** argv)
 {
@@ -24,6 +25,7 @@ int main(int argc, char** argv)
     TestEdge testEdge;
     TestParticle testParticle;
     TestFace testFace;
+    TestObject testObject;
 
     int failures = 0;
     failures += QTest::qExec(&testSmoke);
@@ -31,6 +33,7 @@ int main(int argc, char** argv)
     failures += QTest::qExec(&testEdge);
     failures += QTest::qExec(&testParticle);
     failures += QTest::qExec(&testFace);
+    failures += QTest::qExec(&testObject);
 
     return failures;
 }

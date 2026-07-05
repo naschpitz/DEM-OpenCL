@@ -8,5 +8,6 @@
 #include "../opencl/TestsEdge.cpp.cl"
 #include "../opencl/TestsParticle.cpp.cl"
 #include "../opencl/TestsFace.cpp.cl"
+#include "../opencl/TestsObject.cpp.cl"
 
 #endif // TESTS_CPP_CL

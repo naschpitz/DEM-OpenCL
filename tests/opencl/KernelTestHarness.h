@@ -47,6 +47,8 @@ class KernelTestHarness
         std::vector<cl_uint> runParticleIsInternal(const std::vector<ParticleCL>& particles, const std::vector<cl_float4>& queries);
 
         void runFaceGetClosestTo(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle);
+
+        void runObjectToParticle(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle);
 };
 
 #endif // KERNELTESTHARNESS_H

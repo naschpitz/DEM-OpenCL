@@ -156,3 +156,29 @@ void KernelTestHarness::runFaceGetClosestTo(const std::vector<FaceCL>& faces, co
     this->core->readBuffer<cl_float4>("face_out_face", outFace, 0);
     this->core->readBuffer<cl_float4>("face_out_particle", outParticle, 0);
 }
+
+void KernelTestHarness::runObjectToParticle(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle)
+{
+    cl_uint numFaces = static_cast<cl_uint>(faces.size());
+
+    outFace.assign(particles.size(), ZERO4);
+    outParticle.assign(particles.size(), ZERO4);
+
+    this->core->writeBuffer<FaceCL>("obj_faces", faces, 0);
+    this->core->writeBuffer<ParticleCL>("obj_particles", particles, 0);
+    this->core->writeBuffer<cl_float4>("obj_out_face", outFace, 0);
+    this->core->writeBuffer<cl_float4>("obj_out_particle", outParticle, 0);
+
+    this->core->addKernel("test_object_to_particle", particles.size());
+    this->core->addArgument<FaceCL>("test_object_to_particle", "obj_faces");
+    this->core->addArgument<cl_uint>("test_object_to_particle", numFaces);
+    this->core->addArgument<ParticleCL>("test_object_to_particle", "obj_particles");
+    this->core->addArgument<cl_float4>("test_object_to_particle", "obj_out_face");
+    this->core->addArgument<cl_float4>("test_object_to_particle", "obj_out_particle");
+
+    this->core->run();
+    this->core->clearKernels();
+
+    this->core->readBuffer<cl_float4>("obj_out_face", outFace, 0);
+    this->core->readBuffer<cl_float4>("obj_out_particle", outParticle, 0);
+}
