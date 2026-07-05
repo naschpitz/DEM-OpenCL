@@ -16,6 +16,7 @@ add_executable(TestOpenCL
     TestParticle.cpp        TestParticle.h
     TestFace.cpp            TestFace.h
     TestObject.cpp          TestObject.h
+    TestNonConvexObject.cpp TestNonConvexObject.h
 )
 
 set_target_properties(TestOpenCL PROPERTIES

@@ -58,4 +58,44 @@ inline std::vector<FaceCL> makeUnitCubeCL()
     };
 }
 
+inline std::vector<FaceCL> makeLShapeCL()
+{
+    cl_float4 _000 = {0.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 _100 = {1.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 _200 = {2.0f, 0.0f, 0.0f, 0.0f};
+    cl_float4 _010 = {0.0f, 1.0f, 0.0f, 0.0f};
+    cl_float4 _110 = {1.0f, 1.0f, 0.0f, 0.0f};
+    cl_float4 _210 = {2.0f, 1.0f, 0.0f, 0.0f};
+    cl_float4 _020 = {0.0f, 2.0f, 0.0f, 0.0f};
+    cl_float4 _120 = {1.0f, 2.0f, 0.0f, 0.0f};
+    cl_float4 _001 = {0.0f, 0.0f, 1.0f, 0.0f};
+    cl_float4 _101 = {1.0f, 0.0f, 1.0f, 0.0f};
+    cl_float4 _201 = {2.0f, 0.0f, 1.0f, 0.0f};
+    cl_float4 _011 = {0.0f, 1.0f, 1.0f, 0.0f};
+    cl_float4 _111 = {1.0f, 1.0f, 1.0f, 0.0f};
+    cl_float4 _211 = {2.0f, 1.0f, 1.0f, 0.0f};
+    cl_float4 _021 = {0.0f, 2.0f, 1.0f, 0.0f};
+    cl_float4 _121 = {1.0f, 2.0f, 1.0f, 0.0f};
+
+    std::vector<FaceCL> faces;
+
+    auto addRect = [&](const cl_float4& a, const cl_float4& b, const cl_float4& c, const cl_float4& d) {
+        faces.push_back(makeFaceCL(a, b, c));
+        faces.push_back(makeFaceCL(a, c, d));
+    };
+
+    addRect(_001, _201, _211, _011);
+    addRect(_011, _111, _121, _021);
+    addRect(_000, _010, _210, _200);
+    addRect(_010, _020, _120, _110);
+    addRect(_000, _001, _021, _020);
+    addRect(_000, _200, _201, _001);
+    addRect(_200, _210, _211, _201);
+    addRect(_020, _021, _121, _120);
+    addRect(_110, _111, _121, _120);
+    addRect(_110, _210, _211, _111);
+
+    return faces;
+}
+
 #endif // TESTHELPERS_H
