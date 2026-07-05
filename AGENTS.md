@@ -16,22 +16,33 @@ DEM-OpenCL/
   extern/OpenCLWrapper  OpenCL abstraction (git submodule)
   tests/                Legacy unity-build test (currently broken; BUILD_TEST=ON)
   depends/              External runtime deps
-  deploy.sh             scp binary + kernels + config to a remote host
-  bin/                  Build output (RUNTIME_OUTPUT_DIRECTORY)
+  build.sh              Build wrapper: --development (build-dev, Debug) / --release (build, Release), --static/--shared
+  install.sh            Full installer: clone, build, stage binary+kernels, DEM.ini, optional systemd
 ```
 
 ## Build
 
 ```bash
-cmake --preset static                       # configure (static Qt6, Release)
-cmake --build build --target DEM -j$(nproc) # build the DEM executable -> ./bin/DEM
+./build.sh                  # development (Debug) into build-dev — default
+./build.sh --release        # release (Release) into build
+./build.sh --release --shared
+```
+
+`build.sh` configures via the `static`/`shared` preset from `CMakeUserPresets.json`
+(machine-specific Qt6 kit prefix), then overrides the build dir (`build-dev`/`build`)
+and `CMAKE_BUILD_TYPE` so one preset serves both modes. Equivalent low-level call:
+
+```bash
+cmake --preset static -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)   # builds the DEM executable -> ./build/DEM
 ```
 
 Two presets in `CMakeUserPresets.json` select the Qt6 kit:
 - `static`  — self-contained binary against a statically-linked Qt6 (`Qt-6.8.2-static`)
 - `shared`  — links a shared Qt6 (`Qt-6.8.2-shared`)
 
-Both build into `build/`. Output goes to `bin/DEM`.
+The executable lands in the build dir (`build/DEM` / `build-dev/DEM`). There is no
+separate `bin/` output directory.
 
 ### Prerequisites
 - C++17 compiler (GCC)
@@ -65,10 +76,10 @@ cmake --preset static -DBUILD_TEST=ON       # will NOT compile — see above
 
 ### OpenCL kernels (`opencl/*.cl`)
 The `.cl` / `.cpp.cl` / `.h.cl` files under `opencl/` are **runtime resources**, not CMake build
-inputs. At runtime the simulation runs from `bin/` and loads `../opencl/Simulation.cpp.cl` (which
+inputs. At runtime the simulation runs from `build/` and loads `../opencl/Simulation.cpp.cl` (which
 in turn `#include`s the other kernels). OpenCLWrapper builds with `-I ./`, so every cross-kernel
-include is written as `../opencl/<file>.cl` (resolved relative to the `bin/` CWD). `deploy.sh`
-ships the whole `opencl/` dir to `~/DEM/opencl/` on the remote host, mirroring this layout.
+include is written as `../opencl/<file>.cl` (resolved relative to the `build/` CWD). `install.sh`
+stages the same `bin/` + sibling `opencl/` layout under its install path.
 
 ### OpenCL usage
 Two layers coexist:
@@ -131,8 +142,9 @@ itself, edit in the submodule then bump the pointer (see `submodule-sync` skill)
   config file must be `DEM.ini` (kept in the repo root, deployed to `bin/`). Renaming the target
   renames the expected ini.
 - **`.cl` files are runtime resources.** They live under `opencl/`, are NOT listed as CMake sources,
-  and are not compiled — they must ship next to the binary (`bin/` runs against `../opencl/`).
-  `deploy.sh` handles this.
+  and are not compiled — they must ship one level above the binary's working directory (in dev the
+  binary runs from `build/` against `../opencl/`; `install.sh` stages the same `bin/` + sibling
+  `opencl/` layout on the target).
 - **Prefixed includes.** `#include "nlohmann/json.hpp"` and `#include "restclient-cpp/restclient.h"`
   rely on `libs/` being on the include path (a PRIVATE include dir on the `DEM` target), not on the
   `nlohmann_json` / `restclient-cpp` INTERFACE targets' own include dirs.

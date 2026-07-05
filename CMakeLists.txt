@@ -81,9 +81,6 @@ target_link_libraries(DEM PRIVATE
     OpenCL::OpenCL
 )
 
-# Output to ./bin to match the original DESTDIR (Qt Creator / deployment expect it).
-set_target_properties(DEM PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-
 if(BUILD_TEST)
     add_subdirectory(tests)
 endif()
