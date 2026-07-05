@@ -90,6 +90,68 @@ cmake --build build -j                  # builds the DEM target AND tests/bin/Te
 - **Enum values are integers.** `Material::getCL().forceType` / `dragForceType` return the enum
   int (see `Material.h`), not the string. Compare against the int (e.g. `inverse_quadratic` → 3).
 
+### OpenCL kernel tests
+
+The `tests/opencl/` directory holds a separate Qt Testlib suite (`TestOpenCL` target) that runs the
+**actual OpenCL distance kernels on a real GPU** — no C++ reference port. It covers the per-element
+math the simulation relies on: `vector_getUnitary`, `edge_getClosestTo`, `particle_getClosestTo`,
+`particle_isInternal`, `face_getClosestTo`, and an object-to-particle scan that mirrors the
+production min-distance neighborhood loop (the path that handles non-convex geometry by per-face
+independence — there is no explicit convex/concave branch in the kernels).
+
+The `TestOpenCL` target is **OFF by default** (`BUILD_OPENCL_TEST` CMake option, independent of
+`BUILD_TEST`). It links against `OpenCLWrapper` and the domain headers (Particle/Face/Vertex `.h`),
+so it needs the same Qt6 + OpenCL ICD + headers as the `DEM` target.
+
+```bash
+cmake --preset static -B build -DBUILD_OPENCL_TEST=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j --target TestOpenCL
+( cd build && ./TestOpenCL )   # MUST run from build/ so ../opencl/ resolves
+```
+
+**CWD contract (critical).** Like the sim, the binary runs from the build dir because
+OpenCLWrapper resolves `#include`s via `-I ./` (relative to CWD) and the `.cl` cross-kernel includes
+are written as `../opencl/<file>.cl`. Run it from anywhere else and the kernel build fails.
+
+**Trampoline pattern.** OpenCL device functions can't be invoked directly from the host, so each
+tested kernel is wrapped in a tiny `kernel void test_<func>(...)` "trampoline" under `opencl/`
+(`TestsVector.cpp.cl`, `TestsEdge.cpp.cl`, `TestsParticle.cpp.cl`, `TestsFace.cpp.cl`,
+`TestsObject.cpp.cl`). They `#include` the real kernel they exercise and just forward the args.
+`opencl/Tests.cpp.cl` aggregates them (mirroring `Simulation.cpp.cl`'s pattern) and is the single
+source file handed to `OpenCLWrapper::Core::addSourceFile()`. Add a new trampoline → append an
+`#include` line to `Tests.cpp.cl`.
+
+**Harness.** `KernelTestHarness` (`tests/opencl/KernelTestHarness.{h,cpp}`) is a thin RAII wrapper
+around `OpenCLWrapper::Core`. Each `run<Algorithm>` method uses the **named buffer API**
+(`writeBuffer<T>("name", vec, 0)` / `addArgument<T>("kernel", "name")` / `readBuffer<T>("name", vec, 0)`)
+so device buffers are stable across calls and don't leak. Each test class owns its own
+`KernelTestHarness` instance — i.e. its own `OpenCLWrapper::Core` and its own device buffer map — so
+fixtures of different sizes (the 12-face cube vs the 20-face L-shape) never collide.
+
+**Golden-value strategy.** All expected closest-points/distances are hand-derived closed-form
+values, never a C++ reference implementation. Float32 GPU math varies by vendor; tolerances are
+component-wise `QCOMPARE(float_f, float_f)` (qFuzzyCompare) for normal cases, with documented
+loosening where needed. Literals are `f`-suffixed (same rule as the domain tests above).
+
+**Suites (49 cases across 6 suites).** `TestSmoke` (harness sanity), `TestVector`
+(`getUnitary` incl. zero→0), `TestEdge` (`getClosestTo` all regions incl. degenerate edge),
+`TestParticle` (particle-particle aligned/3D/overlapping + `isInternal` outside/inside/boundary),
+`TestFace` (`face_getClosestTo` inside-triangle / three edge regions / three vertices / coplanar /
+radius-offset), `TestObject` (unit cube, 12 triangles), `TestNonConvexObject` (L-shape, 20 triangles,
+including the concave-pocket case where the closest surface is an inner wall — the prime
+silent-failure scenario for non-convex geometry).
+
+**Known unguarded divide — documented, not fixed here.** `Face.cpp.cl:75` computes the barycentric
+denominator `den = bb*cc - bc*bc` and divides by it unconditionally; a zero-area (degenerate)
+triangle yields NaN/inf. `TestFace::F9` asserts the NaN to lock the current behavior. Issue #2
+tracks adding a kernel guard; do NOT add the guard as part of routine test work without it.
+
+**Object fixtures are hand-authored `FaceCL`, not JSON+`SolidObject`.** `SolidObject::loadStl()`
+writes the JSON `stl` field to `temp.stl` in CWD and parses it via tetgen — a heavy new build surface
+for zero kernel-math benefit (host↔device marshalling is already covered by the `Test` suite's
+`TestSolidObject`). The OpenCL tests build `FaceCL` arrays directly via helpers in
+`tests/opencl/TestHelpers.h` (`makeUnitCubeCL`, `makeLShapeCL`), so they exercise only the device math.
+
 ## Architecture
 
 - **`main.cpp`** — entry point; loads `DEM.ini` via `Common::searchConfigFile()`, starts the QtWebApp HTTP listener.
