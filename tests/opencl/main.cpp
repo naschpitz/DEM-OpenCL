@@ -9,6 +9,7 @@
 #include "TestVector.h"
 #include "TestEdge.h"
 #include "TestParticle.h"
+#include "TestFace.h"
 
 int main(int argc, char** argv)
 {
@@ -22,12 +23,14 @@ int main(int argc, char** argv)
     TestVector testVector;
     TestEdge testEdge;
     TestParticle testParticle;
+    TestFace testFace;
 
     int failures = 0;
     failures += QTest::qExec(&testSmoke);
     failures += QTest::qExec(&testVector);
     failures += QTest::qExec(&testEdge);
     failures += QTest::qExec(&testParticle);
+    failures += QTest::qExec(&testFace);
 
     return failures;
 }

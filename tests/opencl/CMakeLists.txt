@@ -14,6 +14,7 @@ add_executable(TestOpenCL
     TestVector.cpp          TestVector.h
     TestEdge.cpp            TestEdge.h
     TestParticle.cpp        TestParticle.h
+    TestFace.cpp            TestFace.h
 )
 
 set_target_properties(TestOpenCL PROPERTIES

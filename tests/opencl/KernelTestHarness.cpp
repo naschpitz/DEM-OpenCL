@@ -133,3 +133,26 @@ std::vector<cl_uint> KernelTestHarness::runParticleIsInternal(const std::vector<
 
     return output;
 }
+
+void KernelTestHarness::runFaceGetClosestTo(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle)
+{
+    outFace.assign(faces.size(), ZERO4);
+    outParticle.assign(faces.size(), ZERO4);
+
+    this->core->writeBuffer<FaceCL>("face_faces", faces, 0);
+    this->core->writeBuffer<ParticleCL>("face_particles", particles, 0);
+    this->core->writeBuffer<cl_float4>("face_out_face", outFace, 0);
+    this->core->writeBuffer<cl_float4>("face_out_particle", outParticle, 0);
+
+    this->core->addKernel("test_face_getClosestTo", faces.size());
+    this->core->addArgument<FaceCL>("test_face_getClosestTo", "face_faces");
+    this->core->addArgument<ParticleCL>("test_face_getClosestTo", "face_particles");
+    this->core->addArgument<cl_float4>("test_face_getClosestTo", "face_out_face");
+    this->core->addArgument<cl_float4>("test_face_getClosestTo", "face_out_particle");
+
+    this->core->run();
+    this->core->clearKernels();
+
+    this->core->readBuffer<cl_float4>("face_out_face", outFace, 0);
+    this->core->readBuffer<cl_float4>("face_out_particle", outParticle, 0);
+}
