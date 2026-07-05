@@ -11,6 +11,9 @@ add_executable(TestOpenCL
     main.cpp
     KernelTestHarness.cpp   KernelTestHarness.h
     TestSmoke.cpp           TestSmoke.h
+    TestVector.cpp          TestVector.h
+    TestEdge.cpp            TestEdge.h
+    TestParticle.cpp        TestParticle.h
 )
 
 set_target_properties(TestOpenCL PROPERTIES
@@ -22,6 +25,8 @@ find_package(Qt6 REQUIRED COMPONENTS Test)
 
 target_include_directories(TestOpenCL PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/libs
 )
 
 target_link_libraries(TestOpenCL PRIVATE

@@ -6,6 +6,9 @@
 #include <clocale>
 
 #include "TestSmoke.h"
+#include "TestVector.h"
+#include "TestEdge.h"
+#include "TestParticle.h"
 
 int main(int argc, char** argv)
 {
@@ -16,9 +19,15 @@ int main(int argc, char** argv)
     OpenCLWrapper::Core::initialize();
 
     TestSmoke testSmoke;
+    TestVector testVector;
+    TestEdge testEdge;
+    TestParticle testParticle;
 
     int failures = 0;
     failures += QTest::qExec(&testSmoke);
+    failures += QTest::qExec(&testVector);
+    failures += QTest::qExec(&testEdge);
+    failures += QTest::qExec(&testParticle);
 
     return failures;
 }

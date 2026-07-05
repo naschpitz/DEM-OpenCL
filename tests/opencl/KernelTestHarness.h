@@ -11,8 +11,12 @@
 
 #include <CL/opencl.hpp>
 
+#include "Particle.h"
+#include "Vertex.h"
+
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace OpenCLWrapper
 {
@@ -32,6 +36,14 @@ class KernelTestHarness
         bool isReady() const;
 
         cl_float4 runSmokePassthrough(const cl_float4& input);
+
+        std::vector<cl_float4> runVectorGetUnitary(const std::vector<cl_float4>& inputs);
+
+        std::vector<cl_float4> runEdgeGetClosestTo(const std::vector<VertexCL>& edgeVertices, const std::vector<cl_float4>& queries);
+
+        void runParticleGetClosestTo(const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outThis, std::vector<cl_float4>& outOther);
+
+        std::vector<cl_uint> runParticleIsInternal(const std::vector<ParticleCL>& particles, const std::vector<cl_float4>& queries);
 };
 
 #endif // KERNELTESTHARNESS_H
