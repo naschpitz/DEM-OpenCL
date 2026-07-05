@@ -2,7 +2,6 @@
 #define TESTNONSOLIDOBJECT_H
 
 #include <QObject>
-#include <QJsonObject>
 
 #include "../NonSolidObject.h"
 
@@ -11,7 +10,7 @@ class TestNonSolidObject : public QObject
     Q_OBJECT
 
     private:
-        QJsonObject nonSolidObjectWireframeJsonValue;
+        nlohmann::json nonSolidObjectWireframeJsonValue;
 
     public:
         TestNonSolidObject();

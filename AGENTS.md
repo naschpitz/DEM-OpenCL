@@ -54,14 +54,41 @@ separate `bin/` output directory.
 
 ## Tests
 
-The `tests/` target is **OFF by default** (`BUILD_TEST` option). It is currently broken:
-`tests/main.cpp` uses a unity build that `#include`s source files directly, two of which
-(`OpenCL.cpp`, `OpenCLCU.cpp`) no longer exist. Enabling `BUILD_TEST=ON` will fail to compile
-until that unity build is repaired.
+**Working tests are fundamental to this project.** The `tests/` directory holds a Qt Testlib
+unit-test suite (`Test` target) that covers the domain objects — `Vector3D`, `Particle`,
+`Material`, `MaterialsManager`, `NonSolidObject`, `SolidObject`, `Scenery`, `ObjectsManager`.
+Every change to a domain object or its JSON contract MUST keep this suite green; if you add or
+change behavior, add or update the corresponding test. Do not leave the suite broken.
+
+The `Test` target is **OFF by default** (`BUILD_TEST` CMake option). It uses a unity build:
+`tests/main.cpp` `#include`s the `.cpp` sources directly (no linking of domain objects), so it
+compiles fast but only covers code that has no OpenCL dependency. Fixtures live beside the tests
+as `*.json` and are loaded with `std::ifstream` + `nlohmann::json::parse` (the domain constructors
+take `nlohmann::json`, NOT `QJsonObject`). The binary runs from `tests/bin/`, so fixtures are
+referenced as `"../Foo.json"` (resolving to `tests/`).
 
 ```bash
-cmake --preset static -DBUILD_TEST=ON       # will NOT compile — see above
+cmake --preset static -B build -DBUILD_TEST=ON
+cmake --build build -j                  # builds the DEM target AND tests/bin/Test
+( cd tests/bin && ./Test )              # run the suite (prints per-suite totals; 0 failures = green)
 ```
+
+### Conventions for the tests
+- **CL structs store `cl_float`.** When comparing a `*CL` field against a literal, suffix it with
+  `f` (e.g. `QCOMPARE(materialCL.distanceThreshold, 4.56f)`) so QCOMPARE sees `float` vs `float`.
+  Unsuffixed doubles fail QTest's fuzzy compare.
+- **`Vector3D` stores `float`.** Same rule: suffix literals with `f`, and for box/bounds checks
+  compare each component with `qAbs(...) < 1e-3f` rather than `QCOMPARE(Vector3D, Vector3D)` (the
+  `==` operator is exact).
+- **Non-solid / solid objects need `initialize()`.** Their constructors only store fields;
+  particles/faces are built in `initialize()`. Call it before any `getCurrentMass()` /
+  `getCurrentMomentum()` / `getCurrentKineticEnergy*()` / `getBox()` — otherwise they divide by
+  zero or index an empty vector.
+- **Physics sums are large.** Prefer *relative* tolerance (`qAbs(cur - exp) <= 1e-4 * qAbs(exp)`)
+  over absolute for momentum/kinetic-energy over particle packings; for the internal KE (expected
+  0, computed as total − external) bound the residual relative to the total.
+- **Enum values are integers.** `Material::getCL().forceType` / `dragForceType` return the enum
+  int (see `Material.h`), not the string. Compare against the int (e.g. `inverse_quadratic` → 3).
 
 ## Architecture
 

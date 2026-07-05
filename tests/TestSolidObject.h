@@ -2,7 +2,6 @@
 #define TESTSOLIDOBJECT_H
 
 #include <QObject>
-#include <QJsonObject>
 
 #include "../SolidObject.h"
 
@@ -11,7 +10,7 @@ class TestSolidObject : public QObject
     Q_OBJECT
 
     private:
-        QJsonObject solidObjectJsonValue;
+        nlohmann::json solidObjectJsonValue;
 
     public:
         TestSolidObject();

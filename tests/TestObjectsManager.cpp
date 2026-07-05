@@ -1,21 +1,12 @@
 #include "TestObjectsManager.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QString>
+#include <fstream>
 #include <QTest>
-#include <math.h>
 
 TestObjectsManager::TestObjectsManager()
 {
-    QFile objectsManagerFile("../ObjectsManager.json");
-    objectsManagerFile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString objectsManagerFileString = objectsManagerFile.readAll();
-    objectsManagerFile.close();
-
-    QJsonDocument objectsManagerJsonDocument = QJsonDocument::fromJson(objectsManagerFileString.toUtf8());
-    this->objectsManagerJsonValue = objectsManagerJsonDocument.object();
+    std::ifstream file("../ObjectsManager.json");
+    this->objectsManagerJsonValue = nlohmann::json::parse(file);
 }
 
 void TestObjectsManager::constructor()

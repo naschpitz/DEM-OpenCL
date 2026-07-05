@@ -1,19 +1,12 @@
 #include "TestMaterialsManager.h"
 
-#include <QString>
-#include <QString>
+#include <fstream>
 #include <QtTest>
 
 TestMaterialsManager::TestMaterialsManager()
 {
-    QFile file("../MaterialsManager.json");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString fileString = file.readAll();
-    file.close();
-
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(fileString.toUtf8());
-    this->jsonArray = jsonDocument.object()["root"].toArray();
+    std::ifstream file("../MaterialsManager.json");
+    this->jsonArray = nlohmann::json::parse(file)["root"];
 }
 
 void TestMaterialsManager::constructor()
@@ -101,69 +94,70 @@ void TestMaterialsManager::getCL()
 
     QVERIFY(materialsManagerCL.size == 3);
 
+    // CL structs store cl_float; suffix literals so QCOMPARE compares float vs float.
     // Material 0
     MaterialCL& materialCL0 = materialsManagerCL.materials[0];
     QCOMPARE(materialCL0.materialIndex1, -1);
     QCOMPARE(materialCL0.materialIndex2, -1);
-    QCOMPARE(materialCL0.distanceThreshold, 4.560);
-    QCOMPARE(materialCL0.forceType, 2);
+    QCOMPARE(materialCL0.distanceThreshold, 4.560f);
+    QCOMPARE(materialCL0.forceType, 3);
     QCOMPARE(materialCL0.dragForceType, 1);
 
-    QCOMPARE(materialCL0.coefficients[0], 1.230);
-    QCOMPARE(materialCL0.coefficients[1], 3.450);
-    QCOMPARE(materialCL0.coefficients[2], 6.780);
-    QCOMPARE(materialCL0.coefficients[3], 9.100);
-    QCOMPARE(materialCL0.coefficients[4], 11.120);
-    QCOMPARE(materialCL0.coefficients[5], 13.140);
+    QCOMPARE(materialCL0.coefficients[0], 1.230f);
+    QCOMPARE(materialCL0.coefficients[1], 3.450f);
+    QCOMPARE(materialCL0.coefficients[2], 6.780f);
+    QCOMPARE(materialCL0.coefficients[3], 9.100f);
+    QCOMPARE(materialCL0.coefficients[4], 11.120f);
+    QCOMPARE(materialCL0.coefficients[5], 13.140f);
 
-    QCOMPARE(materialCL0.dragCoefficients[0], 15.160);
-    QCOMPARE(materialCL0.dragCoefficients[1], 17.180);
-    QCOMPARE(materialCL0.dragCoefficients[2], 19.200);
-    QCOMPARE(materialCL0.dragCoefficients[3], 21.220);
-    QCOMPARE(materialCL0.dragCoefficients[4], 23.240);
-    QCOMPARE(materialCL0.dragCoefficients[5], 25.260);
+    QCOMPARE(materialCL0.dragCoefficients[0], 15.160f);
+    QCOMPARE(materialCL0.dragCoefficients[1], 17.180f);
+    QCOMPARE(materialCL0.dragCoefficients[2], 19.200f);
+    QCOMPARE(materialCL0.dragCoefficients[3], 21.220f);
+    QCOMPARE(materialCL0.dragCoefficients[4], 23.240f);
+    QCOMPARE(materialCL0.dragCoefficients[5], 25.260f);
 
     // Material 1
     MaterialCL& materialCL1 = materialsManagerCL.materials[1];
     QCOMPARE(materialCL1.materialIndex1, -1);
     QCOMPARE(materialCL1.materialIndex2, -1);
-    QCOMPARE(materialCL1.distanceThreshold, 4.561);
-    QCOMPARE(materialCL1.forceType, 2);
+    QCOMPARE(materialCL1.distanceThreshold, 4.561f);
+    QCOMPARE(materialCL1.forceType, 3);
     QCOMPARE(materialCL1.dragForceType, 1);
 
-    QCOMPARE(materialCL1.coefficients[0], 1.231);
-    QCOMPARE(materialCL1.coefficients[1], 3.451);
-    QCOMPARE(materialCL1.coefficients[2], 6.781);
-    QCOMPARE(materialCL1.coefficients[3], 9.101);
-    QCOMPARE(materialCL1.coefficients[4], 11.121);
-    QCOMPARE(materialCL1.coefficients[5], 13.141);
+    QCOMPARE(materialCL1.coefficients[0], 1.231f);
+    QCOMPARE(materialCL1.coefficients[1], 3.451f);
+    QCOMPARE(materialCL1.coefficients[2], 6.781f);
+    QCOMPARE(materialCL1.coefficients[3], 9.101f);
+    QCOMPARE(materialCL1.coefficients[4], 11.121f);
+    QCOMPARE(materialCL1.coefficients[5], 13.141f);
 
-    QCOMPARE(materialCL1.dragCoefficients[0], 15.161);
-    QCOMPARE(materialCL1.dragCoefficients[1], 17.181);
-    QCOMPARE(materialCL1.dragCoefficients[2], 19.201);
-    QCOMPARE(materialCL1.dragCoefficients[3], 21.221);
-    QCOMPARE(materialCL1.dragCoefficients[4], 23.241);
-    QCOMPARE(materialCL1.dragCoefficients[5], 25.261);
+    QCOMPARE(materialCL1.dragCoefficients[0], 15.161f);
+    QCOMPARE(materialCL1.dragCoefficients[1], 17.181f);
+    QCOMPARE(materialCL1.dragCoefficients[2], 19.201f);
+    QCOMPARE(materialCL1.dragCoefficients[3], 21.221f);
+    QCOMPARE(materialCL1.dragCoefficients[4], 23.241f);
+    QCOMPARE(materialCL1.dragCoefficients[5], 25.261f);
 
     // Material 2
     MaterialCL& materialCL2 = materialsManagerCL.materials[2];
     QCOMPARE(materialCL2.materialIndex1, 0);
     QCOMPARE(materialCL2.materialIndex2, 1);
-    QCOMPARE(materialCL2.distanceThreshold, 4.562);
-    QCOMPARE(materialCL2.forceType, 2);
+    QCOMPARE(materialCL2.distanceThreshold, 4.562f);
+    QCOMPARE(materialCL2.forceType, 3);
     QCOMPARE(materialCL2.dragForceType, 1);
 
-    QCOMPARE(materialCL2.coefficients[0], 1.232);
-    QCOMPARE(materialCL2.coefficients[1], 3.452);
-    QCOMPARE(materialCL2.coefficients[2], 6.782);
-    QCOMPARE(materialCL2.coefficients[3], 9.102);
-    QCOMPARE(materialCL2.coefficients[4], 11.122);
-    QCOMPARE(materialCL2.coefficients[5], 13.142);
+    QCOMPARE(materialCL2.coefficients[0], 1.232f);
+    QCOMPARE(materialCL2.coefficients[1], 3.452f);
+    QCOMPARE(materialCL2.coefficients[2], 6.782f);
+    QCOMPARE(materialCL2.coefficients[3], 9.102f);
+    QCOMPARE(materialCL2.coefficients[4], 11.122f);
+    QCOMPARE(materialCL2.coefficients[5], 13.142f);
 
-    QCOMPARE(materialCL2.dragCoefficients[0], 15.162);
-    QCOMPARE(materialCL2.dragCoefficients[1], 17.182);
-    QCOMPARE(materialCL2.dragCoefficients[2], 19.202);
-    QCOMPARE(materialCL2.dragCoefficients[3], 21.222);
-    QCOMPARE(materialCL2.dragCoefficients[4], 23.242);
-    QCOMPARE(materialCL2.dragCoefficients[5], 25.262);
+    QCOMPARE(materialCL2.dragCoefficients[0], 15.162f);
+    QCOMPARE(materialCL2.dragCoefficients[1], 17.182f);
+    QCOMPARE(materialCL2.dragCoefficients[2], 19.202f);
+    QCOMPARE(materialCL2.dragCoefficients[3], 21.222f);
+    QCOMPARE(materialCL2.dragCoefficients[4], 23.242f);
+    QCOMPARE(materialCL2.dragCoefficients[5], 25.262f);
 }

@@ -1,21 +1,12 @@
 #include "TestScenery.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QString>
+#include <fstream>
 #include <QTest>
-#include <math.h>
 
 TestScenery::TestScenery()
 {
-    QFile sceneryFile("../Scenery.json");
-    sceneryFile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString sceneryFileString = sceneryFile.readAll();
-    sceneryFile.close();
-
-    QJsonDocument sceneryJsonDocument = QJsonDocument::fromJson(sceneryFileString.toUtf8());
-    this->sceneryJsonValue = sceneryJsonDocument.object();
+    std::ifstream file("../Scenery.json");
+    this->sceneryJsonValue = nlohmann::json::parse(file);
 }
 
 void TestScenery::constructor()

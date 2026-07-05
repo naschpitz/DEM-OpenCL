@@ -2,7 +2,6 @@
 #define TESTMATERIALSMANAGER_H
 
 #include <QObject>
-#include <QJsonArray>
 
 #include "../MaterialsManager.h"
 
@@ -11,7 +10,7 @@ class TestMaterialsManager : public QObject
     Q_OBJECT
 
     private:
-        QJsonArray jsonArray;
+        nlohmann::json jsonArray;
 
     public:
         TestMaterialsManager();

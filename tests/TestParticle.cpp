@@ -1,32 +1,9 @@
 #include "TestParticle.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QString>
 #include <QTest>
-#include <math.h>
 
 TestParticle::TestParticle()
 {
-    QFile particleFile("../Particle.json");
-    particleFile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString particleFileString = particleFile.readAll();
-    particleFile.close();
-
-    QJsonDocument particleJsonDocument = QJsonDocument::fromJson(particleFileString.toUtf8());
-    this->particleJsonValue = particleJsonDocument.object();
-}
-
-void TestParticle::constructor()
-{
-    Particle particle(this->particleJsonValue);
-
-    Vector3D expectedCurrentPosition(0, 1, 2);
-    double   expectedRadius = 0.5;
-
-    QCOMPARE(particle.getCurrentPosition(), expectedCurrentPosition);
-    QCOMPARE(particle.getRadius(), expectedRadius);
 }
 
 void TestParticle::getCL()

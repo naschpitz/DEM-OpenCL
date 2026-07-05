@@ -3,10 +3,12 @@
     "totalTime": 10,
     "gravity": [ 0, 0, -9.81 ],
     "scenery": {
+        "_id": "TestSimulationScenery",
         "objects": {
             "nonSolidObjects": [
                 {
-                    "materialId": "6pwfsYxGumpgZzAfP",
+                    "_id": "TestNonSolidObject0",
+                    "material": "6pwfsYxGumpgZzAfP",
                     "type": "wireframe",
                     "density": 7.07,
                     "dimensions": {
@@ -18,7 +20,8 @@
                     "velocity": [ 4.04, 5.05, 6.06 ]
                 },
                 {
-                    "materialId": "6pwfsYxGumpgZzAfP",
+                    "_id": "TestNonSolidObject1",
+                    "material": "6pwfsYxGumpgZzAfP",
                     "type": "wireframe",
                     "density": 7.07,
                     "dimensions": {
@@ -35,8 +38,8 @@
             {
                 "_id": "6pwfsYxGumpgZzAfP",
                 "name": "TestMaterial0",
-                "materialId1": "jhqT2zmbhEAyJAxZj",
-                "materialId2": "EapMmWq6zGpMBX3CR",
+                "material1": "jhqT2zmbhEAyJAxZj",
+                "material2": "EapMmWq6zGpMBX3CR",
                 "distanceThreshold": 4.560,
                 "forceType": "inverse_quadratic",
                 "dragForceType": "quadratic",
@@ -46,8 +49,8 @@
             {
                 "_id": "7pwfsYxGumpgZzAfP",
                 "name": "TestMaterial1",
-                "materialId1": "khqT2zmbhEAyJAxZj",
-                "materialId2": "FapMmWq6zGpMBX3CR",
+                "material1": "khqT2zmbhEAyJAxZj",
+                "material2": "FapMmWq6zGpMBX3CR",
                 "distanceThreshold": 4.561,
                 "forceType": "inverse_quadratic",
                 "dragForceType": "quadratic",
@@ -57,8 +60,8 @@
             {
                 "_id": "8pwfsYxGumpgZzAfP",
                 "name": "TestMaterial2",
-                "materialId1": "6pwfsYxGumpgZzAfP",
-                "materialId2": "7pwfsYxGumpgZzAfP",
+                "material1": "6pwfsYxGumpgZzAfP",
+                "material2": "7pwfsYxGumpgZzAfP",
                 "distanceThreshold": 4.562,
                 "forceType": "inverse_quadratic",
                 "dragForceType": "quadratic",

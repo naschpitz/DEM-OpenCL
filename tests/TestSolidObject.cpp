@@ -1,21 +1,13 @@
 #include "TestSolidObject.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QString>
 #include <QTest>
+#include <fstream>
 #include <math.h>
 
 TestSolidObject::TestSolidObject()
 {
-    QFile solidObjectFile("../SolidObject.json");
-    solidObjectFile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString solidObjectFileString = solidObjectFile.readAll();
-    solidObjectFile.close();
-
-    QJsonDocument solidObjectJsonDocument = QJsonDocument::fromJson(solidObjectFileString.toUtf8());
-    this->solidObjectJsonValue = solidObjectJsonDocument.object();
+    std::ifstream file("../SolidObject.json");
+    this->solidObjectJsonValue = nlohmann::json::parse(file);
 }
 
 void TestSolidObject::constructor()
@@ -41,28 +33,32 @@ void TestSolidObject::getMaterialId()
 void TestSolidObject::getBox()
 {
     SolidObject solidObject(this->solidObjectJsonValue);
+    solidObject.initialize();
 
     Vector3D min, max;
     solidObject.getBox(min, max);
 
-    Vector3D expectedMin, expectedMax;
+    // initialize() -> setPosition() displaces every vertex by this->position
+    // ([1.01, 2.02, 3.03]). The tetgen mesh is a clean (0,-1,-5)->(60,1,5) box,
+    // so after displacement the bounds are as below. Vector3D stores float;
+    // QCOMPARE(Vector3D) uses exact ==, so compare each component with a small
+    // absolute tolerance instead.
+    QVERIFY(qAbs(min.getX() - 1.01f) < 1e-3f);
+    QVERIFY(qAbs(min.getY() - 1.02f) < 1e-3f);
+    QVERIFY(qAbs(min.getZ() - (-1.97f)) < 1e-3f);
 
-    expectedMin.setX( 1.0000000000000000);
-    expectedMin.setY( 1.0100000000000000);
-    expectedMin.setZ(-1.9800000000000000);
-
-    expectedMax.setX(61.019999999999999);
-    expectedMax.setY(3.0300000000000000);
-    expectedMax.setZ(8.0399999999999999);
-
-    QCOMPARE(min, expectedMin);
-    QCOMPARE(max, expectedMax);
+    QVERIFY(qAbs(max.getX() - 61.01f) < 1e-3f);
+    QVERIFY(qAbs(max.getY() - 3.02f) < 1e-3f);
+    QVERIFY(qAbs(max.getZ() - 8.03f) < 1e-3f);
 }
 
 void TestSolidObject::getCurrentMomentum()
 {
     SolidObject solidObject(this->solidObjectJsonValue);
+    solidObject.initialize();
 
+    // initialize() -> setMass() distributes this->mass across faces by area, so
+    // the summed face mass equals the object mass.
     double expectedMass = 7.07;
 
     Vector3D currentMomentum = solidObject.getCurrentMomentum();
@@ -79,6 +75,7 @@ void TestSolidObject::getCurrentMomentum()
 void TestSolidObject::getCurrentKineticEnergyTotal()
 {
     SolidObject solidObject(this->solidObjectJsonValue);
+    solidObject.initialize();
 
     double expectedMass = 7.07;
 

@@ -1,6 +1,7 @@
 {
     "nonSolidObjects": [
         {
+            "_id": "TestNonSolidObject0",
             "material": "6pwfsYxGumpgZzAfP",
             "type": "wireframe",
             "density": 7.07,
@@ -13,6 +14,7 @@
             "velocity": [ 4.04, 5.05, 6.06 ]
         },
         {
+            "_id": "TestNonSolidObject1",
             "material": "6pwfsYxGumpgZzAfP",
             "type": "wireframe",
             "density": 7.07,

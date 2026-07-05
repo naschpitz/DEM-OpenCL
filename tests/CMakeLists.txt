@@ -1,9 +1,9 @@
 # DEM Test — Qt Testlib executable.
 #
-# WARNING: this target is OFF by default (BUILD_TEST=ON to enable) because it is
-# currently broken. Test/main.cpp uses a unity build that #includes sources, two of
-# which (OpenCL.cpp, OpenCLCU.cpp) no longer exist. The migration preserves the
-# qmake structure faithfully; fixing the unity build is a separate task.
+# Enabled with BUILD_TEST=ON. The Test executable is a unity build: main.cpp
+# #includes the domain-object .cpp sources directly (Particle, Material, Scenery,
+# ...). Domain objects do NOT depend on OpenCLWrapper/QtWebApp, so the unity build
+# links only Qt6 + tet + OpenCL headers + the vendored nlohmann/json.hpp.
 
 add_executable(Test
     main.cpp
@@ -11,7 +11,6 @@ add_executable(Test
     TestMaterialsManager.cpp   TestMaterialsManager.h
     TestNonSolidObject.cpp     TestNonSolidObject.h
     TestObjectsManager.cpp     TestObjectsManager.h
-    TestOpenCL.cpp             TestOpenCL.h
     TestParticle.cpp           TestParticle.h
     TestScenery.cpp            TestScenery.h
     TestSolidObject.cpp        TestSolidObject.h
@@ -28,6 +27,7 @@ find_package(Qt6 REQUIRED COMPONENTS Test)
 target_include_directories(Test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CMAKE_SOURCE_DIR}/libs
 )
 
 find_package(OpenCL REQUIRED)

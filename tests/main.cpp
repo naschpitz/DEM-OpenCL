@@ -4,8 +4,6 @@
 #include "../NonSolidObject.cpp"
 #include "../SolidObject.cpp"
 #include "../ObjectsManager.cpp"
-#include "../OpenCL.cpp"
-#include "../OpenCLCU.cpp"
 #include "../Particle.cpp"
 #include "../Scenery.cpp"
 #include "../Vector3D.cpp"
@@ -16,7 +14,6 @@
 #include "TestNonSolidObject.h"
 #include "TestSolidObject.h"
 #include "TestObjectsManager.h"
-#include "TestOpenCL.h"
 #include "TestParticle.h"
 #include "TestScenery.h"
 #include "TestVector3D.h"
@@ -35,7 +32,6 @@ int main(int argc, char **argv)
     TestMaterialsManager testMaterialsManager;
     TestNonSolidObject   testNonSolidObject;
     TestObjectsManager   testObjectsManager;
-    TestOpenCL           testOpenCL;
     TestParticle         testParticle;
     TestScenery          testScenery;
     TestSolidObject      testSolidObject;
@@ -45,7 +41,6 @@ int main(int argc, char **argv)
     QTest::qExec(&testMaterialsManager);
     QTest::qExec(&testNonSolidObject);
     QTest::qExec(&testObjectsManager);
-    QTest::qExec(&testOpenCL);
     QTest::qExec(&testParticle);
     QTest::qExec(&testScenery);
     QTest::qExec(&testSolidObject);

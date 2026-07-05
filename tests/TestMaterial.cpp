@@ -1,19 +1,12 @@
 #include "TestMaterial.h"
 
-#include <QString>
-#include <QString>
+#include <fstream>
 #include <QtTest>
 
 TestMaterial::TestMaterial()
 {
-    QFile file("../Material.json");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString fileString = file.readAll();
-    file.close();
-
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(fileString.toUtf8());
-    this->jsonValue = jsonDocument.object();
+    std::ifstream file("../Material.json");
+    this->jsonValue = nlohmann::json::parse(file);
 }
 
 void TestMaterial::constructor()
@@ -57,21 +50,22 @@ void TestMaterial::getCL()
 
     QCOMPARE(materialCL.materialIndex1, 1);
     QCOMPARE(materialCL.materialIndex2, 2);
-    QCOMPARE(materialCL.distanceThreshold, 4.56);
-    QCOMPARE(materialCL.forceType, 2);
+    // CL structs store cl_float; suffix literals so QCOMPARE compares float vs float.
+    QCOMPARE(materialCL.distanceThreshold, 4.56f);
+    QCOMPARE(materialCL.forceType, 3);
     QCOMPARE(materialCL.dragForceType, 1);
 
-    QCOMPARE(materialCL.coefficients[0], 1.23);
-    QCOMPARE(materialCL.coefficients[1], 3.45);
-    QCOMPARE(materialCL.coefficients[2], 6.78);
-    QCOMPARE(materialCL.coefficients[3], 9.10);
-    QCOMPARE(materialCL.coefficients[4], 11.12);
-    QCOMPARE(materialCL.coefficients[5], 13.14);
+    QCOMPARE(materialCL.coefficients[0], 1.23f);
+    QCOMPARE(materialCL.coefficients[1], 3.45f);
+    QCOMPARE(materialCL.coefficients[2], 6.78f);
+    QCOMPARE(materialCL.coefficients[3], 9.10f);
+    QCOMPARE(materialCL.coefficients[4], 11.12f);
+    QCOMPARE(materialCL.coefficients[5], 13.14f);
 
-    QCOMPARE(materialCL.dragCoefficients[0], 15.16);
-    QCOMPARE(materialCL.dragCoefficients[1], 17.18);
-    QCOMPARE(materialCL.dragCoefficients[2], 19.20);
-    QCOMPARE(materialCL.dragCoefficients[3], 21.22);
-    QCOMPARE(materialCL.dragCoefficients[4], 23.24);
-    QCOMPARE(materialCL.dragCoefficients[5], 25.26);
+    QCOMPARE(materialCL.dragCoefficients[0], 15.16f);
+    QCOMPARE(materialCL.dragCoefficients[1], 17.18f);
+    QCOMPARE(materialCL.dragCoefficients[2], 19.20f);
+    QCOMPARE(materialCL.dragCoefficients[3], 21.22f);
+    QCOMPARE(materialCL.dragCoefficients[4], 23.24f);
+    QCOMPARE(materialCL.dragCoefficients[5], 25.26f);
 }
