@@ -47,4 +47,16 @@ Makefile
 /Test/moc
 /Test/obj
 
+# CMake
+/build
+/build-*
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake.user
+
+# Qt6 static-plugin auto-generated imports (regenerated per build)
+# (kept under Core/ only if needed)
+
 
