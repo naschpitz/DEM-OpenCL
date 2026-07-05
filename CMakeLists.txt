@@ -20,6 +20,10 @@ find_package(OpenCL REQUIRED)
 # (OpenCL.cpp, OpenCLCU.cpp) no longer exist — so Test does not currently compile.
 option(BUILD_TEST "Build the legacy Test executable (currently broken — see tests/main.cpp)" OFF)
 
+# OpenCL kernel test harness: runs the real .cl device functions on an actual
+# OpenCL device. Separate flag because it needs a device present at runtime.
+option(BUILD_OPENCL_TEST "Build the OpenCL kernel test executable (requires an OpenCL device at runtime)" OFF)
+
 # OpenCLWrapper (git submodule, built from source).
 if(NOT TARGET OpenCLWrapper)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/OpenCLWrapper ${CMAKE_CURRENT_BINARY_DIR}/OpenCLWrapper)
@@ -29,7 +33,8 @@ add_subdirectory(libs)
 
 message(STATUS "DEM-OpenCL")
 message(STATUS "  Qt6:        ${Qt6_DIR}")
-message(STATUS "  BUILD_TEST: ${BUILD_TEST}")
+message(STATUS "  BUILD_TEST:       ${BUILD_TEST}")
+message(STATUS "  BUILD_OPENCL_TEST: ${BUILD_OPENCL_TEST}")
 
 # --- DEM Core — headless simulation server (Qt6 console application) -----------
 add_executable(DEM
@@ -83,4 +88,8 @@ target_link_libraries(DEM PRIVATE
 
 if(BUILD_TEST)
     add_subdirectory(tests)
+endif()
+
+if(BUILD_OPENCL_TEST)
+    add_subdirectory(tests/opencl)
 endif()
