@@ -1,9 +1,9 @@
 #ifndef PARTICLEWORKER_CPP_CL
 #define PARTICLEWORKER_CPP_CL
 
-#include "../Face.cpp.cl"
-#include "../Material.cpp.cl"
-#include "../Particle.cpp.cl"
+#include "../opencl/Face.cpp.cl"
+#include "../opencl/Material.cpp.cl"
+#include "../opencl/Particle.cpp.cl"
 
 void particleToParticleWorker_run(Particle* thisParticle, const Particle* otherParticle, const Material* material)
 {

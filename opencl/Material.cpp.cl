@@ -1,9 +1,9 @@
 #ifndef MATERIAL_CPP_CL
 #define MATERIAL_CPP_CL
 
-#include "../Material.h.cl"
+#include "../opencl/Material.h.cl"
 
-#include "../Vector.cpp.cl"
+#include "../opencl/Vector.cpp.cl"
 
 float4 material_calculateForce(const Material* material, float4 distance, float4 distanceUnitary, bool internal, float contactArea, float originalLength, float4 oldForce)
 {

@@ -10,11 +10,11 @@ DEM-OpenCL/
   CMakeLists.txt        Top-level build (single DEM executable target)
   CMakeUserPresets.json Qt6 kit paths (gitignored, machine-specific)
   *.cpp / *.h           Simulation sources (flat in repo root, like ANN)
-  *.cl / *.cpp.cl       OpenCL kernels — RUNTIME RESOURCES, not build inputs
+  opencl/               OpenCL kernels (`.cl` / `.cpp.cl` / `.h.cl`) — RUNTIME RESOURCES, not build inputs
   DEM.ini               Runtime config (appName-derived; see Gotchas)
   libs/                 Vendored static libs (QtWebApp, tet, easyzlib, restclient-cpp, nlohmann)
   extern/OpenCLWrapper  OpenCL abstraction (git submodule)
-  Test/                 Legacy unity-build test (currently broken; BUILD_TEST=ON)
+  tests/                Legacy unity-build test (currently broken; BUILD_TEST=ON)
   depends/              External runtime deps
   deploy.sh             scp binary + kernels + config to a remote host
   bin/                  Build output (RUNTIME_OUTPUT_DIRECTORY)
@@ -43,8 +43,8 @@ Both build into `build/`. Output goes to `bin/DEM`.
 
 ## Tests
 
-The `Test/` target is **OFF by default** (`BUILD_TEST` option). It is currently broken:
-`Test/main.cpp` uses a unity build that `#include`s source files directly, two of which
+The `tests/` target is **OFF by default** (`BUILD_TEST` option). It is currently broken:
+`tests/main.cpp` uses a unity build that `#include`s source files directly, two of which
 (`OpenCL.cpp`, `OpenCLCU.cpp`) no longer exist. Enabling `BUILD_TEST=ON` will fail to compile
 until that unity build is repaired.
 
@@ -63,9 +63,12 @@ cmake --preset static -DBUILD_TEST=ON       # will NOT compile — see above
 - **HTTP layer** — `RequestMapper` (QtWebApp) routes requests; `Sender` / `FrameSender` / `RequestSender` / `LogSender` push frames, requests, and logs out.
 - **Compression** — `Deflater` / `Pigz` / `EasyZLib` compress simulation output.
 
-### OpenCL kernels (`.cl` / `.cpp.cl` / `.h.cl`)
-The `.cl` files are **runtime resources**, not CMake build inputs — they are loaded at runtime by
-the simulation and deployed alongside the binary. `deploy.sh` scp's them to the remote host.
+### OpenCL kernels (`opencl/*.cl`)
+The `.cl` / `.cpp.cl` / `.h.cl` files under `opencl/` are **runtime resources**, not CMake build
+inputs. At runtime the simulation runs from `bin/` and loads `../opencl/Simulation.cpp.cl` (which
+in turn `#include`s the other kernels). OpenCLWrapper builds with `-I ./`, so every cross-kernel
+include is written as `../opencl/<file>.cl` (resolved relative to the `bin/` CWD). `deploy.sh`
+ships the whole `opencl/` dir to `~/DEM/opencl/` on the remote host, mirroring this layout.
 
 ### OpenCL usage
 Two layers coexist:
@@ -127,8 +130,9 @@ itself, edit in the submodule then bump the pointer (see `submodule-sync` skill)
   `QCoreApplication::applicationName()` + `.ini`. The executable target is `DEM`, so the runtime
   config file must be `DEM.ini` (kept in the repo root, deployed to `bin/`). Renaming the target
   renames the expected ini.
-- **`.cl` files are runtime resources.** They are NOT listed as CMake sources and are not compiled —
-  they must ship next to the binary. `deploy.sh` handles this.
+- **`.cl` files are runtime resources.** They live under `opencl/`, are NOT listed as CMake sources,
+  and are not compiled — they must ship next to the binary (`bin/` runs against `../opencl/`).
+  `deploy.sh` handles this.
 - **Prefixed includes.** `#include "nlohmann/json.hpp"` and `#include "restclient-cpp/restclient.h"`
   rely on `libs/` being on the include path (a PRIVATE include dir on the `DEM` target), not on the
   `nlohmann_json` / `restclient-cpp` INTERFACE targets' own include dirs.

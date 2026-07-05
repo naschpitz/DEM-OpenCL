@@ -1,10 +1,10 @@
 #ifndef NEIGHBORHOOD_CPP_CL
 #define NEIGHBORHOOD_CPP_CL
 
-#include "../Error.h.cl"
-#include "../Face.h.cl"
-#include "../Neighborhood.h.cl"
-#include "../Particle.h.cl"
+#include "../opencl/Error.h.cl"
+#include "../opencl/Face.h.cl"
+#include "../opencl/Neighborhood.h.cl"
+#include "../opencl/Particle.h.cl"
 
 void neighborhood_addParticleToParticleNeighborhood(Particle* thisParticle, const Particle* otherParticle, global Error* error)
 {

@@ -1,8 +1,8 @@
 #ifndef FACE_H_CL
 #define FACE_H_CL
 
-#include "../Neighborhood.h.cl"
-#include "../Vertex.h.cl"
+#include "../opencl/Neighborhood.h.cl"
+#include "../opencl/Vertex.h.cl"
 
 typedef struct
 {

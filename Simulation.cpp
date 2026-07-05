@@ -307,7 +307,7 @@ void Simulation::run()
     OpenCLWrapper::Core openClCore(this->multiGPU);
 
     emit this->newLog("Loading OpenCL kernel");
-    openClCore.addSourceFile("../Simulation.cpp.cl");
+    openClCore.addSourceFile("../opencl/Simulation.cpp.cl");
     emit this->newLog("OpenCL kernel loaded");
 
     emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));

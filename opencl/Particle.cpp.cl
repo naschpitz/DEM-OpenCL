@@ -1,10 +1,10 @@
 #ifndef PARTICLE_CL
 #define PARTICLE_CL
 
-#include "../Particle.h.cl"
+#include "../opencl/Particle.h.cl"
 
-#include "../Vector.cpp.cl"
-#include "../Vertex.cpp.cl"
+#include "../opencl/Vector.cpp.cl"
+#include "../opencl/Vertex.cpp.cl"
 
 void particle_addCurrentForce(Particle* particle, const float4* force, const float4* pointOfForce)
 {

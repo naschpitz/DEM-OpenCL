@@ -1,16 +1,16 @@
 #ifndef SIMULATION_CPP_CL
 #define SIMULATION_CPP_CL
 
-#include "../Error.h.cl"
-#include "../Scenery.h.cl"
-#include "../Simulation.h.cl"
+#include "../opencl/Error.h.cl"
+#include "../opencl/Scenery.h.cl"
+#include "../opencl/Simulation.h.cl"
 
-#include "../Face.cpp.cl"
-#include "../FaceWorker.cpp.cl"
-#include "../MaterialsManager.cpp.cl"
-#include "../Neighborhood.cpp.cl"
-#include "../Particle.cpp.cl"
-#include "../ParticleWorker.cpp.cl"
+#include "../opencl/Face.cpp.cl"
+#include "../opencl/FaceWorker.cpp.cl"
+#include "../opencl/MaterialsManager.cpp.cl"
+#include "../opencl/Neighborhood.cpp.cl"
+#include "../opencl/Particle.cpp.cl"
+#include "../opencl/ParticleWorker.cpp.cl"
 
 kernel void initialize_particles(global Particle* particles, constant Simulation* ptrSimulation)
 {

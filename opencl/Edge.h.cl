@@ -1,7 +1,7 @@
 #ifndef EDGE_H_CL
 #define EDGE_H_CL
 
-#include "../Vertex.h.cl"
+#include "../opencl/Vertex.h.cl"
 
 typedef struct
 {

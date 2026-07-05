@@ -1,7 +1,7 @@
 #ifndef REDUCEDVERTEX_CL
 #define REDUCEDVERTEX_CL
 
-#include "../Vertex.cl"
+#include "../opencl/Vertex.cl"
 
 typedef struct
 {

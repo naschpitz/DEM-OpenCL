@@ -1,7 +1,7 @@
 #ifndef VERTEX_CPP_CL
 #define VERTEX_CPP_CL
 
-#include "../Vertex.h.cl"
+#include "../opencl/Vertex.h.cl"
 
 void vertex_integrate(Vertex* vertex, const Simulation* simulation)
 {

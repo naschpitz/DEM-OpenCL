@@ -1,7 +1,7 @@
 #ifndef MATERIALSMANAGER_H_CL
 #define MATERIALSMANAGER_H_CL
 
-#include "../Material.h.cl"
+#include "../opencl/Material.h.cl"
 
 typedef struct
 {

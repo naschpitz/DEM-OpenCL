@@ -21,8 +21,9 @@ if [ "$host_address" = false ] || [ "$username" = false ]; then
     exit 0
 fi
 
-scp *.cl            $username@$host_address:~/DEM
-scp bin/DEM         $username@$host_address:~/DEM/bin/
+ssh $username@$host_address "mkdir -p ~/DEM/opencl"
+scp opencl/*.cl      $username@$host_address:~/DEM/opencl/
+scp bin/DEM          $username@$host_address:~/DEM/bin/
 
 
 if [ "$full_deploy" = true ]; then

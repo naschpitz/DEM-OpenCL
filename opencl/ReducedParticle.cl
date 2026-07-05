@@ -1,9 +1,9 @@
 #ifndef REDUCEDPARTICLE_CL
 #define REDUCEDPARTICLE_CL
 
-#include "../Vector.cl"
-#include "../Particle.cl"
-#include "../ReducedVertex.cl"
+#include "../opencl/Vector.cl"
+#include "../opencl/Particle.cl"
+#include "../opencl/ReducedVertex.cl"
 
 typedef struct
 {

@@ -1,8 +1,8 @@
 #ifndef MATERIALSMANAGER_CPP_CL
 #define MATERIALSMANAGER_CPP_CL
 
-#include "../Material.h.cl"
-#include "../MaterialsManager.h.cl"
+#include "../opencl/Material.h.cl"
+#include "../opencl/MaterialsManager.h.cl"
 
 const Material* materialsManager_getMaterial(int materialIndex1, int materialIndex2, const MaterialsManager* materialsManager)
 {

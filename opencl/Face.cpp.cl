@@ -1,12 +1,12 @@
 #ifndef FACE_CPP_CL
 #define FACE_CPP_CL
 
-#include "../Face.h.cl"
-#include "../Particle.h.cl"
+#include "../opencl/Face.h.cl"
+#include "../opencl/Particle.h.cl"
 
-#include "../Edge.cpp.cl"
-#include "../Vector.cpp.cl"
-#include "../Vertex.cpp.cl"
+#include "../opencl/Edge.cpp.cl"
+#include "../opencl/Vector.cpp.cl"
+#include "../opencl/Vertex.cpp.cl"
 
 void face_addCurrentForce(Face* face, const float4* force, const float4* pointOfForce)
 {

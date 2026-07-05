@@ -1,10 +1,10 @@
 #ifndef FACEWORKER_CPP_CL
 #define FACEWORKER_CPP_CL
 
-#include "../Face.cpp.cl"
-#include "../Particle.cpp.cl"
-#include "../Material.cpp.cl"
-#include "../TestBox.cpp.cl"
+#include "../opencl/Face.cpp.cl"
+#include "../opencl/Particle.cpp.cl"
+#include "../opencl/Material.cpp.cl"
+#include "../opencl/TestBox.cpp.cl"
 
 void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Material* material)
 {

@@ -1,7 +1,7 @@
 #ifndef EDGE_CPP_CL
 #define EDGE_CPP_CL
 
-#include "../Edge.h.cl"
+#include "../opencl/Edge.h.cl"
 
 float4 edge_getDistance(const Edge* edge)
 {

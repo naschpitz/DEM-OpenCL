@@ -16,9 +16,9 @@ find_package(CURL REQUIRED)
 find_package(OpenCL REQUIRED)
 
 # Allow disabling the (legacy, currently broken) Test target.
-# Test/main.cpp uses a unity build that #includes sources, two of which
+# tests/main.cpp uses a unity build that #includes sources, two of which
 # (OpenCL.cpp, OpenCLCU.cpp) no longer exist — so Test does not currently compile.
-option(BUILD_TEST "Build the legacy Test executable (currently broken — see Test/main.cpp)" OFF)
+option(BUILD_TEST "Build the legacy Test executable (currently broken — see tests/main.cpp)" OFF)
 
 # OpenCLWrapper (git submodule, built from source).
 if(NOT TARGET OpenCLWrapper)
@@ -85,5 +85,5 @@ target_link_libraries(DEM PRIVATE
 set_target_properties(DEM PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 if(BUILD_TEST)
-    add_subdirectory(Test)
+    add_subdirectory(tests)
 endif()
