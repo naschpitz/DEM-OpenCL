@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "../Core/Vector3D.h"
+#include "../Vector3D.h"
 
 class TestVector3D : public QObject
 {

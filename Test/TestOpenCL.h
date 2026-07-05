@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "../Core/OpenCL.h"
+#include "../OpenCL.h"
 
 class TestOpenCL : public QObject
 {

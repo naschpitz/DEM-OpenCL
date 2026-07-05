@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonArray>
 
-#include "../Core/MaterialsManager.h"
+#include "../MaterialsManager.h"
 
 class TestMaterialsManager : public QObject
 {

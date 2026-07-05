@@ -21,13 +21,13 @@ if [ "$host_address" = false ] || [ "$username" = false ]; then
     exit 0
 fi
 
-scp Core/*.cl         $username@$host_address:~/DEM
-scp Core/bin/Core     $username@$host_address:~/DEM/bin/
+scp *.cl            $username@$host_address:~/DEM
+scp bin/DEM         $username@$host_address:~/DEM/bin/
 
 
 if [ "$full_deploy" = true ]; then
 
-scp Core/bin/Core.ini $username@$host_address:~/DEM/bin/
+scp DEM.ini         $username@$host_address:~/DEM/bin/
 
 ssh -tt $username@$host_address << 'ENDSSH'
 rm ~/DEM/libs/*

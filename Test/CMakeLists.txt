@@ -1,10 +1,9 @@
 # DEM Test — Qt Testlib executable.
 #
 # WARNING: this target is OFF by default (BUILD_TEST=ON to enable) because it is
-# currently broken. Test/main.cpp uses a unity build that #includes Core .cpp
-# files, two of which (OpenCL.cpp, OpenCLCU.cpp) no longer exist in Core/.
-# The migration preserves the qmake structure faithfully; fixing the unity build
-# is a separate task.
+# currently broken. Test/main.cpp uses a unity build that #includes sources, two of
+# which (OpenCL.cpp, OpenCLCU.cpp) no longer exist. The migration preserves the
+# qmake structure faithfully; fixing the unity build is a separate task.
 
 add_executable(Test
     main.cpp
@@ -28,7 +27,7 @@ find_package(Qt6 REQUIRED COMPONENTS Test)
 
 target_include_directories(Test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../Core
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
 find_package(OpenCL REQUIRED)

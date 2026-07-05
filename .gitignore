@@ -38,10 +38,10 @@ Makefile
 
 /.qtc_clangd
 
-/Core/bin
-/Core/moc
-/Core/obj
-/Core/.qtc_clangd
+/bin
+/moc
+/obj
+/.qtc_clangd
 
 /Test/bin
 /Test/moc

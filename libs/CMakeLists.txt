@@ -6,12 +6,8 @@
 
 add_subdirectory(QtWebApp)
 
-# --- OpenCLWrapper (prebuilt static; headers + libOpenCLWrapper.a only) ---------
-add_library(OpenCLWrapper STATIC IMPORTED GLOBAL)
-set_target_properties(OpenCLWrapper PROPERTIES
-    IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLWrapper/libOpenCLWrapper.a
-)
-target_include_directories(OpenCLWrapper INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLWrapper)
+# OpenCLWrapper is now built from source as a git submodule at extern/OpenCLWrapper
+# (see root CMakeLists.txt). It is no longer a prebuilt archive under libs/.
 
 # --- tetgen 1.5.1 (prebuilt static libtet.a) ----------------------------------
 add_library(tet STATIC IMPORTED GLOBAL)

@@ -3,7 +3,7 @@
 #include <QString>
 #include <QLoggingCategory>
 
-#include <OpenCLWrapper/OCLW_Core.hpp>
+#include <OCLW_Core.hpp>
 
 #include "Common.h"
 #include "httplistener.h"

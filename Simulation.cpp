@@ -6,7 +6,7 @@
 #include <QTextStream>
 #include <iostream>
 
-#include <OpenCLWrapper/OCLW_Core.hpp>
+#include <OCLW_Core.hpp>
 
 #include "Error.h"
 #include "RequestSender.h"

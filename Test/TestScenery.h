@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
-#include "../Core/Scenery.h"
+#include "../Scenery.h"
 
 class TestScenery : public QObject
 {

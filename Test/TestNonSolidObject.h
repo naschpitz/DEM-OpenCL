@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
-#include "../Core/NonSolidObject.h"
+#include "../NonSolidObject.h"
 
 class TestNonSolidObject : public QObject
 {

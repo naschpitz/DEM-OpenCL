@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
-#include "../Core/SolidObject.h"
+#include "../SolidObject.h"
 
 class TestSolidObject : public QObject
 {

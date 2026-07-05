@@ -1,6 +1,6 @@
 #include "RequestMapper.h"
 
-#include <OpenCLWrapper/OCLW_Core.hpp>
+#include <OCLW_Core.hpp>
 #include "RequestSender.h"
 
 #include "nlohmann/json.hpp"

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
-#include "../Core/ObjectsManager.h"
+#include "../ObjectsManager.h"
 
 class TestObjectsManager : public QObject
 {

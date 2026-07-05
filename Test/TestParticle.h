@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
-#include "../Core/Particle.h"
+#include "../Particle.h"
 
 class TestParticle : public QObject
 {
