@@ -3,5 +3,8 @@ repos:
     rev: v18.1.8
     hooks:
       - id: clang-format
-        types_or: [c, c++]
+        # Override the upstream types_or (which excludes .cl) and match by extension instead,
+        # so the OpenCL kernels (.cl / .cpp.cl / .h.cl) get formatted too.
+        types_or: [c, c++, text]
+        files: '\.(c|cc|cpp|cxx|cu|c\+\+|h|hh|hpp|hxx|h\+\+|cuh|cl)$'
         exclude: '^(libs/|extern/)'
