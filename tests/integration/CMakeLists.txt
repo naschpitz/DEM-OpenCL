@@ -27,6 +27,7 @@ add_executable(TestIntegration
     SimulationTestHarness.cpp     SimulationTestHarness.h
     TestSimulationConfig.cpp      TestSimulationConfig.h
     TestSimulationPhysics.cpp     TestSimulationPhysics.h
+    TestRequestMapper.cpp         TestRequestMapper.h
     ${DEM_CORE_SOURCES_ABS}
 )
 

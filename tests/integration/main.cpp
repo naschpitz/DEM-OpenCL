@@ -1,5 +1,6 @@
 #include "TestSimulationConfig.h"
 #include "TestSimulationPhysics.h"
+#include "TestRequestMapper.h"
 
 #include <QObject>
 #include <QTest>
@@ -14,9 +15,11 @@ int main(int argc, char **argv)
 
     TestSimulationConfig   testSimulationConfig;
     TestSimulationPhysics  testSimulationPhysics;
+    TestRequestMapper      testRequestMapper;
 
     failed += QTest::qExec(&testSimulationConfig);
     failed += QTest::qExec(&testSimulationPhysics);
+    failed += QTest::qExec(&testRequestMapper);
 
     std::cout << (failed == 0 ? "INTEGRATION: All tests passed" : "INTEGRATION: FAILURES")
               << std::endl;
