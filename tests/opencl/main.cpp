@@ -12,6 +12,7 @@
 #include "TestFace.h"
 #include "TestObject.h"
 #include "TestNonConvexObject.h"
+#include "TestMaterial.h"
 
 int main(int argc, char** argv)
 {
@@ -28,6 +29,7 @@ int main(int argc, char** argv)
     TestFace testFace;
     TestObject testObject;
     TestNonConvexObject testNonConvexObject;
+    TestMaterial testMaterial;
 
     int failures = 0;
     failures += QTest::qExec(&testSmoke);
@@ -37,6 +39,7 @@ int main(int argc, char** argv)
     failures += QTest::qExec(&testFace);
     failures += QTest::qExec(&testObject);
     failures += QTest::qExec(&testNonConvexObject);
+    failures += QTest::qExec(&testMaterial);
 
     return failures;
 }

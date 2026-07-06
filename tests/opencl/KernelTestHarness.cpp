@@ -182,3 +182,52 @@ void KernelTestHarness::runObjectToParticle(const std::vector<FaceCL>& faces, co
     this->core->readBuffer<cl_float4>("obj_out_face", outFace, 0);
     this->core->readBuffer<cl_float4>("obj_out_particle", outParticle, 0);
 }
+
+cl_float4 KernelTestHarness::runMaterialCalculateForce(const MaterialCL& material, cl_float4 distance, cl_float4 distanceUnitary, bool internal, float contactArea, float originalLength, cl_float4 oldForce)
+{
+    std::vector<MaterialCL> materials = { material };
+    std::vector<cl_float4> output = { ZERO4 };
+
+    this->core->writeBuffer<MaterialCL>("mat_materials", materials, 0);
+    this->core->writeBuffer<cl_float4>("mat_output", output, 0);
+
+    this->core->addKernel("test_material_calculateForce", 1);
+    this->core->addArgument<MaterialCL>("test_material_calculateForce", "mat_materials");
+    this->core->addArgument<cl_float4>("test_material_calculateForce", distance);
+    this->core->addArgument<cl_float4>("test_material_calculateForce", distanceUnitary);
+    this->core->addArgument<int>("test_material_calculateForce", static_cast<int>(internal));
+    this->core->addArgument<float>("test_material_calculateForce", contactArea);
+    this->core->addArgument<float>("test_material_calculateForce", originalLength);
+    this->core->addArgument<cl_float4>("test_material_calculateForce", oldForce);
+    this->core->addArgument<cl_float4>("test_material_calculateForce", "mat_output");
+
+    this->core->run();
+    this->core->clearKernels();
+
+    this->core->readBuffer<cl_float4>("mat_output", output, 0);
+
+    return output[0];
+}
+
+cl_float4 KernelTestHarness::runMaterialCalculateDragForce(const MaterialCL& material, cl_float4 velocity, cl_float4 rotationVelocity, cl_float4 force)
+{
+    std::vector<MaterialCL> materials = { material };
+    std::vector<cl_float4> output = { ZERO4 };
+
+    this->core->writeBuffer<MaterialCL>("mat_materials", materials, 0);
+    this->core->writeBuffer<cl_float4>("mat_output", output, 0);
+
+    this->core->addKernel("test_material_calculateDragForce", 1);
+    this->core->addArgument<MaterialCL>("test_material_calculateDragForce", "mat_materials");
+    this->core->addArgument<cl_float4>("test_material_calculateDragForce", velocity);
+    this->core->addArgument<cl_float4>("test_material_calculateDragForce", rotationVelocity);
+    this->core->addArgument<cl_float4>("test_material_calculateDragForce", force);
+    this->core->addArgument<cl_float4>("test_material_calculateDragForce", "mat_output");
+
+    this->core->run();
+    this->core->clearKernels();
+
+    this->core->readBuffer<cl_float4>("mat_output", output, 0);
+
+    return output[0];
+}

@@ -12,6 +12,7 @@
 #include <CL/opencl.hpp>
 
 #include "Face.h"
+#include "Material.h"
 #include "Particle.h"
 #include "Vertex.h"
 
@@ -49,6 +50,10 @@ class KernelTestHarness
         void runFaceGetClosestTo(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle);
 
         void runObjectToParticle(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles, std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle);
+
+        cl_float4 runMaterialCalculateForce(const MaterialCL& material, cl_float4 distance, cl_float4 distanceUnitary, bool internal, float contactArea, float originalLength, cl_float4 oldForce);
+
+        cl_float4 runMaterialCalculateDragForce(const MaterialCL& material, cl_float4 velocity, cl_float4 rotationVelocity, cl_float4 force);
 };
 
 #endif // KERNELTESTHARNESS_H

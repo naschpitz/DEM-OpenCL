@@ -9,5 +9,6 @@
 #include "../opencl/TestsParticle.cpp.cl"
 #include "../opencl/TestsFace.cpp.cl"
 #include "../opencl/TestsObject.cpp.cl"
+#include "../opencl/TestsMaterial.cpp.cl"
 
 #endif // TESTS_CPP_CL
