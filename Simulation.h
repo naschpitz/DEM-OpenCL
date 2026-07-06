@@ -76,11 +76,9 @@ class Simulation : public QThread
 
         void initialize();
 
-        SimulationSink* resolveSink() const;
-
     public:
         Simulation();
-        Simulation(const nlohmann::json& jsonObject, SimulationSink* sink = nullptr);
+        Simulation(const nlohmann::json& jsonObject, SimulationSink* sink);
         ~Simulation();
 
         // Delete copy constructor and assignment operator to prevent copying

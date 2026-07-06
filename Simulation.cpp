@@ -9,7 +9,6 @@
 #include <OCLW_Core.hpp>
 
 #include "Error.h"
-#include "RequestSender.h"
 #include "Particle.h"
 
 Simulation::Simulation()
@@ -156,19 +155,14 @@ void Simulation::initialize()
     this->scenery.initialize();
 }
 
-SimulationSink* Simulation::resolveSink() const
-{
-    return this->sink ? this->sink : &RequestSender::getInstance();
-}
-
 void Simulation::handleFrame(bool isDetailed)
 {
-    this->resolveSink()->onNewFrame(this, isDetailed);
+    this->sink->onNewFrame(this, isDetailed);
 }
 
 void Simulation::handleLog(QString message)
 {
-    this->resolveSink()->onNewLog(this, message);
+    this->sink->onNewLog(this, message);
 }
 
 SimulationCL Simulation::getCL() const
@@ -512,7 +506,7 @@ void Simulation::run()
 
         // Wait for all frames to be sent before declaring simulation paused
         emit this->newLog("Waiting for all frames to be sent...");
-        this->resolveSink()->onWaitForAllFramesSent(this);
+        this->sink->onWaitForAllFramesSent(this);
 
         emit this->newLog("Simulation paused");
     }
@@ -522,7 +516,7 @@ void Simulation::run()
 
     // Wait for all frames to be sent before ending the thread
     emit this->newLog("Waiting for all frames to be sent...");
-    this->resolveSink()->onWaitForAllFramesSent(this);
+    this->sink->onWaitForAllFramesSent(this);
 
     emit this->newLog("Simulation ended");
 }

@@ -8,6 +8,7 @@
 #include "Common.h"
 #include "httplistener.h"
 #include "RequestMapper.h"
+#include "RequestSender.h"
 #include "Simulation.h"
 
 #include <iostream>
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
 
     QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
     listenerSettings->beginGroup("listener");
-    new HttpListener(listenerSettings, new RequestMapper(&app), &app);
+    new HttpListener(listenerSettings, new RequestMapper(&RequestSender::getInstance(), &app), &app);
 
     return app.exec();
 }

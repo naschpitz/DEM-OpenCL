@@ -9,7 +9,8 @@
 #include <iostream>
 #include <cstring>
 
-RequestMapper::RequestMapper(QObject* parent) : HttpRequestHandler(parent)
+RequestMapper::RequestMapper(SimulationSink* sink, QObject* parent)
+    : HttpRequestHandler(parent), sink(sink)
 {
     connect(&this->statusTimer, SIGNAL(timeout()), this, SLOT(printStatus()));
 
@@ -47,7 +48,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 	    }
 
             try {
-                simulation = simulation ? simulation : new Simulation(jsonObject);
+                simulation = simulation ? simulation : new Simulation(jsonObject, this->sink);
 
                 connect(simulation, SIGNAL(destroyed(QObject*)), this, SLOT(simulationDestroyed(QObject*)));
                 connect(simulation, SIGNAL(finished()), this, SLOT(simulationFinished()));

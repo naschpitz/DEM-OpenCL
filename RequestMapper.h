@@ -3,6 +3,7 @@
 
 #include "httprequesthandler.h"
 #include "Simulation.h"
+#include "SimulationSink.h"
 
 #include <QSet>
 #include <QTimer>
@@ -21,6 +22,7 @@ class RequestMapper : public HttpRequestHandler {
 
     private:
         QSet<Simulation*> simulations;
+        SimulationSink* sink;
 
         Simulation* getSimulationById(const QString& _id);
         uint getTotalSimulations();
@@ -29,7 +31,7 @@ class RequestMapper : public HttpRequestHandler {
         QTimer statusTimer;
 
     public:
-        RequestMapper(QObject* parent=0);
+        RequestMapper(SimulationSink* sink, QObject* parent=0);
         ~RequestMapper();
 
         void service(HttpRequest& request, HttpResponse& response);
