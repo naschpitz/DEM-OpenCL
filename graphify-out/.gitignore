@@ -1,0 +1,3 @@
+# graphify build cache (regenerable, like *.o) and machine-specific interpreter path
+cache/
+.graphify_python

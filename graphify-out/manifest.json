@@ -1,0 +1,937 @@
+{
+  "/home/naschpitz/Projects/DEM-OpenCL/Common.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "ed3a901d7a1fce30bdb6605d443c83bb",
+    "semantic_hash": "ed3a901d7a1fce30bdb6605d443c83bb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Common.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "1babd0dd67117db41be8e1fc3eb20934",
+    "semantic_hash": "1babd0dd67117db41be8e1fc3eb20934"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Deflater.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "a844575d08e95edc9bcf7106ec6bc2f3",
+    "semantic_hash": "a844575d08e95edc9bcf7106ec6bc2f3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Deflater.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "4fad2c3b829c09820c6e7b7e08836e02",
+    "semantic_hash": "4fad2c3b829c09820c6e7b7e08836e02"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/EasyZLib.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "e3da1078513e19f70ad319ff4c87cab0",
+    "semantic_hash": "e3da1078513e19f70ad319ff4c87cab0"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/EasyZLib.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "af13d08e07a18c5ccc9e10e28ff015a4",
+    "semantic_hash": "af13d08e07a18c5ccc9e10e28ff015a4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Error.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "18470677b41a42dc6e24fd6c141e8f00",
+    "semantic_hash": "18470677b41a42dc6e24fd6c141e8f00"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Error.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "46eb1c188640fbfdc560b59204d44536",
+    "semantic_hash": "46eb1c188640fbfdc560b59204d44536"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Face.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "2bb2487b3373d3d018c1116a721918ff",
+    "semantic_hash": "2bb2487b3373d3d018c1116a721918ff"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Face.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "ab631c77b93870489971f2e2c14ba710",
+    "semantic_hash": "ab631c77b93870489971f2e2c14ba710"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/FrameSender.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "fb402de214e1c4ffe394e8760fa8ef4e",
+    "semantic_hash": "fb402de214e1c4ffe394e8760fa8ef4e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/FrameSender.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "f9c041f53a7ffff7d7818a93db6b8dd7",
+    "semantic_hash": "f9c041f53a7ffff7d7818a93db6b8dd7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/LogSender.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "6a72c5b211fd1ee0c15a36a5f0c1a6de",
+    "semantic_hash": "6a72c5b211fd1ee0c15a36a5f0c1a6de"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/LogSender.h": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "5ba6d538104d13060b410c3856383af0",
+    "semantic_hash": "5ba6d538104d13060b410c3856383af0"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Material.cpp": {
+    "mtime": 1783344943.0834908,
+    "ast_hash": "74e8648ade51f9ba9f8baadb8d834413",
+    "semantic_hash": "74e8648ade51f9ba9f8baadb8d834413"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Material.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "70d3709ad2758dbfba72a62167a7e3dc",
+    "semantic_hash": "70d3709ad2758dbfba72a62167a7e3dc"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/MaterialsManager.cpp": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "97023e304b2b3e386328779e3c3e96af",
+    "semantic_hash": "97023e304b2b3e386328779e3c3e96af"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/MaterialsManager.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "ef3079ce002c4df70ed56d0a6b62a79c",
+    "semantic_hash": "ef3079ce002c4df70ed56d0a6b62a79c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Neighborhood.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "aa7e80ad0e8ac72f974d457b5b5b9230",
+    "semantic_hash": "aa7e80ad0e8ac72f974d457b5b5b9230"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/NonSolidObject.cpp": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "b2caa1f9ded9d03c15057af59c0a1a4d",
+    "semantic_hash": "b2caa1f9ded9d03c15057af59c0a1a4d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/NonSolidObject.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "ec3807d6b73b5c401a7acebcd99f6fb6",
+    "semantic_hash": "ec3807d6b73b5c401a7acebcd99f6fb6"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/ObjectsManager.cpp": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "9f4740c1b84b226dc52dc9eeaed07550",
+    "semantic_hash": "9f4740c1b84b226dc52dc9eeaed07550"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/ObjectsManager.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "48e059df06fdb8bf389c73b6d19143a0",
+    "semantic_hash": "48e059df06fdb8bf389c73b6d19143a0"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Particle.cpp": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "f50f8c06059c3403ab3f013fe97803b8",
+    "semantic_hash": "f50f8c06059c3403ab3f013fe97803b8"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Particle.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "1692263a176f979494e3a818d4594182",
+    "semantic_hash": "1692263a176f979494e3a818d4594182"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Pigz.cpp": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "4aca120ae62d5d6c6445f560d2c221b7",
+    "semantic_hash": "4aca120ae62d5d6c6445f560d2c221b7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Pigz.h": {
+    "mtime": 1747603202.762129,
+    "ast_hash": "57c3d7e548d92401917e81fb445e2a2e",
+    "semantic_hash": "57c3d7e548d92401917e81fb445e2a2e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/RequestMapper.cpp": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "bc09af4ad6f9da1c70b4e788a9ed15dc",
+    "semantic_hash": "bc09af4ad6f9da1c70b4e788a9ed15dc"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/RequestMapper.h": {
+    "mtime": 1783344943.084491,
+    "ast_hash": "295b65d58d52598ddd49626415773dc4",
+    "semantic_hash": "295b65d58d52598ddd49626415773dc4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/RequestSender.cpp": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "140588933e0149097be3bda3c963f7fc",
+    "semantic_hash": "140588933e0149097be3bda3c963f7fc"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/RequestSender.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "2929209888b492a3775e4438c95bdbd9",
+    "semantic_hash": "2929209888b492a3775e4438c95bdbd9"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Scenery.cpp": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "79b1ca41d428f660c7f4191d4cb5b704",
+    "semantic_hash": "79b1ca41d428f660c7f4191d4cb5b704"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Scenery.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "3ba990afe8e5705fd820d831a3d834d4",
+    "semantic_hash": "3ba990afe8e5705fd820d831a3d834d4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Sender.cpp": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "abebc52ae9758beb3c2ac884dd0a1e76",
+    "semantic_hash": "abebc52ae9758beb3c2ac884dd0a1e76"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Sender.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "0ca9dc745e2a1d62fd8467796268ae74",
+    "semantic_hash": "0ca9dc745e2a1d62fd8467796268ae74"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Simulation.cpp": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "9c33448723660e79bf232d07b091dee7",
+    "semantic_hash": "9c33448723660e79bf232d07b091dee7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Simulation.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "165785114bbec2b440f00bb0d24e8119",
+    "semantic_hash": "165785114bbec2b440f00bb0d24e8119"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/SimulationSink.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "c3804943e6e75e817c4438c65f7cbb25",
+    "semantic_hash": "c3804943e6e75e817c4438c65f7cbb25"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/SolidObject.cpp": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "fdf509db303f74d3de9acae2b0d181f4",
+    "semantic_hash": "fdf509db303f74d3de9acae2b0d181f4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/SolidObject.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "10d064d85b28db08c899e506fae680e8",
+    "semantic_hash": "10d064d85b28db08c899e506fae680e8"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Vector3D.cpp": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "b27b7e6c8f2d3724ba74b953de52d905",
+    "semantic_hash": "b27b7e6c8f2d3724ba74b953de52d905"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Vector3D.h": {
+    "mtime": 1783344943.085491,
+    "ast_hash": "c7666b6fc569061b40def475d11bee93",
+    "semantic_hash": "c7666b6fc569061b40def475d11bee93"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Vertex.cpp": {
+    "mtime": 1783344943.086491,
+    "ast_hash": "e3c75d5a8c76ccd04d5dfd7b9c833d23",
+    "semantic_hash": "e3c75d5a8c76ccd04d5dfd7b9c833d23"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/Vertex.h": {
+    "mtime": 1783344943.086491,
+    "ast_hash": "6b984a1cbaf52373c760999ffd43e57e",
+    "semantic_hash": "6b984a1cbaf52373c760999ffd43e57e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/build.sh": {
+    "mtime": 1783227812.12042,
+    "ast_hash": "2d5ae4f7db4692434c226c289518086b",
+    "semantic_hash": "2d5ae4f7db4692434c226c289518086b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/OCLW_CU.cpp": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "ad0d3741077c5c05e7674808d80d53c2",
+    "semantic_hash": "ad0d3741077c5c05e7674808d80d53c2"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/OCLW_CU.hpp": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "3b120efd5f5393be06431206aac11f1d",
+    "semantic_hash": "3b120efd5f5393be06431206aac11f1d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/OCLW_Core.cpp": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "d4bc6ff8c476c6fb87211cf0c87ba7f4",
+    "semantic_hash": "d4bc6ff8c476c6fb87211cf0c87ba7f4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/OCLW_Core.hpp": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "b0eb94894da773814861bdc681bf2603",
+    "semantic_hash": "b0eb94894da773814861bdc681bf2603"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/OCLW_Kernel.hpp": {
+    "mtime": 1783225039.3925018,
+    "ast_hash": "1868e11a5791ac7724007040f7538508",
+    "semantic_hash": "1868e11a5791ac7724007040f7538508"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/build.sh": {
+    "mtime": 1783225039.3925018,
+    "ast_hash": "c85731c78ac84509961a3f27c815403d",
+    "semantic_hash": "c85731c78ac84509961a3f27c815403d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/scripts/ensure-blank-lines.py": {
+    "mtime": 1783225039.3925018,
+    "ast_hash": "719587ed220fce62ca3d57747e40e2a9",
+    "semantic_hash": "719587ed220fce62ca3d57747e40e2a9"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/install.sh": {
+    "mtime": 1783227593.8601897,
+    "ast_hash": "f434bd07f7cc546f726cdbca333e25c2",
+    "semantic_hash": "f434bd07f7cc546f726cdbca333e25c2"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpconnectionhandler.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "0217ff9922e744eadb4ca2b8d2d30846",
+    "semantic_hash": "0217ff9922e744eadb4ca2b8d2d30846"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpconnectionhandler.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "bd7c5b4b18d498245ec6a5563e49a017",
+    "semantic_hash": "bd7c5b4b18d498245ec6a5563e49a017"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpconnectionhandlerpool.cpp": {
+    "mtime": 1666108227.293481,
+    "ast_hash": "c4bb155089f489a4c134d95d90b5070c",
+    "semantic_hash": "c4bb155089f489a4c134d95d90b5070c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpconnectionhandlerpool.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "35e3304d3a8a4f84ccf4416cb450e04e",
+    "semantic_hash": "35e3304d3a8a4f84ccf4416cb450e04e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpcookie.cpp": {
+    "mtime": 1600495868.204108,
+    "ast_hash": "822daab8598a877cc8d28b66136e5957",
+    "semantic_hash": "822daab8598a877cc8d28b66136e5957"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpcookie.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "efe6f7c32b3126a3f1d669ce485c80f4",
+    "semantic_hash": "efe6f7c32b3126a3f1d669ce485c80f4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpglobal.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "35e4157182c03fe33d37819bc2ae49a9",
+    "semantic_hash": "35e4157182c03fe33d37819bc2ae49a9"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpglobal.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "9526abdd2f3d2c82a024887f440a521f",
+    "semantic_hash": "9526abdd2f3d2c82a024887f440a521f"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httplistener.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "5322b4ece3b09372907eb968b85c1720",
+    "semantic_hash": "5322b4ece3b09372907eb968b85c1720"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httplistener.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "b8e880185cb386304d3eaa29655cd0ea",
+    "semantic_hash": "b8e880185cb386304d3eaa29655cd0ea"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httprequest.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "cfe51dd057985a9254eb24cc6840c439",
+    "semantic_hash": "cfe51dd057985a9254eb24cc6840c439"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httprequest.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "2537464e69fecd6dd5369ad0ea2ec402",
+    "semantic_hash": "2537464e69fecd6dd5369ad0ea2ec402"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httprequesthandler.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "9d68c0189fe507f482970558bbedd0e3",
+    "semantic_hash": "9d68c0189fe507f482970558bbedd0e3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httprequesthandler.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "0a0dd24af335a78e6097ac4ce01f2a9c",
+    "semantic_hash": "0a0dd24af335a78e6097ac4ce01f2a9c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpresponse.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "a4a781db05c180b488c5fc07cf5a7993",
+    "semantic_hash": "a4a781db05c180b488c5fc07cf5a7993"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpresponse.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "9852f1cd9ede718ab54cdf4f0c2518d7",
+    "semantic_hash": "9852f1cd9ede718ab54cdf4f0c2518d7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpsession.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "b420496330ebb2599feb8afa8bfb7646",
+    "semantic_hash": "b420496330ebb2599feb8afa8bfb7646"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpsession.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "119fb825baf06397fbf9e69ab7fb46dc",
+    "semantic_hash": "119fb825baf06397fbf9e69ab7fb46dc"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpsessionstore.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "300913e4886cc9bb8c952690bd9a3041",
+    "semantic_hash": "300913e4886cc9bb8c952690bd9a3041"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/httpsessionstore.h": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "d1362e0a0c52d631abf6031c55fb109f",
+    "semantic_hash": "d1362e0a0c52d631abf6031c55fb109f"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/staticfilecontroller.cpp": {
+    "mtime": 1548226936.727971,
+    "ast_hash": "3849860be16af112d11c55fa66f5c02d",
+    "semantic_hash": "3849860be16af112d11c55fa66f5c02d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver/staticfilecontroller.h": {
+    "mtime": 1682777526.488748,
+    "ast_hash": "018b189b0ba2ce53b0aaa77f79d42fea",
+    "semantic_hash": "018b189b0ba2ce53b0aaa77f79d42fea"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpconnectionhandler.cpp": {
+    "mtime": 1674579634.0,
+    "ast_hash": "44c02acbeb4febca4794a177d49fd021",
+    "semantic_hash": "44c02acbeb4febca4794a177d49fd021"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpconnectionhandler.h": {
+    "mtime": 1647775773.0,
+    "ast_hash": "7730d0d47afba954b94cc4f30fa41d40",
+    "semantic_hash": "7730d0d47afba954b94cc4f30fa41d40"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpconnectionhandlerpool.cpp": {
+    "mtime": 1664550531.0,
+    "ast_hash": "696bf38f91ae62e23f58b5bcae596161",
+    "semantic_hash": "696bf38f91ae62e23f58b5bcae596161"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpconnectionhandlerpool.h": {
+    "mtime": 1647776601.0,
+    "ast_hash": "584a9521fa1a88573b497d42700565cb",
+    "semantic_hash": "584a9521fa1a88573b497d42700565cb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpcookie.cpp": {
+    "mtime": 1683558437.0,
+    "ast_hash": "8d085d58fb7798ce1cec48bd545796da",
+    "semantic_hash": "8d085d58fb7798ce1cec48bd545796da"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpcookie.h": {
+    "mtime": 1683558437.0,
+    "ast_hash": "4d8c81c435f2b87d5d1ab6fc037a6af7",
+    "semantic_hash": "4d8c81c435f2b87d5d1ab6fc037a6af7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpglobal.cpp": {
+    "mtime": 1694103356.0,
+    "ast_hash": "f50801f135e1125437bf6f046bba9706",
+    "semantic_hash": "f50801f135e1125437bf6f046bba9706"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpglobal.h": {
+    "mtime": 1612628795.0,
+    "ast_hash": "122c051d225eed66701e7c45986bf64b",
+    "semantic_hash": "122c051d225eed66701e7c45986bf64b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httplistener.cpp": {
+    "mtime": 1590347079.0,
+    "ast_hash": "a4aa1f0818120ff86a4ef0b46e399a35",
+    "semantic_hash": "a4aa1f0818120ff86a4ef0b46e399a35"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httplistener.h": {
+    "mtime": 1647776020.0,
+    "ast_hash": "0d5a07534ee52d6442f205117c329aed",
+    "semantic_hash": "0d5a07534ee52d6442f205117c329aed"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httprequest.cpp": {
+    "mtime": 1683558437.0,
+    "ast_hash": "7d191f6ae1838767675d61b7ef01e8a9",
+    "semantic_hash": "7d191f6ae1838767675d61b7ef01e8a9"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httprequest.h": {
+    "mtime": 1683558437.0,
+    "ast_hash": "3bdf0af8747483add383542682e272c1",
+    "semantic_hash": "3bdf0af8747483add383542682e272c1"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httprequesthandler.cpp": {
+    "mtime": 1590347071.0,
+    "ast_hash": "9d68c0189fe507f482970558bbedd0e3",
+    "semantic_hash": "9d68c0189fe507f482970558bbedd0e3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httprequesthandler.h": {
+    "mtime": 1590347079.0,
+    "ast_hash": "c7e0a27f14119c2ce50234f8e4055e69",
+    "semantic_hash": "c7e0a27f14119c2ce50234f8e4055e69"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpresponse.cpp": {
+    "mtime": 1694103087.0,
+    "ast_hash": "a7643bd25027cb4f5a9bab1a576d9325",
+    "semantic_hash": "a7643bd25027cb4f5a9bab1a576d9325"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpresponse.h": {
+    "mtime": 1590347079.0,
+    "ast_hash": "299cacc84f8c038cde923a43d66a6441",
+    "semantic_hash": "299cacc84f8c038cde923a43d66a6441"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpsession.cpp": {
+    "mtime": 1683558437.0,
+    "ast_hash": "7a7fdd753ee1154bdeeee7f306d53d22",
+    "semantic_hash": "7a7fdd753ee1154bdeeee7f306d53d22"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpsession.h": {
+    "mtime": 1683558437.0,
+    "ast_hash": "aaae6688085989a69a11856f1ae3e7f4",
+    "semantic_hash": "aaae6688085989a69a11856f1ae3e7f4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpsessionstore.cpp": {
+    "mtime": 1612688837.0,
+    "ast_hash": "5ff2c8df2845ebac5765f8e7bd507637",
+    "semantic_hash": "5ff2c8df2845ebac5765f8e7bd507637"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/httpsessionstore.h": {
+    "mtime": 1612688499.0,
+    "ast_hash": "ba1a27afdaefbfc52c97a1885f630945",
+    "semantic_hash": "ba1a27afdaefbfc52c97a1885f630945"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/staticfilecontroller.cpp": {
+    "mtime": 1694109065.0,
+    "ast_hash": "e7b9c6538082f4544137b405e262c43a",
+    "semantic_hash": "e7b9c6538082f4544137b405e262c43a"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/httpserver_new/staticfilecontroller.h": {
+    "mtime": 1590347079.0,
+    "ast_hash": "730766432af14265b2be84aad20c68ac",
+    "semantic_hash": "730766432af14265b2be84aad20c68ac"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/easyzlib/easyzlib.c": {
+    "mtime": 1702766695.6407735,
+    "ast_hash": "8a5cb1c1538dffa9d1ccc3573ca8733c",
+    "semantic_hash": "8a5cb1c1538dffa9d1ccc3573ca8733c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/easyzlib/easyzlib.h": {
+    "mtime": 1225726120.0,
+    "ast_hash": "ba8f050cc088cef26d92392bc1c58435",
+    "semantic_hash": "ba8f050cc088cef26d92392bc1c58435"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/nlohmann/json.hpp": {
+    "mtime": 1548231449.540559,
+    "ast_hash": "f31ae7ff09be3b6f0f7d00ef4bb7512e",
+    "semantic_hash": "f31ae7ff09be3b6f0f7d00ef4bb7512e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/connection.h": {
+    "mtime": 1540990754.0,
+    "ast_hash": "28f961a0bcb20a083b8d6bfaa2317105",
+    "semantic_hash": "28f961a0bcb20a083b8d6bfaa2317105"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/helpers.h": {
+    "mtime": 1540990754.0,
+    "ast_hash": "e1f1965b320041cf5b2ee2a999793500",
+    "semantic_hash": "e1f1965b320041cf5b2ee2a999793500"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/restclient.h": {
+    "mtime": 1540990754.0,
+    "ast_hash": "6afe14fe418756c9606575338272cfcd",
+    "semantic_hash": "6afe14fe418756c9606575338272cfcd"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/tetgen1.5.1/predicates.cxx": {
+    "mtime": 1534880794.0,
+    "ast_hash": "0aebaee3ee35a46dacdc6d8fd8574320",
+    "semantic_hash": "0aebaee3ee35a46dacdc6d8fd8574320"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/tetgen1.5.1/tetgen.cxx": {
+    "mtime": 1534880794.0,
+    "ast_hash": "1f79100bac560b1357c37b8e77b94f8b",
+    "semantic_hash": "1f79100bac560b1357c37b8e77b94f8b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/tetgen1.5.1/tetgen.h": {
+    "mtime": 1534880794.0,
+    "ast_hash": "99bceaa9a9d02a55abc07d62d7b63c4b",
+    "semantic_hash": "99bceaa9a9d02a55abc07d62d7b63c4b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/main.cpp": {
+    "mtime": 1783344943.086491,
+    "ast_hash": "a54676f13173aa0a5ca405cecdcaa1c3",
+    "semantic_hash": "a54676f13173aa0a5ca405cecdcaa1c3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestFace.cpp": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "bceccdb5137e98610736882db1499c21",
+    "semantic_hash": "bceccdb5137e98610736882db1499c21"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestFace.h": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "b13b2a062febb5ff29e710edec9da1b9",
+    "semantic_hash": "b13b2a062febb5ff29e710edec9da1b9"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestHelpers.h": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "86393147926d579d8d1cf712fd0bac1a",
+    "semantic_hash": "86393147926d579d8d1cf712fd0bac1a"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestMaterial.cpp": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "e9088c5029da39df317319e30111071e",
+    "semantic_hash": "e9088c5029da39df317319e30111071e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestMaterial.h": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "6fbfdb3e5636b5cf7354a42633c274a6",
+    "semantic_hash": "6fbfdb3e5636b5cf7354a42633c274a6"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestMaterialsManager.cpp": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "2009794d901f99c1557db59612bc873f",
+    "semantic_hash": "2009794d901f99c1557db59612bc873f"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestMaterialsManager.h": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "17ed9a515271d02d9ec6b2c0c359356e",
+    "semantic_hash": "17ed9a515271d02d9ec6b2c0c359356e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestNonSolidObject.cpp": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "278fd2045f8954b10894e9a98678c6fa",
+    "semantic_hash": "278fd2045f8954b10894e9a98678c6fa"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestNonSolidObject.h": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "ff35f05202fd7d2a11af9730d33599a3",
+    "semantic_hash": "ff35f05202fd7d2a11af9730d33599a3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestObjectsManager.cpp": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "0ac1366b978faf766299932075f72a75",
+    "semantic_hash": "0ac1366b978faf766299932075f72a75"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestObjectsManager.h": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "4b7aaa3014177917b690b02904c3fe4c",
+    "semantic_hash": "4b7aaa3014177917b690b02904c3fe4c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestParticle.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "133a8af4285831ad5850a2f07e2d0199",
+    "semantic_hash": "133a8af4285831ad5850a2f07e2d0199"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestParticle.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "a96b3419706308500e02626caef2c2c6",
+    "semantic_hash": "a96b3419706308500e02626caef2c2c6"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestScenery.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "8674517354f0fa5739ca8c1a4e6f2546",
+    "semantic_hash": "8674517354f0fa5739ca8c1a4e6f2546"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestScenery.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "b51a38e77d9643c8531454b6f02a4ab8",
+    "semantic_hash": "b51a38e77d9643c8531454b6f02a4ab8"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestSolidObject.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "61df9a90dcc89c5adba30f874b7aa09b",
+    "semantic_hash": "61df9a90dcc89c5adba30f874b7aa09b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestSolidObject.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "b59d74234a0e72b3b900ef1d5a78219b",
+    "semantic_hash": "b59d74234a0e72b3b900ef1d5a78219b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestVector3D.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "d01e2ba2ca49be6bc052101e5ec78712",
+    "semantic_hash": "d01e2ba2ca49be6bc052101e5ec78712"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestVector3D.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "12c093bdf266de6f55d6414ee46a276b",
+    "semantic_hash": "12c093bdf266de6f55d6414ee46a276b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestVertex.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "369546b1b5a6c1f86c2c35742d282fa7",
+    "semantic_hash": "369546b1b5a6c1f86c2c35742d282fa7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/TestVertex.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "f3aa9a72f5c1d222c2914a23223cf212",
+    "semantic_hash": "f3aa9a72f5c1d222c2914a23223cf212"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/FakeSimulationSink.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "8d8dbf54d46cb9606c2c9d42d0a027f4",
+    "semantic_hash": "8d8dbf54d46cb9606c2c9d42d0a027f4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/FakeSimulationSink.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "0a8408f4f587f842d5c089535195ba60",
+    "semantic_hash": "0a8408f4f587f842d5c089535195ba60"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/SimulationTestHarness.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "e1ab148feef0dadacfe7a961e3671a9e",
+    "semantic_hash": "e1ab148feef0dadacfe7a961e3671a9e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/SimulationTestHarness.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "cf678e9e861d7e18be5eb6b10ae792b8",
+    "semantic_hash": "cf678e9e861d7e18be5eb6b10ae792b8"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestRequestMapper.cpp": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "ef278ce967c2c3ee2969ca7843b14309",
+    "semantic_hash": "ef278ce967c2c3ee2969ca7843b14309"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestRequestMapper.h": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "cc390221863f45f0d089bbff8b3196bc",
+    "semantic_hash": "cc390221863f45f0d089bbff8b3196bc"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationCollisions.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "48062f0e218dbe04bf1a06a8e29e4b59",
+    "semantic_hash": "48062f0e218dbe04bf1a06a8e29e4b59"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationCollisions.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "c7cdae6b962123d1b5215c62267a661d",
+    "semantic_hash": "c7cdae6b962123d1b5215c62267a661d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationConfig.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "4726302610a32d6f588a3a12e60266de",
+    "semantic_hash": "4726302610a32d6f588a3a12e60266de"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationConfig.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "2c4f80e90bf6115f312271bc2ac3a2d4",
+    "semantic_hash": "2c4f80e90bf6115f312271bc2ac3a2d4"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationContacts.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "718032be687a0ed6dc3348d780edcc68",
+    "semantic_hash": "718032be687a0ed6dc3348d780edcc68"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationContacts.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "7e88caf2277147c199aa890f8e020fc3",
+    "semantic_hash": "7e88caf2277147c199aa890f8e020fc3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationPhysics.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "7285fa1af35541bbdd23b859f4e457ad",
+    "semantic_hash": "7285fa1af35541bbdd23b859f4e457ad"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/TestSimulationPhysics.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "5b26c052322e5421be0f0f62b6ce5cb7",
+    "semantic_hash": "5b26c052322e5421be0f0f62b6ce5cb7"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/main.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "d4cc1bc4678a2ee661636be374c9ba46",
+    "semantic_hash": "d4cc1bc4678a2ee661636be374c9ba46"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/main.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "e657b76fb644be33cd098e191e26c26c",
+    "semantic_hash": "e657b76fb644be33cd098e191e26c26c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/KernelTestHarness.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "21b6809288252cc1ccbc5e8f972c3080",
+    "semantic_hash": "21b6809288252cc1ccbc5e8f972c3080"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/KernelTestHarness.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "41cb98c100af0be302cc750c89e28afb",
+    "semantic_hash": "41cb98c100af0be302cc750c89e28afb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestEdge.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "31a7f716fd41330a5663322b4c39dbdb",
+    "semantic_hash": "31a7f716fd41330a5663322b4c39dbdb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestEdge.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "7d21fe0c537544dadd0e9c9c2edf0a56",
+    "semantic_hash": "7d21fe0c537544dadd0e9c9c2edf0a56"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestFace.cpp": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "a3facef9ec2dea68680db59a0dfda257",
+    "semantic_hash": "a3facef9ec2dea68680db59a0dfda257"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestFace.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "9d6f5e9ee4c2c719772cc2e1d8e8806d",
+    "semantic_hash": "9d6f5e9ee4c2c719772cc2e1d8e8806d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestHelpers.h": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "5f6c8ce0383545c27ecb410ffa2164dd",
+    "semantic_hash": "5f6c8ce0383545c27ecb410ffa2164dd"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestMaterial.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "d9afefaa555e6d730a1eb3404a00affc",
+    "semantic_hash": "d9afefaa555e6d730a1eb3404a00affc"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestMaterial.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "a21ccd01436b653b3bea602585e926c0",
+    "semantic_hash": "a21ccd01436b653b3bea602585e926c0"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestNonConvexObject.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "ec848a6d279a39e4cc842f959124e66e",
+    "semantic_hash": "ec848a6d279a39e4cc842f959124e66e"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestNonConvexObject.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "6587f121d5648d153700aefb7de41e48",
+    "semantic_hash": "6587f121d5648d153700aefb7de41e48"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestObject.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "b5ae1e41cae56613d0654bdf884e66c0",
+    "semantic_hash": "b5ae1e41cae56613d0654bdf884e66c0"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestObject.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "17b942c37c34b0415c13d39509c2e1ea",
+    "semantic_hash": "17b942c37c34b0415c13d39509c2e1ea"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestParticle.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "15c9773eb2bdc2506c57205306fe40ed",
+    "semantic_hash": "15c9773eb2bdc2506c57205306fe40ed"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestParticle.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "0457a11d79018c46e929c7fc9acd17d5",
+    "semantic_hash": "0457a11d79018c46e929c7fc9acd17d5"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestParticleWorker.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "9cff353480f76f0cfac8522fcb245f9c",
+    "semantic_hash": "9cff353480f76f0cfac8522fcb245f9c"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestParticleWorker.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "b54f4cef92e9a13c2bd5c9a6a8850c88",
+    "semantic_hash": "b54f4cef92e9a13c2bd5c9a6a8850c88"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestSmoke.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "0cf0c5a0eab7165ee369115824318f16",
+    "semantic_hash": "0cf0c5a0eab7165ee369115824318f16"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestSmoke.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "b062c50dae45c554016483bfdaaa0c88",
+    "semantic_hash": "b062c50dae45c554016483bfdaaa0c88"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestVector.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "f14bdde790c8cb4988a8d81aa1ac8fd3",
+    "semantic_hash": "f14bdde790c8cb4988a8d81aa1ac8fd3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/TestVector.h": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "033ec9d093293e6166069e4db6135310",
+    "semantic_hash": "033ec9d093293e6166069e4db6135310"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/main.cpp": {
+    "mtime": 1783344943.0914912,
+    "ast_hash": "a5cc2a81efead9cc263a332eaccb4843",
+    "semantic_hash": "a5cc2a81efead9cc263a332eaccb4843"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/.pre-commit-config.yaml": {
+    "mtime": 1783344943.082491,
+    "ast_hash": "7150ce2e8b92556c6821188c42b9b96a",
+    "semantic_hash": "7150ce2e8b92556c6821188c42b9b96a"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/AGENTS.md": {
+    "mtime": 1783344943.082491,
+    "ast_hash": "f013d1b31cc6af39ffa5db7112c60722",
+    "semantic_hash": "f013d1b31cc6af39ffa5db7112c60722"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/CMakeLists.txt": {
+    "mtime": 1783344943.082491,
+    "ast_hash": "0b335ce7eb5dfbf73966d3b9d1460a27",
+    "semantic_hash": "0b335ce7eb5dfbf73966d3b9d1460a27"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/LICENSE.md": {
+    "mtime": 1757022425.1794293,
+    "ast_hash": "803009e017255b4a61094be54db8de18",
+    "semantic_hash": "803009e017255b4a61094be54db8de18"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/README.md": {
+    "mtime": 1783229136.4161222,
+    "ast_hash": "26465e2d50ba7fb5ccead94acd10b65b",
+    "semantic_hash": "26465e2d50ba7fb5ccead94acd10b65b"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/.pre-commit-config.yaml": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "2ea33a83f25c8d56f3be5342777e5afb",
+    "semantic_hash": "2ea33a83f25c8d56f3be5342777e5afb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/AGENTS.md": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "e66ea77e7451a195b417d0d8aeb2d279",
+    "semantic_hash": "e66ea77e7451a195b417d0d8aeb2d279"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/CMakeLists.txt": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "032f2c12c02e91de3a8ab8824394a7ee",
+    "semantic_hash": "032f2c12c02e91de3a8ab8824394a7ee"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/LICENSE.md": {
+    "mtime": 1783225039.391502,
+    "ast_hash": "7d560b65dbc7dd7fb86ddc69e40dbcdb",
+    "semantic_hash": "7d560b65dbc7dd7fb86ddc69e40dbcdb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/extern/OpenCLWrapper/README.md": {
+    "mtime": 1783225039.3925018,
+    "ast_hash": "b0cda8596da7b4d4beb5b37db94e357d",
+    "semantic_hash": "b0cda8596da7b4d4beb5b37db94e357d"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/CMakeLists.txt": {
+    "mtime": 1783225049.636718,
+    "ast_hash": "a50a55ea825e84ac3f3fedd503db2e57",
+    "semantic_hash": "a50a55ea825e84ac3f3fedd503db2e57"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/QtWebApp/CMakeLists.txt": {
+    "mtime": 1783223001.237499,
+    "ast_hash": "9db118b39d993c7b4ca786bab4f260fd",
+    "semantic_hash": "9db118b39d993c7b4ca786bab4f260fd"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/.github/CONTRIBUTING.md": {
+    "mtime": 1540990754.0,
+    "ast_hash": "f066e8d66425731b251c5036f7d69478",
+    "semantic_hash": "f066e8d66425731b251c5036f7d69478"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/.github/ISSUE_TEMPLATE.md": {
+    "mtime": 1540990754.0,
+    "ast_hash": "17249187b3cb8adb3fa6df0fcd3b3895",
+    "semantic_hash": "17249187b3cb8adb3fa6df0fcd3b3895"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/.github/PULL_REQUEST_TEMPLATE.md": {
+    "mtime": 1540990754.0,
+    "ast_hash": "c5edf947e5b61fe412912137e3695b62",
+    "semantic_hash": "c5edf947e5b61fe412912137e3695b62"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/restclient-cpp/.travis.yml": {
+    "mtime": 1540990754.0,
+    "ast_hash": "7f367a58c67d4ee4c7d5894a897835e5",
+    "semantic_hash": "7f367a58c67d4ee4c7d5894a897835e5"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/libs/tetgen1.5.1/CMakeLists.txt": {
+    "mtime": 1534880794.0,
+    "ast_hash": "d0729ba3ce721e514b6c9714e5e1be73",
+    "semantic_hash": "d0729ba3ce721e514b6c9714e5e1be73"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/CMakeLists.txt": {
+    "mtime": 1783344943.0884912,
+    "ast_hash": "b159c6fca722c70e94752537074f3dd3",
+    "semantic_hash": "b159c6fca722c70e94752537074f3dd3"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/integration/CMakeLists.txt": {
+    "mtime": 1783344943.0894911,
+    "ast_hash": "86da03cdd6a5a2c1f8f85fe9bc65f1ff",
+    "semantic_hash": "86da03cdd6a5a2c1f8f85fe9bc65f1ff"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/tests/opencl/CMakeLists.txt": {
+    "mtime": 1783344943.0904913,
+    "ast_hash": "adf217a58c87ec1969208eb749b77cdb",
+    "semantic_hash": "adf217a58c87ec1969208eb749b77cdb"
+  },
+  "/home/naschpitz/Projects/DEM-OpenCL/todo/opencl-optimization-plan.md": {
+    "mtime": 1774765209.9188328,
+    "ast_hash": "c5c7ea03353d6e66ce2c15819ce47a6b",
+    "semantic_hash": "c5c7ea03353d6e66ce2c15819ce47a6b"
+  }
+}
