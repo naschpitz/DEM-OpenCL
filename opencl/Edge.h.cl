@@ -3,8 +3,7 @@
 
 #include "../opencl/Vertex.h.cl"
 
-typedef struct
-{
+typedef struct {
     Vertex v1, v2;
 } Edge;
 

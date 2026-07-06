@@ -4,7 +4,7 @@
 
 TestScenery::TestScenery()
 {
-    this->sceneryJsonValue = nlohmann::json::parse(R"({
+  this->sceneryJsonValue = nlohmann::json::parse(R"({
         "_id": "TestScenery",
         "gravity": [0, 0, -9.81],
         "objects": {
@@ -77,8 +77,8 @@ TestScenery::TestScenery()
 
 void TestScenery::constructor()
 {
-    Scenery scenery(this->sceneryJsonValue);
+  Scenery scenery(this->sceneryJsonValue);
 
-    QVERIFY(scenery.getMaterialsManager().getMaterials().count() == 3);
-    QVERIFY(scenery.getObjectsManager().getNonSolidObjects().count() == 2);
+  QVERIFY(scenery.getMaterialsManager().getMaterials().count() == 3);
+  QVERIFY(scenery.getObjectsManager().getNonSolidObjects().count() == 2);
 }

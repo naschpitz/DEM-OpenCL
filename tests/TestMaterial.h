@@ -9,15 +9,17 @@ class TestMaterial : public QObject
 {
     Q_OBJECT
 
-    private:
-        nlohmann::json jsonValue;
+  private:
+    nlohmann::json jsonValue;
 
-    public:
-        TestMaterial();
+  public:
+    TestMaterial();
 
-    private Q_SLOTS:
-        void constructor();
-        void getCL();
+  private Q_SLOTS:
+    void constructor();
+    void getCL();
+    void defaultsWhenOptionalFieldsMissing();
+    void invalidForceTypeString();
 };
 
 #endif // TESTMATEIRAL_H

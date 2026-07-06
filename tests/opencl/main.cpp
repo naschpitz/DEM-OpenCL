@@ -12,31 +12,37 @@
 #include "TestFace.h"
 #include "TestObject.h"
 #include "TestNonConvexObject.h"
+#include "TestMaterial.h"
+#include "TestParticleWorker.h"
 
 int main(int argc, char** argv)
 {
-    QCoreApplication app(argc, argv);
+  QCoreApplication app(argc, argv);
 
-    std::setlocale(LC_NUMERIC, "C");
+  std::setlocale(LC_NUMERIC, "C");
 
-    OpenCLWrapper::Core::initialize();
+  OpenCLWrapper::Core::initialize();
 
-    TestSmoke testSmoke;
-    TestVector testVector;
-    TestEdge testEdge;
-    TestParticle testParticle;
-    TestFace testFace;
-    TestObject testObject;
-    TestNonConvexObject testNonConvexObject;
+  TestSmoke testSmoke;
+  TestVector testVector;
+  TestEdge testEdge;
+  TestParticle testParticle;
+  TestFace testFace;
+  TestObject testObject;
+  TestNonConvexObject testNonConvexObject;
+  TestMaterial testMaterial;
+  TestParticleWorker testParticleWorker;
 
-    int failures = 0;
-    failures += QTest::qExec(&testSmoke);
-    failures += QTest::qExec(&testVector);
-    failures += QTest::qExec(&testEdge);
-    failures += QTest::qExec(&testParticle);
-    failures += QTest::qExec(&testFace);
-    failures += QTest::qExec(&testObject);
-    failures += QTest::qExec(&testNonConvexObject);
+  int failures = 0;
+  failures += QTest::qExec(&testSmoke);
+  failures += QTest::qExec(&testVector);
+  failures += QTest::qExec(&testEdge);
+  failures += QTest::qExec(&testParticle);
+  failures += QTest::qExec(&testFace);
+  failures += QTest::qExec(&testObject);
+  failures += QTest::qExec(&testNonConvexObject);
+  failures += QTest::qExec(&testMaterial);
+  failures += QTest::qExec(&testParticleWorker);
 
-    return failures;
+  return failures;
 }

@@ -9,18 +9,18 @@ class TestSolidObject : public QObject
 {
     Q_OBJECT
 
-    private:
-        nlohmann::json solidObjectJsonValue;
+  private:
+    nlohmann::json solidObjectJsonValue;
 
-    public:
-        TestSolidObject();
+  public:
+    TestSolidObject();
 
-    private Q_SLOTS:
-        void constructor();
-        void getMaterialId();
-        void getBox();
-        void getCurrentMomentum();
-        void getCurrentKineticEnergyTotal();
+  private Q_SLOTS:
+    void constructor();
+    void getMaterialId();
+    void getBox();
+    void getCurrentMomentum();
+    void getCurrentKineticEnergyTotal();
 };
 
 #endif // TESTSOLIDOBJECT_H

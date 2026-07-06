@@ -3,11 +3,9 @@
 
 #include "../opencl/Material.h.cl"
 
-typedef struct
-{
+typedef struct {
     int size;
     Material materials[20];
 } MaterialsManager;
 
 #endif // MATERIALSMANAGER_H_CL
-

@@ -9,21 +9,21 @@ class TestParticle : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestParticle();
+  public:
+    TestParticle();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
-        void getClosestToAligned();
-        void getClosestTo3D();
-        void getClosestToOverlapping();
-        void isInternalOutside();
-        void isInternalInside();
-        void isInternalBoundary();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void getClosestToAligned();
+    void getClosestTo3D();
+    void getClosestToOverlapping();
+    void isInternalOutside();
+    void isInternalInside();
+    void isInternalBoundary();
 };
 
 #endif // TESTPARTICLE_H

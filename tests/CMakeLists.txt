@@ -7,6 +7,7 @@
 
 add_executable(Test
     main.cpp
+    TestFace.cpp               TestFace.h
     TestMaterial.cpp           TestMaterial.h
     TestMaterialsManager.cpp   TestMaterialsManager.h
     TestNonSolidObject.cpp     TestNonSolidObject.h
@@ -15,6 +16,7 @@ add_executable(Test
     TestScenery.cpp            TestScenery.h
     TestSolidObject.cpp        TestSolidObject.h
     TestVector3D.cpp           TestVector3D.h
+    TestVertex.cpp             TestVertex.h
 )
 
 set_target_properties(Test PROPERTIES

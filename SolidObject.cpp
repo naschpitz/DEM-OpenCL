@@ -7,388 +7,393 @@
 #define TETLIBRARY
 #include <tetgen1.5.1/tetgen.h>
 
-SolidObject::SolidObject()
-{
-
-}
+SolidObject::SolidObject() {}
 
 SolidObject::SolidObject(const nlohmann::json& jsonObject)
 {
-    try {
-        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
-    }
+  try {
+    this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing '_id' field in Solid Object");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing '_id' field in Solid Object");
+  }
 
-    try {
-        this->material = QString::fromStdString(jsonObject.at("material").get<std::string>());
-    }
+  try {
+    this->material = QString::fromStdString(jsonObject.at("material").get<std::string>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'material' field in Solid Object");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'material' field in Solid Object");
+  }
 
-    try {
-        this->stl = QString::fromStdString(jsonObject.at("stl").get<std::string>());
-    }
+  try {
+    this->stl = QString::fromStdString(jsonObject.at("stl").get<std::string>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'stl' field in Solid Object");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'stl' field in Solid Object");
+  }
 
-    try {
-        this->maximumTetrahedronVol = jsonObject.at("maximumTetrahedronVolume").get<double>();
-    }
+  try {
+    this->maximumTetrahedronVol = jsonObject.at("maximumTetrahedronVolume").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        this->maximumTetrahedronVol = -1;
-    }
+  catch (const nlohmann::detail::exception& e) {
+    this->maximumTetrahedronVol = -1;
+  }
 
-    this->loadStl();
+  this->loadStl();
 
-    try {
-        this->fixed = jsonObject.at("fixed").get<bool>();
-    }
+  try {
+    this->fixed = jsonObject.at("fixed").get<bool>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        this->fixed = false;
-    }
+  catch (const nlohmann::detail::exception& e) {
+    this->fixed = false;
+  }
 
-    try {
-        this->mass = jsonObject.at("mass").get<double>();
-    }
+  try {
+    this->mass = jsonObject.at("mass").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'mass' field in Solid Object");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'mass' field in Solid Object");
+  }
 
-    try {
-        const nlohmann::json& positionArray = jsonObject.at("position");
-        this->position = Vector3D(positionArray.at(0).get<double>(), positionArray.at(1).get<double>(), positionArray.at(2).get<double>());
-    }
+  try {
+    const nlohmann::json& positionArray = jsonObject.at("position");
+    this->position =
+      Vector3D(positionArray.at(0).get<double>(), positionArray.at(1).get<double>(), positionArray.at(2).get<double>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'position' field in Solid Object");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'position' field in Solid Object");
+  }
 
-    try {
-        const nlohmann::json& velocityArray = jsonObject.at("velocity");
-        this->velocity = Vector3D(velocityArray.at(0).get<double>(), velocityArray.at(1).get<double>(), velocityArray.at(2).get<double>());
-    }
+  try {
+    const nlohmann::json& velocityArray = jsonObject.at("velocity");
+    this->velocity =
+      Vector3D(velocityArray.at(0).get<double>(), velocityArray.at(1).get<double>(), velocityArray.at(2).get<double>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'velocity' field in Solid Object");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'velocity' field in Solid Object");
+  }
 }
 
 void SolidObject::initialize()
 {
-    this->setMaterial();
-    this->setFixed();
-    this->setMass();
-    this->setPosition();
-    this->setVelocity();
+  this->setMaterial();
+  this->setFixed();
+  this->setMass();
+  this->setPosition();
+  this->setVelocity();
 }
 
 void SolidObject::loadStl()
 {
-    tetgenio in;
+  tetgenio in;
 
-    QFile file("temp.stl");
-    file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
-    file.write(this->stl.toUtf8().data());
-    file.flush();
+  QFile file("temp.stl");
+  file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
+  file.write(this->stl.toUtf8().data());
+  file.flush();
 
-    in.load_stl(QString("temp.stl").toUtf8().data());
+  in.load_stl(QString("temp.stl").toUtf8().data());
 
-    file.remove();
+  file.remove();
 
-    QVector<Vertex> vertexes;
+  QVector<Vertex> vertexes;
 
-    for(int i = 0; i < in.numberofpoints; i++) {
-        double x = in.pointlist[i * 3];
-        double y = in.pointlist[i * 3 + 1];
-        double z = in.pointlist[i * 3 + 2];
+  for (int i = 0; i < in.numberofpoints; i++) {
+    double x = in.pointlist[i * 3];
+    double y = in.pointlist[i * 3 + 1];
+    double z = in.pointlist[i * 3 + 2];
 
-        vertexes.append(Vertex(x, y, z));
+    vertexes.append(Vertex(x, y, z));
+  }
+
+  for (int i = 0; i < in.numberoffacets; i++) {
+    tetgenio::facet facet = in.facetlist[i];
+
+    for (int j = 0; j < facet.numberofpolygons; j++) {
+      tetgenio::polygon polygon = facet.polygonlist[j];
+
+      int v1Index = polygon.vertexlist[0];
+      int v2Index = polygon.vertexlist[1];
+      int v3Index = polygon.vertexlist[2];
+
+      Vertex v1 = vertexes.at(v1Index - 1);
+      Vertex v2 = vertexes.at(v2Index - 1);
+      Vertex v3 = vertexes.at(v3Index - 1);
+
+      Face face(v1, v2, v3);
+      face.setVelocity(this->velocity);
+
+      this->faces.append(face);
     }
-
-    for(int i = 0; i < in.numberoffacets; i++) {
-        tetgenio::facet facet = in.facetlist[i];
-
-        for(int j = 0; j < facet.numberofpolygons; j++) {
-            tetgenio::polygon polygon = facet.polygonlist[j];
-
-            int v1Index = polygon.vertexlist[0];
-            int v2Index = polygon.vertexlist[1];
-            int v3Index = polygon.vertexlist[2];
-
-            Vertex v1 = vertexes.at(v1Index - 1);
-            Vertex v2 = vertexes.at(v2Index - 1);
-            Vertex v3 = vertexes.at(v3Index - 1);
-
-            Face face(v1, v2, v3);
-            face.setVelocity(this->velocity);
-
-            this->faces.append(face);
-        }
-    }
+  }
 }
 
 void SolidObject::setFixed()
 {
-    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
-        it->setFixed(this->fixed);
-    }
+  for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    it->setFixed(this->fixed);
+  }
 }
 
 void SolidObject::setMass()
 {
-    double totalArea = this->getArea();
+  double totalArea = this->getArea();
 
-    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
-        double mass = (this->mass * it->getArea()) / totalArea;
+  for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    double mass = (this->mass * it->getArea()) / totalArea;
 
-        it->setMass(mass);
-    }
+    it->setMass(mass);
+  }
 }
 
 void SolidObject::setMaterial()
 {
-    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
-        it->setMaterial(this->material);
-    }
+  for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    it->setMaterial(this->material);
+  }
 }
 
 void SolidObject::setPosition()
 {
-    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
-        it->displaceBy(this->position);
-    }
+  for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    it->displaceBy(this->position);
+  }
 }
 
 void SolidObject::setVelocity()
 {
-    for(QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
-        it->setVelocity(this->velocity);
-    }
+  for (QVector<Face>::iterator it = this->faces.begin(); it != this->faces.end(); it++) {
+    it->setVelocity(this->velocity);
+  }
 }
 
 const QString& SolidObject::getId() const
 {
-    return this->id;
+  return this->id;
 }
 
 const QString& SolidObject::getMaterial() const
 {
-    return this->material;
+  return this->material;
 }
 
 const double& SolidObject::getMass() const
 {
-    return this->mass;
+  return this->mass;
 }
 
-void SolidObject::getBox(Vector3D &min, Vector3D &max)
+void SolidObject::getBox(Vector3D& min, Vector3D& max)
 {
-    double minX, maxX;
-    double minY, maxY;
-    double minZ, maxZ;
+  double minX, maxX;
+  double minY, maxY;
+  double minZ, maxZ;
 
-    minX = maxX = this->faces[0].getVertexes()[0].getCurrentPosition().getX();
-    minY = maxY = this->faces[0].getVertexes()[0].getCurrentPosition().getY();
-    minZ = maxZ = this->faces[0].getVertexes()[0].getCurrentPosition().getZ();
+  minX = maxX = this->faces[0].getVertexes()[0].getCurrentPosition().getX();
+  minY = maxY = this->faces[0].getVertexes()[0].getCurrentPosition().getY();
+  minZ = maxZ = this->faces[0].getVertexes()[0].getCurrentPosition().getZ();
 
-    foreach(const Face& face, this->faces) {
-        const QVector<Vertex>& vertexes = face.getVertexes();
+  foreach (const Face& face, this->faces) {
+    const QVector<Vertex>& vertexes = face.getVertexes();
 
-        foreach(const Vertex& vertex, vertexes) {
-            const Vector3D &position = vertex.getCurrentPosition();
+    foreach (const Vertex& vertex, vertexes) {
+      const Vector3D& position = vertex.getCurrentPosition();
 
-            if(position.getX() < minX) minX = position.getX();
-            if(position.getX() > maxX) maxX = position.getX();
+      if (position.getX() < minX)
+        minX = position.getX();
+      if (position.getX() > maxX)
+        maxX = position.getX();
 
-            if(position.getY() < minY) minY = position.getY();
-            if(position.getY() > maxY) maxY = position.getY();
+      if (position.getY() < minY)
+        minY = position.getY();
+      if (position.getY() > maxY)
+        maxY = position.getY();
 
-            if(position.getZ() < minZ) minZ = position.getZ();
-            if(position.getZ() > maxZ) maxZ = position.getZ();
-        }
+      if (position.getZ() < minZ)
+        minZ = position.getZ();
+      if (position.getZ() > maxZ)
+        maxZ = position.getZ();
     }
+  }
 
-    min.setX(minX);
-    min.setY(minY);
-    min.setZ(minZ);
+  min.setX(minX);
+  min.setY(minY);
+  min.setZ(minZ);
 
-    max.setX(maxX);
-    max.setY(maxY);
-    max.setZ(maxZ);
+  max.setX(maxX);
+  max.setY(maxY);
+  max.setZ(maxZ);
 }
 
 double SolidObject::getArea() const
 {
-    double area = 0;
+  double area = 0;
 
-    foreach (const Face& face, this->faces)
-        area += face.getArea();
+  foreach (const Face& face, this->faces)
+    area += face.getArea();
 
-    return area;
+  return area;
 }
 
 Vector3D SolidObject::getCurrentPosition() const
 {
-    Vector3D position;
+  Vector3D position;
 
-    foreach (const Face& face, this->faces)
-        position += face.getCurrentPosition() * face.getArea();
+  foreach (const Face& face, this->faces)
+    position += face.getCurrentPosition() * face.getArea();
 
-    return position / this->getArea();
+  return position / this->getArea();
 }
 
 Vector3D SolidObject::getCurrentVelocity() const
 {
-    Vector3D velocity;
+  Vector3D velocity;
 
-    foreach (const Face& face, this->faces)
-        velocity += face.getCurrentVelocity() * face.getArea();
+  foreach (const Face& face, this->faces)
+    velocity += face.getCurrentVelocity() * face.getArea();
 
-    return velocity / this->getArea();
+  return velocity / this->getArea();
 }
 
 Vector3D SolidObject::getMeanVelocity() const
 {
-    Vector3D velocity;
+  Vector3D velocity;
 
-    foreach (const Face& face, this->faces)
-        velocity += face.getMeanVelocity() * face.getArea();
+  foreach (const Face& face, this->faces)
+    velocity += face.getMeanVelocity() * face.getArea();
 
-    return velocity / this->getArea();
+  return velocity / this->getArea();
 }
 
 Vector3D SolidObject::getCurrentMomentum() const
 {
-    Vector3D momentum;
+  Vector3D momentum;
 
-    foreach (const Face& face, this->faces)
-        momentum += face.getCurrentMomentum();
+  foreach (const Face& face, this->faces)
+    momentum += face.getCurrentMomentum();
 
-    return momentum;
+  return momentum;
 }
 
 Vector3D SolidObject::getMeanMomentum() const
 {
-    Vector3D momentum;
+  Vector3D momentum;
 
-    foreach (const Face& face, this->faces)
-        momentum += face.getMeanMomentum();
+  foreach (const Face& face, this->faces)
+    momentum += face.getMeanMomentum();
 
-    return momentum;
+  return momentum;
 }
 
 Vector3D SolidObject::getCurrentForce() const
 {
-    Vector3D force;
+  Vector3D force;
 
-    foreach (const Face& face, this->faces)
-        force += face.getCurrentForce();
+  foreach (const Face& face, this->faces)
+    force += face.getCurrentForce();
 
-    return force;
+  return force;
 }
 
 Vector3D SolidObject::getMeanForce() const
 {
-    Vector3D force;
+  Vector3D force;
 
-    foreach (const Face& face, this->faces)
-        force += face.getMeanForce();
+  foreach (const Face& face, this->faces)
+    force += face.getMeanForce();
 
-    return force;
+  return force;
 }
 
 double SolidObject::getCurrentKineticEnergyTotal() const
 {
-    double kineticEnergy = 0;
+  double kineticEnergy = 0;
 
-    foreach (const Face& face, this->faces)
-        kineticEnergy += face.getCurrentKineticEnergy();
+  foreach (const Face& face, this->faces)
+    kineticEnergy += face.getCurrentKineticEnergy();
 
-    return kineticEnergy;
+  return kineticEnergy;
 }
 
 double SolidObject::getMeanKineticEnergyTotal() const
 {
-    double kineticEnergy = 0;
+  double kineticEnergy = 0;
 
-    foreach (const Face& face, this->faces)
-        kineticEnergy += face.getMeanKineticEnergy();
+  foreach (const Face& face, this->faces)
+    kineticEnergy += face.getMeanKineticEnergy();
 
-    return kineticEnergy;
+  return kineticEnergy;
 }
 
 const QVector<Face>& SolidObject::getFaces() const
 {
-    return this->faces;
+  return this->faces;
 }
 
 void SolidObject::setFacesCL(const QVector<FaceCL>& facesCL)
 {
-    for(int i = 0; i < facesCL.count(); i++) {
-        this->faces[i].setCL(facesCL[i]);
-    }
+  for (int i = 0; i < facesCL.count(); i++) {
+    this->faces[i].setCL(facesCL[i]);
+  }
 }
 
 nlohmann::json SolidObject::getJson(bool detailed = true) const
 {
-    nlohmann::json jsonObject;
+  nlohmann::json jsonObject;
 
-    jsonObject["_id"] = this->id.toStdString();
+  jsonObject["_id"] = this->id.toStdString();
 
-    // -- position
-    Vector3D currentPosition = this->getCurrentPosition();
+  // -- position
+  Vector3D currentPosition = this->getCurrentPosition();
 
-    nlohmann::json currentPositionArray;
-    currentPositionArray.push_back(currentPosition.getX());
-    currentPositionArray.push_back(currentPosition.getY());
-    currentPositionArray.push_back(currentPosition.getZ());
+  nlohmann::json currentPositionArray;
+  currentPositionArray.push_back(currentPosition.getX());
+  currentPositionArray.push_back(currentPosition.getY());
+  currentPositionArray.push_back(currentPosition.getZ());
 
-    jsonObject["position"] = currentPositionArray;
-    //
+  jsonObject["position"] = currentPositionArray;
+  //
 
-    // -- velocity
-    Vector3D meanVelocity = this->getMeanVelocity();
+  // -- velocity
+  Vector3D meanVelocity = this->getMeanVelocity();
 
-    nlohmann::json meanVelocityArray;
-    meanVelocityArray.push_back(meanVelocity.getX());
-    meanVelocityArray.push_back(meanVelocity.getY());
-    meanVelocityArray.push_back(meanVelocity.getZ());
+  nlohmann::json meanVelocityArray;
+  meanVelocityArray.push_back(meanVelocity.getX());
+  meanVelocityArray.push_back(meanVelocity.getY());
+  meanVelocityArray.push_back(meanVelocity.getZ());
 
-    jsonObject["velocity"] = meanVelocityArray;
-    //
+  jsonObject["velocity"] = meanVelocityArray;
+  //
 
-    // -- force
-    Vector3D meanForce = this->getMeanForce();
+  // -- force
+  Vector3D meanForce = this->getMeanForce();
 
-    nlohmann::json meanForceArray;
-    meanForceArray.push_back(meanForce.getX());
-    meanForceArray.push_back(meanForce.getY());
-    meanForceArray.push_back(meanForce.getZ());
+  nlohmann::json meanForceArray;
+  meanForceArray.push_back(meanForce.getX());
+  meanForceArray.push_back(meanForce.getY());
+  meanForceArray.push_back(meanForce.getZ());
 
-    jsonObject["force"] = meanForceArray;
-    //
+  jsonObject["force"] = meanForceArray;
+  //
 
-    // -- faces
-    if(detailed) {
-        nlohmann::json facesArray;
+  // -- faces
+  if (detailed) {
+    nlohmann::json facesArray;
 
-        foreach(const Face& face, this->faces) {
-            facesArray.push_back(face.getJson());
-        }
-
-        jsonObject["faces"] = facesArray;
+    foreach (const Face& face, this->faces) {
+      facesArray.push_back(face.getJson());
     }
-    //
 
-    return jsonObject;
+    jsonObject["faces"] = facesArray;
+  }
+  //
+
+  return jsonObject;
 }

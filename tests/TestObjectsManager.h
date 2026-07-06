@@ -9,14 +9,14 @@ class TestObjectsManager : public QObject
 {
     Q_OBJECT
 
-    private:
-        nlohmann::json objectsManagerJsonValue;
+  private:
+    nlohmann::json objectsManagerJsonValue;
 
-    public:
-        TestObjectsManager();
+  public:
+    TestObjectsManager();
 
-    private Q_SLOTS:
-        void constructor();
+  private Q_SLOTS:
+    void constructor();
 };
 
 #endif // TESTOBJECTSMANAGER_H

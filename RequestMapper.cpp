@@ -9,197 +9,195 @@
 #include <iostream>
 #include <cstring>
 
-RequestMapper::RequestMapper(QObject* parent) : HttpRequestHandler(parent)
+RequestMapper::RequestMapper(SimulationSink* sink, QObject* parent) : HttpRequestHandler(parent), sink(sink)
 {
-    connect(&this->statusTimer, SIGNAL(timeout()), this, SLOT(printStatus()));
+  connect(&this->statusTimer, SIGNAL(timeout()), this, SLOT(printStatus()));
 
-    this->statusTimer.start(10000);
+  this->statusTimer.start(10000);
 }
 
-RequestMapper::~RequestMapper()
-{
-
-}
+RequestMapper::~RequestMapper() {}
 
 void RequestMapper::service(HttpRequest& request, HttpResponse& response)
 {
-    QByteArray path = request.getPath();
+  QByteArray path = request.getPath();
 
-    if(path.startsWith("/simulations/start")) {
-        response.setStatus(204);
-        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+  if (path.startsWith("/simulations/start")) {
+    response.setStatus(204);
+    response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
-        nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
+    nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
 
-        try {
-            QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
-            QString instance = QString::fromStdString(jsonObject.at("instance").get<std::string>());
+    try {
+      QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+      QString instance = QString::fromStdString(jsonObject.at("instance").get<std::string>());
 
-            Simulation* simulation = this->getSimulationById(_id);
+      Simulation* simulation = this->getSimulationById(_id);
 
-            std::cout << "Simulation id: " << _id.toStdString() << " start order received" << std::endl;
+      std::cout << "Simulation id: " << _id.toStdString() << " start order received" << std::endl;
 
-	    // The means the current simulation has been invalidated in the webserver.
-	    if (simulation && simulation->getInstance() != instance) {
-		std::cout << "Different instance received, stopping the old one" << std::endl;
-		simulation->stop();
-		simulation = NULL; // Invalidate the local pointer, as it is going to be destryoed soon be its own thread.
-	    }
+      // The means the current simulation has been invalidated in the webserver.
+      if (simulation && simulation->getInstance() != instance) {
+        std::cout << "Different instance received, stopping the old one" << std::endl;
+        simulation->stop();
+        simulation = NULL; // Invalidate the local pointer, as it is going to be destryoed soon be its own thread.
+      }
 
-            try {
-                simulation = simulation ? simulation : new Simulation(jsonObject);
+      try {
+        simulation = simulation ? simulation : new Simulation(jsonObject, this->sink);
 
-                connect(simulation, SIGNAL(destroyed(QObject*)), this, SLOT(simulationDestroyed(QObject*)));
-                connect(simulation, SIGNAL(finished()), this, SLOT(simulationFinished()));
+        connect(simulation, SIGNAL(destroyed(QObject*)), this, SLOT(simulationDestroyed(QObject*)));
+        connect(simulation, SIGNAL(finished()), this, SLOT(simulationFinished()));
 
-                this->simulations.insert(simulation);
+        this->simulations.insert(simulation);
 
-                simulation->setInterfaceAddress(request.getPeerAddress());
+        simulation->setInterfaceAddress(request.getPeerAddress());
 
-                std::cout << "Starting simulation thread..." << std::endl;
-                simulation->start();
+        std::cout << "Starting simulation thread..." << std::endl;
+        simulation->start();
 
-                // Give the thread a moment to start and check if it's running
-                QThread::msleep(100);
-                if (simulation->isRunning()) {
-                    std::cout << "Simulation thread started successfully" << std::endl;
-                } else {
-                    std::cout << "WARNING: Simulation thread failed to start or exited immediately" << std::endl;
-                }
-            }
-
-            catch (const std::runtime_error& e) {
-                std::cout << e.what() << std::endl;
-                std::cout.flush();
-                response.setStatus(402);
-                response.write(e.what());
-            }
+        // Give the thread a moment to start and check if it's running
+        QThread::msleep(100);
+        if (simulation->isRunning()) {
+          std::cout << "Simulation thread started successfully" << std::endl;
+        } else {
+          std::cout << "WARNING: Simulation thread failed to start or exited immediately" << std::endl;
         }
+      }
 
-        catch (const nlohmann::detail::exception& e) {
-            response.setStatus(402);
-            response.write("Simulation '_id' field missing");
-        }
+      catch (const std::runtime_error& e) {
+        std::cout << e.what() << std::endl;
+        std::cout.flush();
+        response.setStatus(402);
+        response.write(e.what());
+      }
     }
 
-    if(path.startsWith("/simulations/pause")) {
-        response.setStatus(204);
-        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+    catch (const nlohmann::detail::exception& e) {
+      response.setStatus(402);
+      response.write("Simulation '_id' field missing");
+    }
+  }
 
-        nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
+  if (path.startsWith("/simulations/pause")) {
+    response.setStatus(204);
+    response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
-        try {
-            QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+    nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
 
-            Simulation* simulation = this->getSimulationById(_id);
+    try {
+      QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
 
-            if(!simulation)
-                return;
+      Simulation* simulation = this->getSimulationById(_id);
 
-            if(!simulation->isRunning()) {
-                response.setStatus(412);
-                response.write("Simulation not running");
-            }
+      if (!simulation)
+        return;
 
-            else {
-                simulation->setInterfaceAddress(request.getPeerAddress());
-                simulation->pause();
-            }
-        }
+      if (!simulation->isRunning()) {
+        response.setStatus(412);
+        response.write("Simulation not running");
+      }
 
-        catch (const nlohmann::detail::exception& e) {
-            response.setStatus(402);
-            response.write("Simulation '_id' field missing");
-        }
+      else {
+        simulation->setInterfaceAddress(request.getPeerAddress());
+        simulation->pause();
+      }
     }
 
-    if(path.startsWith("/simulations/stop")) {
-        response.setStatus(204);
-        response.setHeader("Content-Type", "application/json; charset=UTF-8");
-
-        nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
-
-        try {
-            QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
-
-            Simulation* simulation = this->getSimulationById(_id);
-
-            if(!simulation) {
-                response.setStatus(412);
-                response.write("Simulation not paused or running");
-            }
-
-            else {
-                simulation->setInterfaceAddress(request.getPeerAddress());
-                simulation->stop();
-            }
-        }
-
-        catch (const nlohmann::detail::exception& e) {
-            response.setStatus(402);
-            response.write("Simulation '_id' field missing");
-        }
+    catch (const nlohmann::detail::exception& e) {
+      response.setStatus(402);
+      response.write("Simulation '_id' field missing");
     }
+  }
+
+  if (path.startsWith("/simulations/stop")) {
+    response.setStatus(204);
+    response.setHeader("Content-Type", "application/json; charset=UTF-8");
+
+    nlohmann::json jsonObject = nlohmann::json::parse(request.getBody().toStdString());
+
+    try {
+      QString _id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+
+      Simulation* simulation = this->getSimulationById(_id);
+
+      if (!simulation) {
+        response.setStatus(412);
+        response.write("Simulation not paused or running");
+      }
+
+      else {
+        simulation->setInterfaceAddress(request.getPeerAddress());
+        simulation->stop();
+      }
+    }
+
+    catch (const nlohmann::detail::exception& e) {
+      response.setStatus(402);
+      response.write("Simulation '_id' field missing");
+    }
+  }
 }
 
 Simulation* RequestMapper::getSimulationById(const QString& _id)
 {
-    foreach(Simulation* simulation, this->simulations) {
-        if(simulation->getId() == _id) {
-            return simulation;
-        }
+  foreach (Simulation* simulation, this->simulations) {
+    if (simulation->getId() == _id) {
+      return simulation;
     }
+  }
 
-    return NULL;
+  return NULL;
 }
 
 uint RequestMapper::getTotalSimulations()
 {
-    return this->simulations.count();
+  return this->simulations.count();
 }
 
 uint RequestMapper::getRunningSimulations()
 {
-    uint simulationsRunning = 0;
+  uint simulationsRunning = 0;
 
-    foreach(const Simulation* simulation, this->simulations) {
-        if(simulation->isRunning())
-            simulationsRunning++;
-    }
+  foreach (const Simulation* simulation, this->simulations) {
+    if (simulation->isRunning())
+      simulationsRunning++;
+  }
 
-    return simulationsRunning;
+  return simulationsRunning;
 }
 
 void RequestMapper::simulationDestroyed(QObject* obj)
 {
-    Simulation *simulation = (Simulation*)obj;
+  Simulation* simulation = (Simulation*)obj;
 
-    this->simulations.remove(simulation);
+  this->simulations.remove(simulation);
 }
 
 void RequestMapper::simulationFinished()
 {
-    Simulation *simulation = (Simulation*)QObject::sender();
-    std::cout << "Simulation " << simulation->getId().toStdString() << " thread finished" << std::endl;
+  Simulation* simulation = (Simulation*)QObject::sender();
+  std::cout << "Simulation " << simulation->getId().toStdString() << " thread finished" << std::endl;
 }
 
 void RequestMapper::printStatus()
 {
-    std::map<const cl::Device*, uint> &devicesUsage = OpenCLWrapper::Core::getDevicesUsage();
+  std::map<const cl::Device*, uint>& devicesUsage = OpenCLWrapper::Core::getDevicesUsage();
 
-    std::cout << "\n-----------------------STATUS-----------------------\n";
-    std::cout << "               " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz").toStdString() << "\n\n";
+  std::cout << "\n-----------------------STATUS-----------------------\n";
+  std::cout << "               " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz").toStdString()
+            << "\n\n";
 
-    std::cout << "There are " << this->getTotalSimulations() << " Simulations instantiated\n";
-    std::cout << "There are " << this->getRunningSimulations() << " Simulations running\n";
-    std::cout << std::endl;
+  std::cout << "There are " << this->getTotalSimulations() << " Simulations instantiated\n";
+  std::cout << "There are " << this->getRunningSimulations() << " Simulations running\n";
+  std::cout << std::endl;
 
-    for(auto it = devicesUsage.begin(); it != devicesUsage.end(); it++) {
-        uint deviceIndex = std::distance(devicesUsage.begin(), it);
-        uint jobs = it->second;
+  for (auto it = devicesUsage.begin(); it != devicesUsage.end(); it++) {
+    uint deviceIndex = std::distance(devicesUsage.begin(), it);
+    uint jobs = it->second;
 
-        std::cout << "GPU #" << deviceIndex << " has " << jobs << " job(s) running\n";
-    }
+    std::cout << "GPU #" << deviceIndex << " has " << jobs << " job(s) running\n";
+  }
 
-    std::cout << "----------------------------------------------------\n\n";
+  std::cout << "----------------------------------------------------\n\n";
 }

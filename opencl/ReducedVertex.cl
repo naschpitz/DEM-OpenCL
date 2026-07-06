@@ -3,8 +3,7 @@
 
 #include "../opencl/Vertex.cl"
 
-typedef struct
-{
+typedef struct {
     bool fixed;
 
     float4 currentPosition;
@@ -13,26 +12,26 @@ typedef struct
 
 ReducedVertex reducedVertex_fromVertex(const Vertex* vertex)
 {
-    ReducedVertex reducedVertex;
+  ReducedVertex reducedVertex;
 
-    reducedVertex.fixed = vertex->fixed;
+  reducedVertex.fixed = vertex->fixed;
 
-    reducedVertex.currentPosition = vertex->currentPosition;
-    reducedVertex.currentVelocity = vertex->currentVelocity;
+  reducedVertex.currentPosition = vertex->currentPosition;
+  reducedVertex.currentVelocity = vertex->currentVelocity;
 
-    return reducedVertex;
+  return reducedVertex;
 }
 
 Vertex reducedVertex_toVertex(const ReducedVertex* reducedVertex)
 {
-    Vertex vertex;
+  Vertex vertex;
 
-    vertex.fixed = reducedVertex->fixed;
+  vertex.fixed = reducedVertex->fixed;
 
-    vertex.currentPosition = reducedVertex->currentPosition;
-    vertex.currentVelocity = reducedVertex->currentVelocity;
+  vertex.currentPosition = reducedVertex->currentPosition;
+  vertex.currentVelocity = reducedVertex->currentVelocity;
 
-    return vertex;
+  return vertex;
 }
 
 #endif // REDUCEDVERTEX_CL

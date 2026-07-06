@@ -9,21 +9,21 @@ class TestObject : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestObject();
+  public:
+    TestObject();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
-        void outsideFace();
-        void onFaceCenter();
-        void sharedEdge();
-        void sharedCorner();
-        void insideCube();
-        void farParticle();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void outsideFace();
+    void onFaceCenter();
+    void sharedEdge();
+    void sharedCorner();
+    void insideCube();
+    void farParticle();
 };
 
 #endif // TESTOBJECT_H

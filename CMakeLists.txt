@@ -24,6 +24,11 @@ option(BUILD_TEST "Build the legacy Test executable (currently broken — see te
 # OpenCL device. Separate flag because it needs a device present at runtime.
 option(BUILD_OPENCL_TEST "Build the OpenCL kernel test executable (requires an OpenCL device at runtime)" OFF)
 
+# Integration tests: drive the full Simulation orchestration (config parsing,
+# physics loop on a real GPU, HTTP control plane). Separate flag because the
+# GPU tests need an OpenCL device at runtime, like BUILD_OPENCL_TEST.
+option(BUILD_INTEGRATION_TEST "Build the integration test executable (Simulation lifecycle + physics loop; GPU cases need an OpenCL device at runtime)" OFF)
+
 # OpenCLWrapper (git submodule, built from source).
 if(NOT TARGET OpenCLWrapper)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/OpenCLWrapper ${CMAKE_CURRENT_BINARY_DIR}/OpenCLWrapper)
@@ -35,10 +40,12 @@ message(STATUS "DEM-OpenCL")
 message(STATUS "  Qt6:        ${Qt6_DIR}")
 message(STATUS "  BUILD_TEST:       ${BUILD_TEST}")
 message(STATUS "  BUILD_OPENCL_TEST: ${BUILD_OPENCL_TEST}")
+message(STATUS "  BUILD_INTEGRATION_TEST: ${BUILD_INTEGRATION_TEST}")
 
-# --- DEM Core — headless simulation server (Qt6 console application) -----------
-add_executable(DEM
-    main.cpp
+# --- DEM Core sources (shared by the DEM executable and the integration tests).
+# Kept in a variable so the integration test target compiles the real .cpp
+# sources (Simulation.cpp, Scenery.cpp, ...) instead of a unity-build mirror.
+set(DEM_CORE_SOURCES
     Common.cpp           Common.h
     Deflater.cpp         Deflater.h
     EasyZLib.cpp         EasyZLib.h
@@ -58,9 +65,16 @@ add_executable(DEM
     Scenery.cpp          Scenery.h
     Sender.cpp           Sender.h
     Simulation.cpp       Simulation.h
+    SimulationSink.h
     SolidObject.cpp      SolidObject.h
     Vector3D.cpp         Vector3D.h
     Vertex.cpp           Vertex.h
+)
+
+# --- DEM Core — headless simulation server (Qt6 console application) -----------
+add_executable(DEM
+    main.cpp
+    ${DEM_CORE_SOURCES}
 )
 
 set_target_properties(DEM PROPERTIES
@@ -92,4 +106,8 @@ endif()
 
 if(BUILD_OPENCL_TEST)
     add_subdirectory(tests/opencl)
+endif()
+
+if(BUILD_INTEGRATION_TEST)
+    add_subdirectory(tests/integration)
 endif()

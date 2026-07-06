@@ -16,8 +16,7 @@
 
 #define MAX_PARTICLES_TO_FACES 1024
 
-typedef struct
-{
+typedef struct {
     cl_uint numParticles;
     cl_uint numFaces;
 
@@ -25,8 +24,7 @@ typedef struct
     cl_uint faces[MAX_FACES_TO_PARTICLES];
 } ParticleNeighborhoodCL;
 
-typedef struct
-{
+typedef struct {
     cl_uint numParticles;
 
     cl_uint particles[MAX_PARTICLES_TO_FACES];

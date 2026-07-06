@@ -1,8 +1,7 @@
 #ifndef VERTEX_H_CL
 #define VERTEX_H_CL
 
-typedef struct
-{
+typedef struct {
     bool fixed;
 
     float4 originalPosition;

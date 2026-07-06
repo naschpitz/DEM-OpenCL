@@ -181,10 +181,20 @@ Two layers coexist:
 
 ## Code style
 
-**Match existing style in every file — even if you'd do it differently.**
+**Formatting is governed by `.clang-format` (repo root).** It is the single source of truth for
+indentation, brace placement, column limit, pointer alignment, etc. Run `clang-format -i <file>`
+on any `.h`/`.cpp` you touch (the codebase is being migrated from a prior 4-space style, so
+nearby lines may still show the old style — don't hand-match; let clang-format win).
+
+Key settings: 2-space indent, 120-column limit, Linux braces (next-line for
+functions/classes/namespaces, same-line for control structures), `PointerAlignment: Left`,
+`SortIncludes: Never`.
+
+For everything not covered by `.clang-format` (naming, file layout, idioms), match existing
+style in every file — even if you'd do it differently.
 
 ### `.h` class layout
-`private:` (members) → `public:` (constructors, then methods). 4-space indent.
+`private:` (members) → `public:` (constructors, then methods). 2-space indent (per `.clang-format`).
 Domain objects declare a flat C struct (`typedef struct { ... } FooCL;`) holding `cl_*` fields for
 device memory, above the C++ class.
 

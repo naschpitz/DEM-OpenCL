@@ -17,8 +17,7 @@
 
 #include <CL/opencl.hpp>
 
-typedef struct
-{
+typedef struct {
     cl_ulong numParticles;
     cl_ulong numFaces;
 
@@ -27,30 +26,30 @@ typedef struct
 
 class Scenery
 {
-    private:
-        QString id;
-        QString owner;
-        Vector3D gravity;
+  private:
+    QString id;
+    QString owner;
+    Vector3D gravity;
 
-        ObjectsManager objectsManager;
-        MaterialsManager materialsManager;
+    ObjectsManager objectsManager;
+    MaterialsManager materialsManager;
 
-    public:
-        Scenery();
-        Scenery(const nlohmann::json& jsonObject);
+  public:
+    Scenery();
+    Scenery(const nlohmann::json& jsonObject);
 
-        void initialize();
+    void initialize();
 
-        SceneryCL getCL() const;
+    SceneryCL getCL() const;
 
-        const QString& getId() const;
+    const QString& getId() const;
 
-        const ObjectsManager& getObjectsManager() const;
-        const MaterialsManager& getMaterialsManager() const;
-        const nlohmann::json getJson(bool detailed) const;
+    const ObjectsManager& getObjectsManager() const;
+    const MaterialsManager& getMaterialsManager() const;
+    const nlohmann::json getJson(bool detailed) const;
 
-        void setParticlesCL(const QVector<ParticleCL>& particlesCL);
-        void setFacesCL(const QVector<FaceCL>& facesCL);
+    void setParticlesCL(const QVector<ParticleCL>& particlesCL);
+    void setFacesCL(const QVector<FaceCL>& facesCL);
 };
 
 #endif // SCENERY_H

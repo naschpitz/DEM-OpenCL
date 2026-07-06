@@ -5,10 +5,10 @@
 
 class Common
 {
-    public:
-        Common();
+  public:
+    Common();
 
-        static QString searchConfigFile();
+    static QString searchConfigFile();
 };
 
 #endif // COMMON_H

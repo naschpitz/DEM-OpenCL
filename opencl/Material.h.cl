@@ -1,27 +1,20 @@
 #ifndef MATERIAL_H_CL
 #define MATERIAL_H_CL
 
-enum ForceType
-{
-    adiabatic_compression,
-    hooks_law,
-    inverse_linear,
-    inverse_quadratic,
-    inverse_cubic,
-    morse,
-    lennard_jones,
-    realistic_material
+enum ForceType {
+  adiabatic_compression,
+  hooks_law,
+  inverse_linear,
+  inverse_quadratic,
+  inverse_cubic,
+  morse,
+  lennard_jones,
+  realistic_material
 };
 
-enum DragForceType
-{
-    linear,
-    quadratic,
-    cubic
-};
+enum DragForceType { linear, quadratic, cubic };
 
-typedef struct
-{
+typedef struct {
     int materialIndex1;
     int materialIndex2;
 

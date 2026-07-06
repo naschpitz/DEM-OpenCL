@@ -6,9 +6,9 @@
 
 class EasyZLib
 {
-    public:
-        EasyZLib();
-        static std::string deflate(const QByteArray& data);
+  public:
+    EasyZLib();
+    static std::string deflate(const QByteArray& data);
 };
 
 #endif // EASYZLIB_H

@@ -4,7 +4,7 @@
 
 TestObjectsManager::TestObjectsManager()
 {
-    this->objectsManagerJsonValue = nlohmann::json::parse(R"({
+  this->objectsManagerJsonValue = nlohmann::json::parse(R"({
         "nonSolidObjects": [
             {
                 "_id": "TestNonSolidObject0",
@@ -38,7 +38,7 @@ TestObjectsManager::TestObjectsManager()
 
 void TestObjectsManager::constructor()
 {
-    ObjectsManager objectsManager(this->objectsManagerJsonValue);
+  ObjectsManager objectsManager(this->objectsManagerJsonValue);
 
-    QVERIFY(objectsManager.getNonSolidObjects().count() == 2);
+  QVERIFY(objectsManager.getNonSolidObjects().count() == 2);
 }

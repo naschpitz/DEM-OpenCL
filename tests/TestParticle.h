@@ -9,12 +9,12 @@ class TestParticle : public QObject
 {
     Q_OBJECT
 
-    public:
-        TestParticle();
+  public:
+    TestParticle();
 
-    private Q_SLOTS:
-        void getCL();
-        void setCL();
+  private Q_SLOTS:
+    void getCL();
+    void setCL();
 };
 
 #endif // TESTPARTICLE_H

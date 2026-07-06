@@ -15,8 +15,7 @@
 
 #include <QString>
 
-typedef struct
-{
+typedef struct {
     cl_uint index;
     cl_uint materialIndex;
 
@@ -42,71 +41,71 @@ typedef struct
 
 class Particle : public Vertex
 {
-    private:
-        QString materialName;
+  private:
+    QString materialName;
 
-        double radius;
-        double density;
-        double mass;
-        double area;
-        double volume;
-        double inertiaMomentum;
+    double radius;
+    double density;
+    double mass;
+    double area;
+    double volume;
+    double inertiaMomentum;
 
-        Vector3D currentForce;
-        Vector3D meanForce;
-        Vector3D oldForce;
+    Vector3D currentForce;
+    Vector3D meanForce;
+    Vector3D oldForce;
 
-        Vector3D currentTorque;
-        Vector3D meanTorque;
-        Vector3D oldTorque;
+    Vector3D currentTorque;
+    Vector3D meanTorque;
+    Vector3D oldTorque;
 
-    public:
-        Particle();
-        Particle(const double& x, const double& y, const double& z, const double& radius);
-        Particle(const Vector3D& vector, const double& radius);
+  public:
+    Particle();
+    Particle(const double& x, const double& y, const double& z, const double& radius);
+    Particle(const Vector3D& vector, const double& radius);
 
-        ParticleCL getCL(uint index, uint materialIndex) const;
-        void setCL(const ParticleCL& particleCL);
+    ParticleCL getCL(uint index, uint materialIndex) const;
+    void setCL(const ParticleCL& particleCL);
 
-        void setMaterial(const QString& materialName);
-        void setDensity(const double& density);
+    void setMaterial(const QString& materialName);
+    void setDensity(const double& density);
 
-        const QString& getId() const;
+    const QString& getId() const;
 
-        const double& getRadius() const;
-        const double& getMass()   const;
-        const double& getArea()   const;
-        const double& getVolume() const;
+    const double& getRadius() const;
+    const double& getMass() const;
+    const double& getArea() const;
+    const double& getVolume() const;
 
-        const Vector3D& getCurrentForce() const;
-        const Vector3D& getMeanForce()    const;
+    const Vector3D& getCurrentForce() const;
+    const Vector3D& getMeanForce() const;
 
-        const Vector3D& getCurrentTorque() const;
-        const Vector3D& getMeanTorque()    const;
+    const Vector3D& getCurrentTorque() const;
+    const Vector3D& getMeanTorque() const;
 
-        Vector3D getCurrentMomentum() const;
-        Vector3D getMeanMomentum()    const;
+    Vector3D getCurrentMomentum() const;
+    Vector3D getMeanMomentum() const;
 
-        Vector3D getCurrentAngularMomentum() const;
-        Vector3D getMeanAngularMomentum()    const;
+    Vector3D getCurrentAngularMomentum() const;
+    Vector3D getMeanAngularMomentum() const;
 
-        double getCurrentKineticEnergyTotal()    const;
-        double getMeanKineticEnergyTotal()       const;
+    double getCurrentKineticEnergyTotal() const;
+    double getMeanKineticEnergyTotal() const;
 
-        double getCurrentKineticEnergyExternal() const;
-        double getMeanKineticEnergyExternal()   const;
+    double getCurrentKineticEnergyExternal() const;
+    double getMeanKineticEnergyExternal() const;
 
-        double getCurrentKineticEnergyInternal() const;
-        double getMeanKineticEnergyInternal() const;
+    double getCurrentKineticEnergyInternal() const;
+    double getMeanKineticEnergyInternal() const;
 
-        nlohmann::json getJson() const;
+    nlohmann::json getJson() const;
 
-        bool isInside(const Particle& otherParticle) const;
+    bool isInside(const Particle& otherParticle) const;
 
-        void calculateArea();
-        void calculateVolume();
+    void calculateArea();
+    void calculateVolume();
 
-        virtual bool operator==(const Particle &other) const;
+    virtual bool operator==(const Particle& other) const;
 };
 
 #endif // PARTICLE_H

@@ -9,14 +9,14 @@ class TestScenery : public QObject
 {
     Q_OBJECT
 
-    private:
-        nlohmann::json sceneryJsonValue;
+  private:
+    nlohmann::json sceneryJsonValue;
 
-    public:
-        TestScenery();
+  public:
+    TestScenery();
 
-    private Q_SLOTS:
-        void constructor();
+  private Q_SLOTS:
+    void constructor();
 };
 
 #endif // TESTSCENERY_H
