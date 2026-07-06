@@ -54,6 +54,10 @@ class KernelTestHarness
         cl_float4 runMaterialCalculateForce(const MaterialCL& material, cl_float4 distance, cl_float4 distanceUnitary, bool internal, float contactArea, float originalLength, cl_float4 oldForce);
 
         cl_float4 runMaterialCalculateDragForce(const MaterialCL& material, cl_float4 velocity, cl_float4 rotationVelocity, cl_float4 force);
+
+        void runParticleToParticleWorker(ParticleCL& thisParticle, const ParticleCL& otherParticle, const MaterialCL& material, cl_float4& outForce, cl_float4& outTorque);
+
+        void runParticleToFaceWorker(ParticleCL& thisParticle, const FaceCL& otherFace, const MaterialCL& material, cl_float4& outForce, cl_float4& outTorque);
 };
 
 #endif // KERNELTESTHARNESS_H

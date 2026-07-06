@@ -18,6 +18,7 @@ add_executable(TestOpenCL
     TestObject.cpp          TestObject.h
     TestNonConvexObject.cpp TestNonConvexObject.h
     TestMaterial.cpp          TestMaterial.h
+    TestParticleWorker.cpp    TestParticleWorker.h
 )
 
 set_target_properties(TestOpenCL PROPERTIES
