@@ -5,6 +5,7 @@
 
 #include <QVector>
 #include <QString>
+#include <QMutex>
 
 #include "nlohmann/json.hpp"
 
@@ -37,6 +38,12 @@ class FakeSimulationSink : public SimulationSink
         void onWaitForAllFramesSent(const Simulation* simulation) override;
 
         void clear();
+
+        int frameCount();
+        int waitCallCount();
+
+    private:
+        QMutex mutex;
 };
 
 #endif // FAKE_SIMULATION_SINK_H

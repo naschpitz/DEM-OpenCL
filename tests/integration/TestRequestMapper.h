@@ -35,10 +35,15 @@ class TestRequestMapper : public QObject
         void startInvalidSimulationJson();
         void stopUnknownId();
         void pauseUnknownId();
+        void startAndStopRunningSimulation();
+        void instanceInvalidationStopsOldSim();
 
     private:
         struct Response { int status; QByteArray body; };
         Response post(const QString& path, const QByteArray& body);
+        QByteArray validStartBody(const QString& _id, const QString& instance, double totalTime) const;
+        void waitForSinkFrames(int minCount, int timeoutMs);
+        void stopAllStartedSimulations();
 
         QSettings* settings;
         QTemporaryFile* settingsFile;
@@ -47,6 +52,7 @@ class TestRequestMapper : public QObject
         FakeSimulationSink* sink;
         QNetworkAccessManager* nam;
         int port;
+        QStringList startedIds;
 };
 
 #endif
