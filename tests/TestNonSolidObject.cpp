@@ -2,6 +2,7 @@
 
 #include <QTest>
 #include <QtGlobal>
+#include <array>
 #include <math.h>
 
 TestNonSolidObject::TestNonSolidObject()
@@ -136,4 +137,37 @@ void TestNonSolidObject::getCurrentKineticEnergyInternal()
     double currentKineticEnergyTotal    = nonSolidObject.getCurrentKineticEnergyTotal();
 
     QVERIFY(qAbs(currentKineticEnergyInternal) <= 1e-4 * qAbs(currentKineticEnergyTotal));
+}
+
+void TestNonSolidObject::particlePackingCount()
+{
+    // buildObject uses hexagonal close packing (HCP), not a simple cubic grid.
+    // Each z-layer alternates the x-offset pattern ((j+k)%2), so odd rows
+    // have one fewer particle in x than even rows when length is barely large
+    // enough. Verified by running the actual HCP loop.
+
+    struct Case { std::array<double, 3> length; int expected; };
+    const QVector<Case> cases = {
+        {{1.5, 1.5, 1.5},   1},
+        {{3.5, 1.5, 1.5},   3},
+        {{3.5, 3.5, 1.5},   8},
+        {{3.5, 3.5, 3.5},  30},
+    };
+
+    for (const Case& c : cases) {
+        nlohmann::json json;
+        json["_id"]      = "pack";
+        json["material"] = "mat";
+        json["density"]  = 1.0;
+        json["dimensions"]["spacing"] = 1;
+        json["dimensions"]["length"]  = nlohmann::json::array(
+            {c.length[0], c.length[1], c.length[2]});
+        json["position"]  = nlohmann::json::array({0.0, 0.0, 0.0});
+        json["velocity"]  = nlohmann::json::array({0.0, 0.0, 0.0});
+
+        NonSolidObject obj(json);
+        obj.initialize();
+
+        QCOMPARE(static_cast<int>(obj.getParticles().size()), c.expected);
+    }
 }

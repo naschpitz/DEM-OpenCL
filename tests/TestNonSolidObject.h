@@ -23,6 +23,7 @@ class TestNonSolidObject : public QObject
         void getCurrentKineticEnergyTotal();
         void getCurrentKineticEnergyExternal();
         void getCurrentKineticEnergyInternal();
+        void particlePackingCount();
 };
 
 #endif // TESTNONSOLIDOBJECT_H

@@ -18,6 +18,8 @@ class TestMaterial : public QObject
     private Q_SLOTS:
         void constructor();
         void getCL();
+        void defaultsWhenOptionalFieldsMissing();
+        void invalidForceTypeString();
 };
 
 #endif // TESTMATEIRAL_H

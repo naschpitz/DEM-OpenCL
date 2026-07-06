@@ -76,3 +76,47 @@ void TestMaterial::getCL()
     QCOMPARE(materialCL.dragCoefficients[4], 23.24f);
     QCOMPARE(materialCL.dragCoefficients[5], 25.26f);
 }
+
+void TestMaterial::defaultsWhenOptionalFieldsMissing()
+{
+    nlohmann::json minimal = nlohmann::json::parse(R"({
+        "_id": "minimal",
+        "distanceThreshold": 2.0
+    })");
+
+    Material material(minimal);
+
+    QVERIFY(material.getForceType().isEmpty());
+    QVERIFY(material.getDragForceType().isEmpty());
+    QVERIFY(material.getMaterial1().isEmpty());
+    QVERIFY(material.getMaterial2().isEmpty());
+    QVERIFY(material.getCoefficients().isEmpty());
+    QVERIFY(material.getDragCoefficients().isEmpty());
+
+    QMap<QString, int> namesMap;
+    MaterialCL cl = material.getCL(namesMap);
+
+    QCOMPARE(cl.forceType, -1);
+    QCOMPARE(cl.dragForceType, -1);
+    QCOMPARE(cl.materialIndex1, -1);
+    QCOMPARE(cl.materialIndex2, -1);
+    QCOMPARE(cl.distanceThreshold, 2.0f);
+}
+
+void TestMaterial::invalidForceTypeString()
+{
+    nlohmann::json json = nlohmann::json::parse(R"({
+        "_id": "badtype",
+        "distanceThreshold": 1.0,
+        "forceType": "nonexistent",
+        "dragForceType": "also_nonexistent"
+    })");
+
+    Material material(json);
+
+    QMap<QString, int> namesMap;
+    MaterialCL cl = material.getCL(namesMap);
+
+    QCOMPARE(cl.forceType, -1);
+    QCOMPARE(cl.dragForceType, -1);
+}
