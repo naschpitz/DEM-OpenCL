@@ -1,8 +1,7 @@
 #ifndef SIMULATION_H_CL
 #define SIMULATION_H_CL
 
-typedef struct
-{
+typedef struct {
     float currentTime;
     ulong currentStep;
 
@@ -11,7 +10,7 @@ typedef struct
 
     float frameTime;
 
-    ulong  calcNeighStepsInt;
+    ulong calcNeighStepsInt;
     double neighDistThresMult;
 } Simulation;
 

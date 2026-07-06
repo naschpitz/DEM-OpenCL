@@ -4,8 +4,7 @@
 #include "../opencl/Neighborhood.h.cl"
 #include "../opencl/Vertex.h.cl"
 
-typedef struct
-{
+typedef struct {
     uint index;
     uint materialIndex;
 

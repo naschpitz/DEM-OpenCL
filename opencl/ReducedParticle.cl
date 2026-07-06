@@ -5,8 +5,7 @@
 #include "../opencl/Particle.cl"
 #include "../opencl/ReducedVertex.cl"
 
-typedef struct
-{
+typedef struct {
     uint index;
     uint materialIndex;
 
@@ -18,32 +17,32 @@ typedef struct
 
 ReducedParticle reducedParticle_fromParticle(const Particle* particle)
 {
-    ReducedParticle reducedParticle;
+  ReducedParticle reducedParticle;
 
-    reducedParticle.index = particle->index;
-    reducedParticle.materialIndex = particle->materialIndex;
+  reducedParticle.index = particle->index;
+  reducedParticle.materialIndex = particle->materialIndex;
 
-    reducedParticle.radius = particle->radius;
-    reducedParticle.area = particle->area;
+  reducedParticle.radius = particle->radius;
+  reducedParticle.area = particle->area;
 
-    reducedParticle.vertex = reducedVertex_fromVertex(&(particle->vertex));
+  reducedParticle.vertex = reducedVertex_fromVertex(&(particle->vertex));
 
-    return reducedParticle;
+  return reducedParticle;
 }
 
 Particle reducedParticle_toParticle(const ReducedParticle* reducedParticle)
 {
-    Particle particle;
+  Particle particle;
 
-    particle.index = reducedParticle->index;
-    particle.materialIndex = reducedParticle->materialIndex;
+  particle.index = reducedParticle->index;
+  particle.materialIndex = reducedParticle->materialIndex;
 
-    particle.radius = reducedParticle->radius;
-    particle.area = reducedParticle->area;
+  particle.radius = reducedParticle->radius;
+  particle.area = reducedParticle->area;
 
-    particle.vertex = reducedVertex_toVertex(&(reducedParticle->vertex));
+  particle.vertex = reducedVertex_toVertex(&(reducedParticle->vertex));
 
-    return particle;
+  return particle;
 }
 
 #endif // REDUCEDPARTICLE_CL

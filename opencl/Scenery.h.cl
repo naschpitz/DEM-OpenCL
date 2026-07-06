@@ -1,8 +1,7 @@
 #ifndef SCENERY_H_CL
 #define SCENERY_H_CL
 
-typedef struct
-{
+typedef struct {
     ulong numParticles;
     ulong numFaces;
 
