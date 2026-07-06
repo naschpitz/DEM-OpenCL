@@ -39,7 +39,7 @@ FaceCL Face::getCL(uint index, uint materialIndex) const
     faceCL.oldForce     = {this->oldForce.getX(), this->oldForce.getY(), this->oldForce.getZ(), 0};
 
     faceCL.currentTorque = {this->currentTorque.getX(), this->currentTorque.getY(), this->currentTorque.getZ(), 0};
-    faceCL.meanForce     = {this->meanTorque.getX(), this->meanTorque.getY(), meanTorque.getZ(), 0};
+    faceCL.meanTorque    = {this->meanTorque.getX(), this->meanTorque.getY(), this->meanTorque.getZ(), 0};
     faceCL.oldTorque     = {this->oldTorque.getX(), this->oldTorque.getY(), this->oldTorque.getZ(), 0};
 
     for(int i = 0; i < 3; i++) {
