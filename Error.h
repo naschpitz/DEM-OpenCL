@@ -18,14 +18,13 @@
 #define ERROR_MAX_FACES_TO_PARTICLES 2
 #define ERROR_MAX_PARTICLES_TO_FACES 3
 
-typedef struct
-{
+typedef struct {
     cl_uint errorCode;
 } ErrorCL;
 
 class Error
 {
-public:
+  public:
     static QString getErrorMessage(cl_uint errorCode);
 };
 

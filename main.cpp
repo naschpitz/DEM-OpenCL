@@ -15,30 +15,30 @@
 
 using namespace stefanfrings;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QCoreApplication app(argc, argv);
+  QCoreApplication app(argc, argv);
 
-    std::setlocale(LC_NUMERIC, "C");
+  std::setlocale(LC_NUMERIC, "C");
 
-    OpenCLWrapper::Core::initialize();
+  OpenCLWrapper::Core::initialize();
 
-    QString configFileName = Common::searchConfigFile();
+  QString configFileName = Common::searchConfigFile();
 
-    // Read logging configuration
-    QSettings* loggingSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
-    loggingSettings->beginGroup("logging");
-    bool enableHttpDebug = loggingSettings->value("enableHttpDebug", false).toBool();
-    loggingSettings->endGroup();
+  // Read logging configuration
+  QSettings* loggingSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
+  loggingSettings->beginGroup("logging");
+  bool enableHttpDebug = loggingSettings->value("enableHttpDebug", false).toBool();
+  loggingSettings->endGroup();
 
-    // Conditionally disable Qt debug output to reduce HTTP logging noise
-    if (!enableHttpDebug) {
-        QLoggingCategory::setFilterRules("*.debug=false");
-    }
+  // Conditionally disable Qt debug output to reduce HTTP logging noise
+  if (!enableHttpDebug) {
+    QLoggingCategory::setFilterRules("*.debug=false");
+  }
 
-    QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
-    listenerSettings->beginGroup("listener");
-    new HttpListener(listenerSettings, new RequestMapper(&RequestSender::getInstance(), &app), &app);
+  QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
+  listenerSettings->beginGroup("listener");
+  new HttpListener(listenerSettings, new RequestMapper(&RequestSender::getInstance(), &app), &app);
 
-    return app.exec();
+  return app.exec();
 }

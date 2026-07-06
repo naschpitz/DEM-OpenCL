@@ -26,34 +26,34 @@
 #include <clocale>
 #include <iostream>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    QCoreApplication app(argc, argv);
+  QCoreApplication app(argc, argv);
 
-    TestFace             testFace;
-    TestMaterial         testMaterial;
-    TestMaterialsManager testMaterialsManager;
-    TestNonSolidObject   testNonSolidObject;
-    TestObjectsManager   testObjectsManager;
-    TestParticle         testParticle;
-    TestScenery          testScenery;
-    TestSolidObject      testSolidObject;
-    TestVector3D         testVector3D;
-    TestVertex           testVertex;
+  TestFace testFace;
+  TestMaterial testMaterial;
+  TestMaterialsManager testMaterialsManager;
+  TestNonSolidObject testNonSolidObject;
+  TestObjectsManager testObjectsManager;
+  TestParticle testParticle;
+  TestScenery testScenery;
+  TestSolidObject testSolidObject;
+  TestVector3D testVector3D;
+  TestVertex testVertex;
 
-    QTest::qExec(&testFace);
-    QTest::qExec(&testMaterial);
-    QTest::qExec(&testMaterialsManager);
-    QTest::qExec(&testNonSolidObject);
-    QTest::qExec(&testObjectsManager);
-    QTest::qExec(&testParticle);
-    QTest::qExec(&testScenery);
-    QTest::qExec(&testSolidObject);
-    QTest::qExec(&testVector3D);
-    QTest::qExec(&testVertex);
+  QTest::qExec(&testFace);
+  QTest::qExec(&testMaterial);
+  QTest::qExec(&testMaterialsManager);
+  QTest::qExec(&testNonSolidObject);
+  QTest::qExec(&testObjectsManager);
+  QTest::qExec(&testParticle);
+  QTest::qExec(&testScenery);
+  QTest::qExec(&testSolidObject);
+  QTest::qExec(&testVector3D);
+  QTest::qExec(&testVertex);
 
-    std::lconv* lc = std::localeconv();
-    std::cout << "Decimal Separator: " << lc->decimal_point << "\n";
+  std::lconv* lc = std::localeconv();
+  std::cout << "Decimal Separator: " << lc->decimal_point << "\n";
 
-    return 0;
+  return 0;
 }

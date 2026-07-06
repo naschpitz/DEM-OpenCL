@@ -13,525 +13,522 @@
 
 Simulation::Simulation()
 {
-    this->initialized = false;
-    this->paused = false;
-    this->stopped = false;
-    this->sink = nullptr;
+  this->initialized = false;
+  this->paused = false;
+  this->stopped = false;
+  this->sink = nullptr;
 }
 
 Simulation::Simulation(const nlohmann::json& jsonObject, SimulationSink* sink)
 {
-    this->initialized = false;
-    this->paused = false;
-    this->stopped = false;
-    this->sink = sink;
+  this->initialized = false;
+  this->paused = false;
+  this->stopped = false;
+  this->sink = sink;
 
-    try {
-        this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
-    }
+  try {
+    this->id = QString::fromStdString(jsonObject.at("_id").get<std::string>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing '_id' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing '_id' field in Simulation");
+  }
 
-    try {
-        this->instance = QString::fromStdString(jsonObject.at("instance").get<std::string>());
-    }
+  try {
+    this->instance = QString::fromStdString(jsonObject.at("instance").get<std::string>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'instance' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'instance' field in Simulation");
+  }
 
-    try {
-        this->primary = jsonObject.at("primary").get<bool>();
-    }
+  try {
+    this->primary = jsonObject.at("primary").get<bool>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'primary' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'primary' field in Simulation");
+  }
 
-    this->currentTime    = 0;
-    this->currentStep    = 0;
-    this->stepsPerSecond = 0;
-    this->et             = 0;
+  this->currentTime = 0;
+  this->currentStep = 0;
+  this->stepsPerSecond = 0;
+  this->et = 0;
 
-    try {
-        this->interfaceUrl = QString::fromStdString(jsonObject.at("url").get<std::string>());
-    }
+  try {
+    this->interfaceUrl = QString::fromStdString(jsonObject.at("url").get<std::string>());
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'url' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'url' field in Simulation");
+  }
 
-    try {
-        this->timeStep = jsonObject.at("timeStep").get<double>();
-    }
+  try {
+    this->timeStep = jsonObject.at("timeStep").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'timeStep' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'timeStep' field in Simulation");
+  }
 
-    try {
-        this->totalTime = jsonObject.at("totalTime").get<double>();
-    }
+  try {
+    this->totalTime = jsonObject.at("totalTime").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'totalTime' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'totalTime' field in Simulation");
+  }
 
-    try {
-        this->frameTime = jsonObject.at("frameTime").get<double>();
-    }
+  try {
+    this->frameTime = jsonObject.at("frameTime").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'frameTime' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'frameTime' field in Simulation");
+  }
 
-    try {
-        this->logTime = jsonObject.at("logTime").get<double>();
-    }
+  try {
+    this->logTime = jsonObject.at("logTime").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'logTime' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'logTime' field in Simulation");
+  }
 
-    try {
-        this->detailedFramesDiv = jsonObject.at("detailedFramesDiv").get<long>();
-    }
+  try {
+    this->detailedFramesDiv = jsonObject.at("detailedFramesDiv").get<long>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'detailedFramesDiv' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'detailedFramesDiv' field in Simulation");
+  }
 
-    try {
-        this->calcNeighTimeInt = jsonObject.at("calcNeighTimeInt").get<double>();
-        this->calcNeighStepsInt = qRound(this->calcNeighTimeInt / this->timeStep);
-    }
+  try {
+    this->calcNeighTimeInt = jsonObject.at("calcNeighTimeInt").get<double>();
+    this->calcNeighStepsInt = qRound(this->calcNeighTimeInt / this->timeStep);
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'calcNeighTimeInt' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'calcNeighTimeInt' field in Simulation");
+  }
 
-    try {
-        this->neighDistThresMult = jsonObject.at("neighDistThresMult").get<double>();
-    }
+  try {
+    this->neighDistThresMult = jsonObject.at("neighDistThresMult").get<double>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'neighDistThresMult' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'neighDistThresMult' field in Simulation");
+  }
 
-    try {
-        this->multiGPU = jsonObject.at("multiGPU").get<bool>();
-    }
+  try {
+    this->multiGPU = jsonObject.at("multiGPU").get<bool>();
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'multiGPU' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'multiGPU' field in Simulation");
+  }
 
-    this->totalSteps = qRound(this->totalTime / this->timeStep);
+  this->totalSteps = qRound(this->totalTime / this->timeStep);
 
-    try {
-        const nlohmann::json& sceneryJsonObject = jsonObject.at("scenery");
-        this->scenery = Scenery(sceneryJsonObject);
-    }
+  try {
+    const nlohmann::json& sceneryJsonObject = jsonObject.at("scenery");
+    this->scenery = Scenery(sceneryJsonObject);
+  }
 
-    catch (const nlohmann::detail::exception& e) {
-        throw std::runtime_error("Missing 'scenery' field in Simulation");
-    }
+  catch (const nlohmann::detail::exception& e) {
+    throw std::runtime_error("Missing 'scenery' field in Simulation");
+  }
 
-    connect(this, SIGNAL(newLog(QString)), this, SLOT(handleLog(QString)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(newFrame(bool)), this, SLOT(handleFrame(bool)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
+  connect(this, SIGNAL(newLog(QString)), this, SLOT(handleLog(QString)), Qt::BlockingQueuedConnection);
+  connect(this, SIGNAL(newFrame(bool)), this, SLOT(handleFrame(bool)), Qt::BlockingQueuedConnection);
+  connect(this, SIGNAL(finished()), this, SLOT(selfDelete()));
 }
 
 Simulation::~Simulation()
 {
-    std::cout << "Simulation destroyed!" << std::endl;
-    std::cout.flush();
+  std::cout << "Simulation destroyed!" << std::endl;
+  std::cout.flush();
 }
 
 void Simulation::initialize()
 {
-    this->scenery.initialize();
+  this->scenery.initialize();
 }
 
 void Simulation::handleFrame(bool isDetailed)
 {
-    this->sink->onNewFrame(this, isDetailed);
+  this->sink->onNewFrame(this, isDetailed);
 }
 
 void Simulation::handleLog(QString message)
 {
-    this->sink->onNewLog(this, message);
+  this->sink->onNewLog(this, message);
 }
 
 SimulationCL Simulation::getCL() const
 {
-    SimulationCL simulationCL;
+  SimulationCL simulationCL;
 
-    simulationCL.currentTime = this->currentTime;
-    simulationCL.currentStep = this->currentStep;
+  simulationCL.currentTime = this->currentTime;
+  simulationCL.currentStep = this->currentStep;
 
-    simulationCL.timeStep = this->timeStep;
-    simulationCL.totalTime = this->totalTime;
+  simulationCL.timeStep = this->timeStep;
+  simulationCL.totalTime = this->totalTime;
 
-    simulationCL.frameTime = this->frameTime;
+  simulationCL.frameTime = this->frameTime;
 
-    simulationCL.calcNeighStepsInt = this->calcNeighStepsInt;
-    simulationCL.neighDistThresMult = this->neighDistThresMult;
+  simulationCL.calcNeighStepsInt = this->calcNeighStepsInt;
+  simulationCL.neighDistThresMult = this->neighDistThresMult;
 
-    return simulationCL;
+  return simulationCL;
 }
 
 const QHostAddress& Simulation::getInterfaceAddress() const
 {
-    return this->interfaceAddress;
+  return this->interfaceAddress;
 }
 
 void Simulation::setInterfaceAddress(const QHostAddress& serverAddress)
 {
-    this->interfaceAddress = serverAddress;
+  this->interfaceAddress = serverAddress;
 }
 
 const QString& Simulation::getInterfaceUrl() const
 {
-    return this->interfaceUrl;
+  return this->interfaceUrl;
 }
 
 void Simulation::setInterfaceUrl(const QString& serverUrl)
 {
-    this->interfaceUrl = serverUrl;
+  this->interfaceUrl = serverUrl;
 }
 
 const QString& Simulation::getId() const
 {
-    return this->id;
+  return this->id;
 }
 
 const QString& Simulation::getInstance() const
 {
-    return this->instance;
+  return this->instance;
 }
 
 const ulong& Simulation::getCurrentStep() const
 {
-    return this->currentStep;
+  return this->currentStep;
 }
 
 const double& Simulation::getCurrentTime() const
 {
-    return this->currentTime;
+  return this->currentTime;
 }
 
 const Scenery& Simulation::getScenery() const
 {
-    return this->scenery;
+  return this->scenery;
 }
 
 const double& Simulation::getTimeStep() const
 {
-    return this->timeStep;
+  return this->timeStep;
 }
 
 const double& Simulation::getTotalTime() const
 {
-    return this->totalTime;
+  return this->totalTime;
 }
 
 const ulong& Simulation::getTotalSteps() const
 {
-    return this->totalSteps;
+  return this->totalSteps;
 }
 
 const double& Simulation::getStepsPerSecond() const
 {
-    return this->stepsPerSecond;
+  return this->stepsPerSecond;
 }
 
 ulong Simulation::getEta() const
 {
-    ulong remaningSteps = this->getTotalSteps() - this->getCurrentStep();
+  ulong remaningSteps = this->getTotalSteps() - this->getCurrentStep();
 
-    if(this->getStepsPerSecond() > 0) {
-        return remaningSteps / this->getStepsPerSecond();
-    }
-    else {
-        return 0;
-    }
+  if (this->getStepsPerSecond() > 0) {
+    return remaningSteps / this->getStepsPerSecond();
+  } else {
+    return 0;
+  }
 }
 
 ulong Simulation::getEt() const
 {
-    return this->et / 1000;
+  return this->et / 1000;
 }
 
 bool Simulation::isRunning() const
 {
-    return !this->isPaused() && !this->isStopped() && !this->isDone();
+  return !this->isPaused() && !this->isStopped() && !this->isDone();
 }
 
 bool Simulation::isPaused() const
 {
-    return this->paused;
+  return this->paused;
 }
 
 bool Simulation::isStopped() const
 {
-    return this->stopped;
+  return this->stopped;
 }
 
 bool Simulation::isDone() const
 {
-    return this->getCurrentStep() == this->getTotalSteps();
+  return this->getCurrentStep() == this->getTotalSteps();
 }
 
 bool Simulation::isPrimary() const
 {
-    return this->primary;
+  return this->primary;
 }
 
 void Simulation::run()
 {
-    if(!this->initialized) {
-        emit this->newLog("Initilizing simulation's scenery");
-        this->initialize();
-        emit this->newLog("Simulation's scenery initialized");
+  if (!this->initialized) {
+    emit this->newLog("Initilizing simulation's scenery");
+    this->initialize();
+    emit this->newLog("Simulation's scenery initialized");
+  }
+
+  const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
+
+  std::vector<SimulationCL> simulationsCL = {this->getCL()};
+  std::vector<SceneryCL> sceneriesCL = {this->scenery.getCL()};
+
+  QVector<ParticleCL> particles = this->scenery.getObjectsManager().getParticlesCL(materialsManager);
+  std::vector<ParticleCL> particlesCL = std::vector(particles.begin(), particles.end());
+
+  QVector<FaceCL> faces = this->scenery.getObjectsManager().getFacesCL(materialsManager);
+  std::vector<FaceCL> facesCL = std::vector(faces.begin(), faces.end());
+
+  std::vector<MaterialsManagerCL> materialsManagerCL = {materialsManager.getCL()};
+
+  // Initialize error tracking - size buffer to number of GPUs
+  size_t numGPUs = this->multiGPU ? OpenCLWrapper::Core::getDevicesUsage().size() : 1;
+  std::vector<ErrorCL> errorCL(numGPUs, {ERROR_NONE});
+
+  OpenCLWrapper::Core openClCore(this->multiGPU);
+
+  emit this->newLog("Loading OpenCL kernel");
+  openClCore.addSourceFile("../opencl/Simulation.cpp.cl");
+  emit this->newLog("OpenCL kernel loaded");
+
+  emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));
+  emit this->newLog(QString("Total number of faces: %1").arg(facesCL.size()));
+
+  emit this->newLog("Initiating objects copy to GPU's memory");
+  openClCore.writeBuffer<ParticleCL>(particlesCL);
+  openClCore.writeBuffer<FaceCL>(facesCL);
+  openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
+  openClCore.writeBuffer<SimulationCL>(simulationsCL);
+  openClCore.writeBuffer<SceneryCL>(sceneriesCL);
+  openClCore.writeBuffer<ErrorCL>(errorCL);
+  emit this->newLog("Objects copy to GPU's memory done");
+
+  bool hasParticles = particlesCL.size();
+  bool hasFaces = facesCL.size();
+
+  if (!this->isPaused()) {
+    if (hasParticles) {
+      openClCore.addKernel("initialize_particles", particlesCL.size());
+      openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
+      openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
     }
 
-    const MaterialsManager& materialsManager = this->scenery.getMaterialsManager();
-
-    std::vector<SimulationCL> simulationsCL = { this->getCL() };
-    std::vector<SceneryCL>    sceneriesCL   = { this->scenery.getCL() };
-
-    QVector<ParticleCL> particles = this->scenery.getObjectsManager().getParticlesCL(materialsManager);
-    std::vector<ParticleCL> particlesCL = std::vector(particles.begin(), particles.end());
-
-    QVector<FaceCL> faces = this->scenery.getObjectsManager().getFacesCL(materialsManager);
-    std::vector<FaceCL> facesCL = std::vector(faces.begin(), faces.end());
-
-    std::vector<MaterialsManagerCL> materialsManagerCL = { materialsManager.getCL() };
-
-    // Initialize error tracking - size buffer to number of GPUs
-    size_t numGPUs = this->multiGPU ? OpenCLWrapper::Core::getDevicesUsage().size() : 1;
-    std::vector<ErrorCL> errorCL(numGPUs, {ERROR_NONE});
-
-    OpenCLWrapper::Core openClCore(this->multiGPU);
-
-    emit this->newLog("Loading OpenCL kernel");
-    openClCore.addSourceFile("../opencl/Simulation.cpp.cl");
-    emit this->newLog("OpenCL kernel loaded");
-
-    emit this->newLog(QString("Total number of particles: %1").arg(particlesCL.size()));
-    emit this->newLog(QString("Total number of faces: %1").arg(facesCL.size()));
-
-    emit this->newLog("Initiating objects copy to GPU's memory");
-    openClCore.writeBuffer<ParticleCL>(particlesCL);
-    openClCore.writeBuffer<FaceCL>(facesCL);
-    openClCore.writeBuffer<MaterialsManagerCL>(materialsManagerCL);
-    openClCore.writeBuffer<SimulationCL>(simulationsCL);
-    openClCore.writeBuffer<SceneryCL>(sceneriesCL);
-    openClCore.writeBuffer<ErrorCL>(errorCL);
-    emit this->newLog("Objects copy to GPU's memory done");
-
-    bool hasParticles = particlesCL.size();
-    bool hasFaces = facesCL.size();
-
-    if(!this->isPaused()) {
-        if(hasParticles) {
-            openClCore.addKernel("initialize_particles", particlesCL.size());
-            openClCore.addArgument<ParticleCL>("initialize_particles", particlesCL);
-            openClCore.addArgument<SimulationCL>("initialize_particles", simulationsCL);
-        }
-
-        if(hasFaces) {
-            openClCore.addKernel("initialize_faces", facesCL.size());
-            openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
-            openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
-        }
-
-        openClCore.run();
-        openClCore.clearKernels();
-
-	openClCore.syncDevicesBuffers(particlesCL);
-	openClCore.syncDevicesBuffers<FaceCL>(facesCL);
+    if (hasFaces) {
+      openClCore.addKernel("initialize_faces", facesCL.size());
+      openClCore.addArgument<FaceCL>("initialize_faces", facesCL);
+      openClCore.addArgument<SimulationCL>("initialize_faces", simulationsCL);
     }
 
-    if(hasParticles) {
-        openClCore.addKernel("reset_particles", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("reset_particles", particlesCL);
-        openClCore.addArgument<SimulationCL>("reset_particles", simulationsCL);
-    }
+    openClCore.run();
+    openClCore.clearKernels();
 
-    if(hasFaces) {
-        openClCore.addKernel("reset_faces", facesCL.size());
-        openClCore.addArgument<FaceCL>("reset_faces", facesCL);
-        openClCore.addArgument<SimulationCL>("reset_faces", simulationsCL);
-    }
+    openClCore.syncDevicesBuffers(particlesCL);
+    openClCore.syncDevicesBuffers<FaceCL>(facesCL);
+  }
 
-    if(hasParticles) {
-        openClCore.addKernel("calculate_particles_neighborhood", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("calculate_particles_neighborhood", particlesCL);
-        openClCore.addArgument<FaceCL>("calculate_particles_neighborhood", facesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_particles_neighborhood", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
-        openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
-        openClCore.addArgument<ErrorCL>("calculate_particles_neighborhood", errorCL);
+  if (hasParticles) {
+    openClCore.addKernel("reset_particles", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("reset_particles", particlesCL);
+    openClCore.addArgument<SimulationCL>("reset_particles", simulationsCL);
+  }
 
-        openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
-    }
+  if (hasFaces) {
+    openClCore.addKernel("reset_faces", facesCL.size());
+    openClCore.addArgument<FaceCL>("reset_faces", facesCL);
+    openClCore.addArgument<SimulationCL>("reset_faces", simulationsCL);
+  }
 
-    if(hasParticles && hasFaces) {
-        openClCore.addKernel("calculate_faces_neighborhood", facesCL.size());
-        openClCore.addArgument<FaceCL>("calculate_faces_neighborhood", facesCL);
-        openClCore.addArgument<ParticleCL>("calculate_faces_neighborhood", particlesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_faces_neighborhood", materialsManagerCL);
-        openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
-        openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
-        openClCore.addArgument<ErrorCL>("calculate_faces_neighborhood", errorCL);
+  if (hasParticles) {
+    openClCore.addKernel("calculate_particles_neighborhood", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("calculate_particles_neighborhood", particlesCL);
+    openClCore.addArgument<FaceCL>("calculate_particles_neighborhood", facesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_particles_neighborhood", materialsManagerCL);
+    openClCore.addArgument<SceneryCL>("calculate_particles_neighborhood", sceneriesCL);
+    openClCore.addArgument<SimulationCL>("calculate_particles_neighborhood", simulationsCL);
+    openClCore.addArgument<ErrorCL>("calculate_particles_neighborhood", errorCL);
 
-        openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
-        openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
+    openClCore.addKernel("calculate_particle_to_particle", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("calculate_particle_to_particle", particlesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_particle", materialsManagerCL);
+  }
 
-        openClCore.addKernel("calculate_face_to_particle", facesCL.size());
-        openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
-        openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
-        openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
-    }
+  if (hasParticles && hasFaces) {
+    openClCore.addKernel("calculate_faces_neighborhood", facesCL.size());
+    openClCore.addArgument<FaceCL>("calculate_faces_neighborhood", facesCL);
+    openClCore.addArgument<ParticleCL>("calculate_faces_neighborhood", particlesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_faces_neighborhood", materialsManagerCL);
+    openClCore.addArgument<SceneryCL>("calculate_faces_neighborhood", sceneriesCL);
+    openClCore.addArgument<SimulationCL>("calculate_faces_neighborhood", simulationsCL);
+    openClCore.addArgument<ErrorCL>("calculate_faces_neighborhood", errorCL);
 
-    if(hasParticles) {
-        openClCore.addKernel("apply_particles_gravity", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
-        openClCore.addArgument<SceneryCL>("apply_particles_gravity", sceneriesCL);
-    }
+    openClCore.addKernel("calculate_particle_to_face", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("calculate_particle_to_face", particlesCL);
+    openClCore.addArgument<FaceCL>("calculate_particle_to_face", facesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_particle_to_face", materialsManagerCL);
 
-    if(hasFaces) {
-        openClCore.addKernel("apply_faces_gravity", facesCL.size());
-        openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
-        openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
-    }
+    openClCore.addKernel("calculate_face_to_particle", facesCL.size());
+    openClCore.addArgument<FaceCL>("calculate_face_to_particle", facesCL);
+    openClCore.addArgument<ParticleCL>("calculate_face_to_particle", particlesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_particle", materialsManagerCL);
+  }
 
+  if (hasParticles) {
+    openClCore.addKernel("apply_particles_gravity", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("apply_particles_gravity", particlesCL);
+    openClCore.addArgument<SceneryCL>("apply_particles_gravity", sceneriesCL);
+  }
 
-    if(hasParticles) {
-        openClCore.addKernel("integrate_particles", particlesCL.size());
-        openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
-        openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
-    }
+  if (hasFaces) {
+    openClCore.addKernel("apply_faces_gravity", facesCL.size());
+    openClCore.addArgument<FaceCL>("apply_faces_gravity", facesCL);
+    openClCore.addArgument<SceneryCL>("apply_faces_gravity", sceneriesCL);
+  }
 
-    if(hasFaces) {
-        openClCore.addKernel("integrate_faces", facesCL.size());
-        openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
-        openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
-    }
+  if (hasParticles) {
+    openClCore.addKernel("integrate_particles", particlesCL.size());
+    openClCore.addArgument<ParticleCL>("integrate_particles", particlesCL);
+    openClCore.addArgument<SimulationCL>("integrate_particles", simulationsCL);
+  }
 
-    this->paused = this->stopped = false;
+  if (hasFaces) {
+    openClCore.addKernel("integrate_faces", facesCL.size());
+    openClCore.addArgument<FaceCL>("integrate_faces", facesCL);
+    openClCore.addArgument<SimulationCL>("integrate_faces", simulationsCL);
+  }
 
-    uint stepsPerFrame = this->frameTime / this->timeStep;
+  this->paused = this->stopped = false;
 
-    QDateTime dateTime = QDateTime::currentDateTime();
+  uint stepsPerFrame = this->frameTime / this->timeStep;
 
-    bool ran = false;
-    double previousStep = this->currentStep;
+  QDateTime dateTime = QDateTime::currentDateTime();
 
-    emit this->newLog("Simulation began");
+  bool ran = false;
+  double previousStep = this->currentStep;
 
-    while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stopped)
-    {
-        ran = true;
-        this->currentTime = this->timeStep * this->currentStep;
+  emit this->newLog("Simulation began");
 
-        simulationsCL = { this->getCL() };
-        openClCore.writeBuffer(simulationsCL);
+  while ((this->currentStep <= this->totalSteps) && !this->paused && !this->stopped) {
+    ran = true;
+    this->currentTime = this->timeStep * this->currentStep;
 
-        if(this->multiGPU || this->currentStep % stepsPerFrame == 0) {
-            if(this->multiGPU) {
-                openClCore.syncDevicesBuffers(particlesCL);
-                openClCore.syncDevicesBuffers(facesCL);
-            }
+    simulationsCL = {this->getCL()};
+    openClCore.writeBuffer(simulationsCL);
 
-            else {
-                openClCore.readBuffer<ParticleCL>(particlesCL);
-                openClCore.readBuffer<FaceCL>(facesCL);
-            }
-        }
-
-        if(this->currentStep % stepsPerFrame == 0) {
-            this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
-            this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
-
-            bool isDetailed = false;
-
-            if (this->isPrimary()) {
-                isDetailed = this->currentStep % (stepsPerFrame * this->detailedFramesDiv) == 0;
-            }
-
-            emit this->newFrame(isDetailed);
-        }
-
-        ulong mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());
-
-        if(mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
-            ulong numSteps = this->currentStep - previousStep;
-            this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
-            this->et += mSecElapsed;
-
-            previousStep = this->currentStep;
-            dateTime = QDateTime::currentDateTime();
-
-            emit this->newLog("New log message");
-        }
-
-        openClCore.run();
-
-        // Check for errors from the GPU
-        openClCore.readBuffer<ErrorCL>(errorCL);
-        this->checkForErrors(errorCL);
-
-        this->currentStep++;
-    }
-
-    // Decrement because the last loop dosen't happen.
-    if(ran && !this->isPaused())
-        this->currentStep--;
-
-    if(this->isPaused()) {
+    if (this->multiGPU || this->currentStep % stepsPerFrame == 0) {
+      if (this->multiGPU) {
         openClCore.syncDevicesBuffers(particlesCL);
         openClCore.syncDevicesBuffers(facesCL);
+      }
 
-        this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
-        this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
-
-        // Wait for all frames to be sent before declaring simulation paused
-        emit this->newLog("Waiting for all frames to be sent...");
-        this->sink->onWaitForAllFramesSent(this);
-
-        emit this->newLog("Simulation paused");
+      else {
+        openClCore.readBuffer<ParticleCL>(particlesCL);
+        openClCore.readBuffer<FaceCL>(facesCL);
+      }
     }
 
-    if(this->isStopped())
-        emit this->newLog("Simulation stopped");
+    if (this->currentStep % stepsPerFrame == 0) {
+      this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
+      this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
 
-    // Wait for all frames to be sent before ending the thread
+      bool isDetailed = false;
+
+      if (this->isPrimary()) {
+        isDetailed = this->currentStep % (stepsPerFrame * this->detailedFramesDiv) == 0;
+      }
+
+      emit this->newFrame(isDetailed);
+    }
+
+    ulong mSecElapsed = dateTime.msecsTo(QDateTime::currentDateTime());
+
+    if (mSecElapsed > (this->logTime * 1000) || this->currentStep == this->totalSteps) {
+      ulong numSteps = this->currentStep - previousStep;
+      this->stepsPerSecond = ((double)numSteps / mSecElapsed) * 1000;
+      this->et += mSecElapsed;
+
+      previousStep = this->currentStep;
+      dateTime = QDateTime::currentDateTime();
+
+      emit this->newLog("New log message");
+    }
+
+    openClCore.run();
+
+    // Check for errors from the GPU
+    openClCore.readBuffer<ErrorCL>(errorCL);
+    this->checkForErrors(errorCL);
+
+    this->currentStep++;
+  }
+
+  // Decrement because the last loop dosen't happen.
+  if (ran && !this->isPaused())
+    this->currentStep--;
+
+  if (this->isPaused()) {
+    openClCore.syncDevicesBuffers(particlesCL);
+    openClCore.syncDevicesBuffers(facesCL);
+
+    this->scenery.setParticlesCL(QVector<ParticleCL>(particlesCL.begin(), particlesCL.end()));
+    this->scenery.setFacesCL(QVector<FaceCL>(facesCL.begin(), facesCL.end()));
+
+    // Wait for all frames to be sent before declaring simulation paused
     emit this->newLog("Waiting for all frames to be sent...");
     this->sink->onWaitForAllFramesSent(this);
 
-    emit this->newLog("Simulation ended");
+    emit this->newLog("Simulation paused");
+  }
+
+  if (this->isStopped())
+    emit this->newLog("Simulation stopped");
+
+  // Wait for all frames to be sent before ending the thread
+  emit this->newLog("Waiting for all frames to be sent...");
+  this->sink->onWaitForAllFramesSent(this);
+
+  emit this->newLog("Simulation ended");
 }
 
 void Simulation::pause()
 {
-    this->paused = true;
+  this->paused = true;
 }
 
 void Simulation::stop()
 {
-    this->stopped = true;
+  this->stopped = true;
 
-    // TODO: Correct error when stopping a paused simulation, deadlock involved.
-    /*
+  // TODO: Correct error when stopping a paused simulation, deadlock involved.
+  /*
     if(this->isPaused())
         emit this->newLog();
     */
@@ -539,35 +536,34 @@ void Simulation::stop()
 
 void Simulation::selfDelete()
 {
-    if(this->isStopped() || !this->isPaused()) {
-        this->deleteLater();
-    }
+  if (this->isStopped() || !this->isPaused()) {
+    this->deleteLater();
+  }
 }
 
 void Simulation::checkForErrors(const std::vector<ErrorCL>& errorCL)
 {
-    bool hasError = false;
+  bool hasError = false;
 
-    for(size_t gpuIndex = 0; gpuIndex < errorCL.size(); ++gpuIndex) {
-        if(errorCL[gpuIndex].errorCode != ERROR_NONE) {
-            QString baseMessage = Error::getErrorMessage(errorCL[gpuIndex].errorCode);
-            QString errorMessage;
+  for (size_t gpuIndex = 0; gpuIndex < errorCL.size(); ++gpuIndex) {
+    if (errorCL[gpuIndex].errorCode != ERROR_NONE) {
+      QString baseMessage = Error::getErrorMessage(errorCL[gpuIndex].errorCode);
+      QString errorMessage;
 
-            if(errorCL.size() > 1) {
-                // Multi-GPU: include GPU information
-                errorMessage = QString("GPU %1: %2").arg(gpuIndex).arg(baseMessage);
-            }
-            else {
-                // Single GPU: use base message
-                errorMessage = baseMessage;
-            }
+      if (errorCL.size() > 1) {
+        // Multi-GPU: include GPU information
+        errorMessage = QString("GPU %1: %2").arg(gpuIndex).arg(baseMessage);
+      } else {
+        // Single GPU: use base message
+        errorMessage = baseMessage;
+      }
 
-            emit this->newLog(errorMessage);
-            hasError = true;
-        }
+      emit this->newLog(errorMessage);
+      hasError = true;
     }
+  }
 
-    if(hasError) {
-        this->stop();
-    }
+  if (hasError) {
+    this->stop();
+  }
 }

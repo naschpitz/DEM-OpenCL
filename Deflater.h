@@ -14,38 +14,35 @@ class Deflater : public QThread
 {
     Q_OBJECT
 
-    public:
-        enum DataType {
-            FileData,
-            MemoryData
-        };
+  public:
+    enum DataType { FileData, MemoryData };
 
-        struct DeflationTask {
-            DataType type;
-            QVariant data;  // QSharedPointer<QFile> for files, QSharedPointer<QByteArray> for memory
-        };
+    struct DeflationTask {
+        DataType type;
+        QVariant data; // QSharedPointer<QFile> for files, QSharedPointer<QByteArray> for memory
+    };
 
-        Deflater();
+    Deflater();
 
-        // File deflation (maintains backward compatibility)
-        void deflate(QSharedPointer<QFile> file);
+    // File deflation (maintains backward compatibility)
+    void deflate(QSharedPointer<QFile> file);
 
-        // Memory deflation
-        void deflate(QSharedPointer<QByteArray> data);
+    // Memory deflation
+    void deflate(QSharedPointer<QByteArray> data);
 
-    private:
-        QMutex mutex;
-        QVector<DeflationTask> deflationQueue;
+  private:
+    QMutex mutex;
+    QVector<DeflationTask> deflationQueue;
 
-    protected:
-        void run();
+  protected:
+    void run();
 
-    signals:
-        // Signal for file deflation completion
-        void fileDeflated(QSharedPointer<QFile> inflatedFile, QSharedPointer<QFile> deflatedFile);
+  signals:
+    // Signal for file deflation completion
+    void fileDeflated(QSharedPointer<QFile> inflatedFile, QSharedPointer<QFile> deflatedFile);
 
-        // Signal for memory deflation completion
-        void dataDeflated(QSharedPointer<QByteArray> inflatedData, QSharedPointer<QByteArray> deflatedData);
+    // Signal for memory deflation completion
+    void dataDeflated(QSharedPointer<QByteArray> inflatedData, QSharedPointer<QByteArray> deflatedData);
 };
 
 #endif // DEFLATER_H

@@ -16,27 +16,20 @@
 #include <QVector>
 #include <QMap>
 
-enum ForceType
-{
-    adiabatic_compression,
-    hooks_law,
-    inverse_linear,
-    inverse_quadratic,
-    inverse_cubic,
-    morse,
-    lennard_jones,
-    realistic_material
+enum ForceType {
+  adiabatic_compression,
+  hooks_law,
+  inverse_linear,
+  inverse_quadratic,
+  inverse_cubic,
+  morse,
+  lennard_jones,
+  realistic_material
 };
 
-enum DragForceType
-{
-    linear,
-    quadratic,
-    cubic
-};
+enum DragForceType { linear, quadratic, cubic };
 
-typedef struct
-{
+typedef struct {
     cl_int materialIndex1;
     cl_int materialIndex2;
 
@@ -51,46 +44,46 @@ typedef struct
 
 class Material
 {
-    private:
-        QString id;
+  private:
+    QString id;
 
-        QString material1;
-        QString material2;
+    QString material1;
+    QString material2;
 
-        double distanceThreshold;
+    double distanceThreshold;
 
-        QString forceType;
-        QString dragForceType;
+    QString forceType;
+    QString dragForceType;
 
-        QVector<double> coefficients;
-        QVector<double> dragCoefficients;
+    QVector<double> coefficients;
+    QVector<double> dragCoefficients;
 
-    public:
-        Material();
-        Material(const nlohmann::json& jsonObject);
+  public:
+    Material();
+    Material(const nlohmann::json& jsonObject);
 
-        MaterialCL getCL(const QMap<QString, int>& idsMap) const;
+    MaterialCL getCL(const QMap<QString, int>& idsMap) const;
 
-        const QString& getId()        const;
-        const QString& getMaterial1() const;
-        const QString& getMaterial2() const;
+    const QString& getId() const;
+    const QString& getMaterial1() const;
+    const QString& getMaterial2() const;
 
-        const double&  getDistanceThreshold() const;
+    const double& getDistanceThreshold() const;
 
-        const QString& getForceType()     const;
-        const QString& getDragForceType() const;
+    const QString& getForceType() const;
+    const QString& getDragForceType() const;
 
-        const QVector<double>& getCoefficients()     const;
-        const QVector<double>& getDragCoefficients() const;
+    const QVector<double>& getCoefficients() const;
+    const QVector<double>& getDragCoefficients() const;
 
-        virtual bool operator==(const Material &other) const;
+    virtual bool operator==(const Material& other) const;
 
-    private:
-        void addCoefficient(const double& coefficient);
-        void addDragCoefficient(const double& dragCoefficient);
+  private:
+    void addCoefficient(const double& coefficient);
+    void addDragCoefficient(const double& dragCoefficient);
 
-        int fromQStringToForceType(const QString& forceTypeString) const;
-        int fromQStringToDragForceType(const QString& dragForceTypeString) const;
+    int fromQStringToForceType(const QString& forceTypeString) const;
+    int fromQStringToDragForceType(const QString& dragForceTypeString) const;
 };
 
 #endif // MATERIAL_H

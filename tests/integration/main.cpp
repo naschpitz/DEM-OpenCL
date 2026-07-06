@@ -9,26 +9,25 @@
 #include <QCoreApplication>
 #include <iostream>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    QCoreApplication app(argc, argv);
+  QCoreApplication app(argc, argv);
 
-    int failed = 0;
+  int failed = 0;
 
-    TestSimulationConfig    testSimulationConfig;
-    TestSimulationPhysics   testSimulationPhysics;
-    TestSimulationContacts  testSimulationContacts;
-    TestSimulationCollisions testSimulationCollisions;
-    TestRequestMapper       testRequestMapper;
+  TestSimulationConfig testSimulationConfig;
+  TestSimulationPhysics testSimulationPhysics;
+  TestSimulationContacts testSimulationContacts;
+  TestSimulationCollisions testSimulationCollisions;
+  TestRequestMapper testRequestMapper;
 
-    failed += QTest::qExec(&testSimulationConfig);
-    failed += QTest::qExec(&testSimulationPhysics);
-    failed += QTest::qExec(&testSimulationContacts);
-    failed += QTest::qExec(&testSimulationCollisions);
-    failed += QTest::qExec(&testRequestMapper);
+  failed += QTest::qExec(&testSimulationConfig);
+  failed += QTest::qExec(&testSimulationPhysics);
+  failed += QTest::qExec(&testSimulationContacts);
+  failed += QTest::qExec(&testSimulationCollisions);
+  failed += QTest::qExec(&testRequestMapper);
 
-    std::cout << (failed == 0 ? "INTEGRATION: All tests passed" : "INTEGRATION: FAILURES")
-              << std::endl;
+  std::cout << (failed == 0 ? "INTEGRATION: All tests passed" : "INTEGRATION: FAILURES") << std::endl;
 
-    return failed;
+  return failed;
 }

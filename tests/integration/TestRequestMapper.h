@@ -6,7 +6,10 @@
 
 class QSettings;
 class QTemporaryFile;
-namespace stefanfrings { class HttpListener; }
+namespace stefanfrings
+{
+  class HttpListener;
+}
 class RequestMapper;
 class FakeSimulationSink;
 
@@ -23,36 +26,39 @@ class TestRequestMapper : public QObject
 {
     Q_OBJECT
 
-    public:
-        TestRequestMapper();
-        ~TestRequestMapper();
+  public:
+    TestRequestMapper();
+    ~TestRequestMapper();
 
-    private slots:
-        void initTestCase();
-        void cleanupTestCase();
+  private slots:
+    void initTestCase();
+    void cleanupTestCase();
 
-        void startMissingId();
-        void startInvalidSimulationJson();
-        void stopUnknownId();
-        void pauseUnknownId();
-        void startAndStopRunningSimulation();
-        void instanceInvalidationStopsOldSim();
+    void startMissingId();
+    void startInvalidSimulationJson();
+    void stopUnknownId();
+    void pauseUnknownId();
+    void startAndStopRunningSimulation();
+    void instanceInvalidationStopsOldSim();
 
-    private:
-        struct Response { int status; QByteArray body; };
-        Response post(const QString& path, const QByteArray& body);
-        QByteArray validStartBody(const QString& _id, const QString& instance, double totalTime) const;
-        void waitForSinkFrames(int minCount, int timeoutMs);
-        void stopAllStartedSimulations();
+  private:
+    struct Response {
+        int status;
+        QByteArray body;
+    };
+    Response post(const QString& path, const QByteArray& body);
+    QByteArray validStartBody(const QString& _id, const QString& instance, double totalTime) const;
+    void waitForSinkFrames(int minCount, int timeoutMs);
+    void stopAllStartedSimulations();
 
-        QSettings* settings;
-        QTemporaryFile* settingsFile;
-        stefanfrings::HttpListener* listener;
-        RequestMapper* mapper;
-        FakeSimulationSink* sink;
-        QNetworkAccessManager* nam;
-        int port;
-        QStringList startedIds;
+    QSettings* settings;
+    QTemporaryFile* settingsFile;
+    stefanfrings::HttpListener* listener;
+    RequestMapper* mapper;
+    FakeSimulationSink* sink;
+    QNetworkAccessManager* nam;
+    int port;
+    QStringList startedIds;
 };
 
 #endif

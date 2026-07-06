@@ -9,36 +9,36 @@ class TestMaterial : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestMaterial();
+  public:
+    TestMaterial();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
 
-        void hooksLaw();
-        void inverseLinearExternal();
-        void inverseLinearInternal();
-        void inverseQuadratic();
-        void inverseCubic();
-        void adiabaticCompression();
-        void morseEquilibrium();
-        void morseNontrivial();
-        void lennardJones();
-        void realisticElastic();
-        void realisticInternal();
-        void realisticPlasticBelowMax();
-        void realisticPlasticAboveMax();
-        void nanGuard();
+    void hooksLaw();
+    void inverseLinearExternal();
+    void inverseLinearInternal();
+    void inverseQuadratic();
+    void inverseCubic();
+    void adiabaticCompression();
+    void morseEquilibrium();
+    void morseNontrivial();
+    void lennardJones();
+    void realisticElastic();
+    void realisticInternal();
+    void realisticPlasticBelowMax();
+    void realisticPlasticAboveMax();
+    void nanGuard();
 
-        void dragLinear();
-        void dragLinearWithRotation();
-        void dragQuadratic();
-        void dragCubic();
-        void dragNone();
+    void dragLinear();
+    void dragLinearWithRotation();
+    void dragQuadratic();
+    void dragCubic();
+    void dragNone();
 };
 
 #endif // TESTMATERIAL_H

@@ -17,12 +17,12 @@ class Simulation;
 // need QObject::sender() to recover the source.
 class SimulationSink
 {
-    public:
-        virtual ~SimulationSink() = default;
+  public:
+    virtual ~SimulationSink() = default;
 
-        virtual void onNewFrame(const Simulation* simulation, bool detailed) = 0;
-        virtual void onNewLog(const Simulation* simulation, const QString& message) = 0;
-        virtual void onWaitForAllFramesSent(const Simulation* simulation) = 0;
+    virtual void onNewFrame(const Simulation* simulation, bool detailed) = 0;
+    virtual void onNewLog(const Simulation* simulation, const QString& message) = 0;
+    virtual void onWaitForAllFramesSent(const Simulation* simulation) = 0;
 };
 
 #endif // SIMULATION_SINK_H

@@ -18,8 +18,7 @@
 #include <QVector>
 #include <QMap>
 
-typedef struct
-{
+typedef struct {
     cl_uint index;
     cl_uint materialIndex;
 
@@ -46,66 +45,66 @@ typedef struct
 
 class Face
 {
-    private:
-        QString material;
+  private:
+    QString material;
 
-        double area;
-        double mass;
+    double area;
+    double mass;
 
-        Vector3D currentPosition;
+    Vector3D currentPosition;
 
-        Vector3D currentVelocity;
-        Vector3D meanVelocity;
+    Vector3D currentVelocity;
+    Vector3D meanVelocity;
 
-        Vector3D currentForce;
-        Vector3D meanForce;
-        Vector3D oldForce;
+    Vector3D currentForce;
+    Vector3D meanForce;
+    Vector3D oldForce;
 
-        Vector3D currentTorque;
-        Vector3D meanTorque;
-        Vector3D oldTorque;
+    Vector3D currentTorque;
+    Vector3D meanTorque;
+    Vector3D oldTorque;
 
-        QVector<Vertex> vertexes;
+    QVector<Vertex> vertexes;
 
-    public:
-        Face();
-        Face(const Vertex& v1, const Vertex& v2, const Vertex& v3);
+  public:
+    Face();
+    Face(const Vertex& v1, const Vertex& v2, const Vertex& v3);
 
-        const QVector<Vertex>& getVertexes() const;
+    const QVector<Vertex>& getVertexes() const;
 
-        FaceCL getCL(uint index, uint materialIndex) const;
-        void setCL(const FaceCL& particleCL);
+    FaceCL getCL(uint index, uint materialIndex) const;
+    void setCL(const FaceCL& particleCL);
 
-        void displaceBy(const Vector3D& displacement);
-        void setFixed(bool fixed);
-        void setMass(const double& mass);
-        void setMaterial(const QString& material);
-        void setVelocity(const Vector3D& velocity);
+    void displaceBy(const Vector3D& displacement);
+    void setFixed(bool fixed);
+    void setMass(const double& mass);
+    void setMaterial(const QString& material);
+    void setVelocity(const Vector3D& velocity);
 
-        Vector3D      getNormal() const;
-        const double& getArea()   const;
+    Vector3D getNormal() const;
+    const double& getArea() const;
 
-        const Vector3D& getCurrentPosition() const;
+    const Vector3D& getCurrentPosition() const;
 
-        const Vector3D& getCurrentVelocity() const;
-        const Vector3D& getMeanVelocity()    const;
+    const Vector3D& getCurrentVelocity() const;
+    const Vector3D& getMeanVelocity() const;
 
-        const Vector3D& getCurrentForce() const;
-        const Vector3D& getMeanForce()    const;
-        
-        const Vector3D& getCurrentTorque() const;
-        const Vector3D& getMeanTorque()    const;
+    const Vector3D& getCurrentForce() const;
+    const Vector3D& getMeanForce() const;
 
-        Vector3D getCurrentMomentum() const;
-        Vector3D getMeanMomentum()    const;
+    const Vector3D& getCurrentTorque() const;
+    const Vector3D& getMeanTorque() const;
 
-        double getCurrentKineticEnergy() const;
-        double getMeanKineticEnergy()    const;
+    Vector3D getCurrentMomentum() const;
+    Vector3D getMeanMomentum() const;
 
-        nlohmann::json getJson() const;
+    double getCurrentKineticEnergy() const;
+    double getMeanKineticEnergy() const;
 
-    private:
-        void calculateArea();
+    nlohmann::json getJson() const;
+
+  private:
+    void calculateArea();
 };
 
 #endif // FACE_H

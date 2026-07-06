@@ -14,15 +14,15 @@ class TestSimulationConfig : public QObject
 {
     Q_OBJECT
 
-    private:
-        nlohmann::json validSimulationJson();
+  private:
+    nlohmann::json validSimulationJson();
 
-    private slots:
-        void constructor();
-        void getCL();
-        void missingRequiredFields();
-        void totalStepsComputation();
-        void stateMachine();
+  private slots:
+    void constructor();
+    void getCL();
+    void missingRequiredFields();
+    void totalStepsComputation();
+    void stateMachine();
 };
 
 #endif // TEST_SIMULATION_CONFIG_H

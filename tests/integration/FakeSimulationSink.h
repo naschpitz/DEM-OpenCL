@@ -13,37 +13,35 @@
 // ./framesData/ writes, no network sends, no DEM.ini lookup. Each captured
 // frame snapshots the scenery JSON (same payload the production RequestSender
 // would forward), so physics assertions can read particle positions per step.
-struct CapturedFrame
-{
+struct CapturedFrame {
     ulong step;
     double time;
     bool detailed;
     nlohmann::json scenery;
 };
 
-struct CapturedLog
-{
+struct CapturedLog {
     QString message;
 };
 
 class FakeSimulationSink : public SimulationSink
 {
-    public:
-        QVector<CapturedFrame> frames;
-        QVector<CapturedLog>   logs;
-        int waitCalls = 0;
+  public:
+    QVector<CapturedFrame> frames;
+    QVector<CapturedLog> logs;
+    int waitCalls = 0;
 
-        void onNewFrame(const Simulation* simulation, bool detailed) override;
-        void onNewLog(const Simulation* simulation, const QString& message) override;
-        void onWaitForAllFramesSent(const Simulation* simulation) override;
+    void onNewFrame(const Simulation* simulation, bool detailed) override;
+    void onNewLog(const Simulation* simulation, const QString& message) override;
+    void onWaitForAllFramesSent(const Simulation* simulation) override;
 
-        void clear();
+    void clear();
 
-        int frameCount();
-        int waitCallCount();
+    int frameCount();
+    int waitCallCount();
 
-    private:
-        QMutex mutex;
+  private:
+    QMutex mutex;
 };
 
 #endif // FAKE_SIMULATION_SINK_H

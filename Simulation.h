@@ -20,8 +20,7 @@
 #include <QThread>
 #include <QHostAddress>
 
-typedef struct
-{
+typedef struct {
     cl_float currentTime;
     cl_ulong currentStep;
 
@@ -30,7 +29,7 @@ typedef struct
 
     cl_float frameTime;
 
-    cl_ulong  calcNeighStepsInt;
+    cl_ulong calcNeighStepsInt;
     cl_double neighDistThresMult;
 } SimulationCL;
 
@@ -38,101 +37,101 @@ class Simulation : public QThread
 {
     Q_OBJECT
 
-    private:
-        QHostAddress interfaceAddress;
-        QString interfaceUrl;
-        QString id;
-        QString instance;
+  private:
+    QHostAddress interfaceAddress;
+    QString interfaceUrl;
+    QString id;
+    QString instance;
 
-        double currentTime;
-        ulong  currentStep;
+    double currentTime;
+    ulong currentStep;
 
-        double timeStep;
-        double totalTime;
-        ulong  totalSteps;
+    double timeStep;
+    double totalTime;
+    ulong totalSteps;
 
-        double frameTime;
-        double logTime;
-        ulong detailedFramesDiv;
+    double frameTime;
+    double logTime;
+    ulong detailedFramesDiv;
 
-        double calcNeighTimeInt;
-        ulong  calcNeighStepsInt;
+    double calcNeighTimeInt;
+    ulong calcNeighStepsInt;
 
-        double neighDistThresMult;
+    double neighDistThresMult;
 
-        bool multiGPU;
+    bool multiGPU;
 
-        double stepsPerSecond;
-        ulong et;
+    double stepsPerSecond;
+    ulong et;
 
-        Scenery scenery;
+    Scenery scenery;
 
-        SimulationSink* sink;
+    SimulationSink* sink;
 
-        bool initialized;
-        bool paused;
-        bool stopped;
-        bool primary;
+    bool initialized;
+    bool paused;
+    bool stopped;
+    bool primary;
 
-        void initialize();
+    void initialize();
 
-    public:
-        Simulation();
-        Simulation(const nlohmann::json& jsonObject, SimulationSink* sink);
-        ~Simulation();
+  public:
+    Simulation();
+    Simulation(const nlohmann::json& jsonObject, SimulationSink* sink);
+    ~Simulation();
 
-        // Delete copy constructor and assignment operator to prevent copying
-        Simulation(const Simulation&) = delete;
-        Simulation& operator=(const Simulation&) = delete;
+    // Delete copy constructor and assignment operator to prevent copying
+    Simulation(const Simulation&) = delete;
+    Simulation& operator=(const Simulation&) = delete;
 
-        SimulationCL getCL() const;
+    SimulationCL getCL() const;
 
-        const QHostAddress& getInterfaceAddress() const;
-        void setInterfaceAddress(const QHostAddress& interfaceAddress);
+    const QHostAddress& getInterfaceAddress() const;
+    void setInterfaceAddress(const QHostAddress& interfaceAddress);
 
-        const QString& getInterfaceUrl() const;
-        void setInterfaceUrl(const QString& interfaceUrl);
+    const QString& getInterfaceUrl() const;
+    void setInterfaceUrl(const QString& interfaceUrl);
 
-        const QString& getId()          const;
-        const QString& getInstance()    const;
-        const double&  getCurrentTime() const;
-        const ulong&   getCurrentStep() const;
+    const QString& getId() const;
+    const QString& getInstance() const;
+    const double& getCurrentTime() const;
+    const ulong& getCurrentStep() const;
 
-        const double& getTimeStep()   const;
-        const double& getTotalTime()  const;
-        const ulong&  getTotalSteps() const;
+    const double& getTimeStep() const;
+    const double& getTotalTime() const;
+    const ulong& getTotalSteps() const;
 
-        const double& getStepsPerSecond() const;
-        ulong getEta() const;
-        ulong getEt()  const;
+    const double& getStepsPerSecond() const;
+    ulong getEta() const;
+    ulong getEt() const;
 
-        const Scenery& getScenery() const;
+    const Scenery& getScenery() const;
 
-        bool isRunning() const;
-        bool isPaused() const;
-        bool isStopped() const;
-        bool isDone() const;
-        bool isPrimary() const;
+    bool isRunning() const;
+    bool isPaused() const;
+    bool isStopped() const;
+    bool isDone() const;
+    bool isPrimary() const;
 
-        void pause();
-        void stop();
+    void pause();
+    void stop();
 
-    protected:
-        void run();
+  protected:
+    void run();
 
-    private:
-        void checkForErrors(const std::vector<ErrorCL>& errorCL);
+  private:
+    void checkForErrors(const std::vector<ErrorCL>& errorCL);
 
-    public slots:
-        void selfDelete();
+  public slots:
+    void selfDelete();
 
-    signals:
-        void newFrame(bool isDetailed);
-        void newLog(QString message);
+  signals:
+    void newFrame(bool isDetailed);
+    void newLog(QString message);
 
-    private slots:
-        void handleFrame(bool isDetailed);
-        void handleLog(QString message);
+  private slots:
+    void handleFrame(bool isDetailed);
+    void handleLog(QString message);
 };
 
 #endif // SIMULATION_H

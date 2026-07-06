@@ -9,23 +9,23 @@ class TestParticleWorker : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestParticleWorker();
+  public:
+    TestParticleWorker();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
 
-        void p2pOverlappingRepel();
-        void p2pSeparatedAttract();
-        void p2pBeyondThreshold();
+    void p2pOverlappingRepel();
+    void p2pSeparatedAttract();
+    void p2pBeyondThreshold();
 
-        void p2fParticleAboveFace();
-        void p2fBeyondThreshold();
-        void p2fNumFacesDivision();
+    void p2fParticleAboveFace();
+    void p2fBeyondThreshold();
+    void p2fNumFacesDivision();
 };
 
 #endif // TESTPARTICLEWORKER_H

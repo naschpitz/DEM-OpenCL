@@ -1,158 +1,156 @@
 #include "ObjectsManager.h"
 
-ObjectsManager::ObjectsManager()
-{
-
-}
+ObjectsManager::ObjectsManager() {}
 
 ObjectsManager::ObjectsManager(const nlohmann::json& jsonValue)
 {
-    try {
-        const nlohmann::json& nonSolidObjectsArray = jsonValue.at("nonSolidObjects");
+  try {
+    const nlohmann::json& nonSolidObjectsArray = jsonValue.at("nonSolidObjects");
 
-        for(const auto& nonSolidObjectValue : nonSolidObjectsArray) {
-            NonSolidObject nonSolidObject(nonSolidObjectValue);
+    for (const auto& nonSolidObjectValue : nonSolidObjectsArray) {
+      NonSolidObject nonSolidObject(nonSolidObjectValue);
 
-            this->nonSolidObjects.push_back(nonSolidObject);
-        }
+      this->nonSolidObjects.push_back(nonSolidObject);
     }
+  }
 
-    catch (...) { }
+  catch (...) {
+  }
 
-    try {
-        const nlohmann::json& solidObjectsArray = jsonValue.at("solidObjects");
+  try {
+    const nlohmann::json& solidObjectsArray = jsonValue.at("solidObjects");
 
-        for(const auto& solidObjectValue : solidObjectsArray) {
-            SolidObject solidObject(solidObjectValue);
+    for (const auto& solidObjectValue : solidObjectsArray) {
+      SolidObject solidObject(solidObjectValue);
 
-            this->solidObjects.push_back(solidObject);
-        }
+      this->solidObjects.push_back(solidObject);
     }
+  }
 
-    catch (...) { }
+  catch (...) {
+  }
 }
 
 void ObjectsManager::initialize()
 {
-    for(QVector<NonSolidObject>::iterator it = this->nonSolidObjects.begin(); it != this->nonSolidObjects.end(); it++) {
-        it->initialize();
-    }
+  for (QVector<NonSolidObject>::iterator it = this->nonSolidObjects.begin(); it != this->nonSolidObjects.end(); it++) {
+    it->initialize();
+  }
 
-    for(QVector<SolidObject>::iterator it = this->solidObjects.begin(); it != this->solidObjects.end(); it++) {
-        it->initialize();
-    }
+  for (QVector<SolidObject>::iterator it = this->solidObjects.begin(); it != this->solidObjects.end(); it++) {
+    it->initialize();
+  }
 }
 
 const QVector<NonSolidObject>& ObjectsManager::getNonSolidObjects() const
 {
-    return this->nonSolidObjects;
+  return this->nonSolidObjects;
 }
 
 const QVector<SolidObject>& ObjectsManager::getSolidObjects() const
 {
-    return this->solidObjects;
+  return this->solidObjects;
 }
 
 QVector<ParticleCL> ObjectsManager::getParticlesCL(const MaterialsManager& materialsManager) const
 {
-    uint particleIndex = 0;
+  uint particleIndex = 0;
 
-    QVector<ParticleCL> particlesCL;
+  QVector<ParticleCL> particlesCL;
 
-    for(const NonSolidObject& nonSolidObject : this->nonSolidObjects) {
-        uint materialIndex = materialsManager.getMaterialIndex(nonSolidObject.getMaterial());
+  for (const NonSolidObject& nonSolidObject : this->nonSolidObjects) {
+    uint materialIndex = materialsManager.getMaterialIndex(nonSolidObject.getMaterial());
 
-        const QVector<Particle>& particles = nonSolidObject.getParticles();
+    const QVector<Particle>& particles = nonSolidObject.getParticles();
 
-        for(const Particle& particle : particles) {
-            ParticleCL particleCL = particle.getCL(particleIndex, materialIndex);
-            particleIndex++;
+    for (const Particle& particle : particles) {
+      ParticleCL particleCL = particle.getCL(particleIndex, materialIndex);
+      particleIndex++;
 
-            particlesCL.push_back(particleCL);
-        }
+      particlesCL.push_back(particleCL);
     }
+  }
 
-    return particlesCL;
+  return particlesCL;
 }
 
-QVector<FaceCL> ObjectsManager::getFacesCL(const MaterialsManager &materialsManager) const
+QVector<FaceCL> ObjectsManager::getFacesCL(const MaterialsManager& materialsManager) const
 {
-    uint faceIndex = 0;
+  uint faceIndex = 0;
 
-    QVector<FaceCL> facesCL;
+  QVector<FaceCL> facesCL;
 
-    for(const SolidObject& solidObject : this->solidObjects) {
-        uint materialIndex = materialsManager.getMaterialIndex(solidObject.getMaterial());
+  for (const SolidObject& solidObject : this->solidObjects) {
+    uint materialIndex = materialsManager.getMaterialIndex(solidObject.getMaterial());
 
-        const QVector<Face>& faces = solidObject.getFaces();
+    const QVector<Face>& faces = solidObject.getFaces();
 
-        for(const Face& face : faces) {
-            FaceCL faceCL = face.getCL(faceIndex, materialIndex);
-            faceIndex++;
+    for (const Face& face : faces) {
+      FaceCL faceCL = face.getCL(faceIndex, materialIndex);
+      faceIndex++;
 
-            facesCL.push_back(faceCL);
-        }
+      facesCL.push_back(faceCL);
     }
+  }
 
-    return facesCL;
+  return facesCL;
 }
 
 void ObjectsManager::setParticlesCL(const QVector<ParticleCL>& particlesCL)
 {
-    int i = 0;
+  int i = 0;
 
-    while(i < particlesCL.size())
-    {
-        for(QVector<NonSolidObject>::iterator it = this->nonSolidObjects.begin(); it != this->nonSolidObjects.end(); it++) {
-            const QVector<Particle>& particles = it->getParticles();
+  while (i < particlesCL.size()) {
+    for (QVector<NonSolidObject>::iterator it = this->nonSolidObjects.begin(); it != this->nonSolidObjects.end();
+         it++) {
+      const QVector<Particle>& particles = it->getParticles();
 
-            QVector<ParticleCL> particlesClChunk = particlesCL.mid(i, particles.size());
-            i += particles.size();
+      QVector<ParticleCL> particlesClChunk = particlesCL.mid(i, particles.size());
+      i += particles.size();
 
-            it->setParticlesCL(particlesClChunk);
-        }
+      it->setParticlesCL(particlesClChunk);
     }
+  }
 }
 
 void ObjectsManager::setFacesCL(const QVector<FaceCL>& facesCL)
 {
-    int i = 0;
+  int i = 0;
 
-    while(i < facesCL.size())
-    {
-        for(QVector<SolidObject>::iterator it = this->solidObjects.begin(); it != this->solidObjects.end(); it++) {
-            const QVector<Face>& faces = it->getFaces();
+  while (i < facesCL.size()) {
+    for (QVector<SolidObject>::iterator it = this->solidObjects.begin(); it != this->solidObjects.end(); it++) {
+      const QVector<Face>& faces = it->getFaces();
 
-            QVector<FaceCL> facesClChunk = facesCL.mid(i, faces.size());
-            i += faces.size();
+      QVector<FaceCL> facesClChunk = facesCL.mid(i, faces.size());
+      i += faces.size();
 
-            it->setFacesCL(facesClChunk);
-        }
+      it->setFacesCL(facesClChunk);
     }
+  }
 }
 
 nlohmann::json ObjectsManager::getJson(bool detailed = true) const
 {
-    nlohmann::json jsonObject;
+  nlohmann::json jsonObject;
 
-    nlohmann::json nonSolidObjectsArray;
-    nlohmann::json solidObjectsArray;
+  nlohmann::json nonSolidObjectsArray;
+  nlohmann::json solidObjectsArray;
 
-    if(!this->nonSolidObjects.isEmpty()) {
-        for(const NonSolidObject& nonSolidObject : this->nonSolidObjects) {
-            nonSolidObjectsArray.push_back(nonSolidObject.getJson(detailed));
-        }
-
-        jsonObject["nonSolidObjects"] = nonSolidObjectsArray;
+  if (!this->nonSolidObjects.isEmpty()) {
+    for (const NonSolidObject& nonSolidObject : this->nonSolidObjects) {
+      nonSolidObjectsArray.push_back(nonSolidObject.getJson(detailed));
     }
 
-    if(!this->solidObjects.isEmpty()) {
-        for(const SolidObject& solidObject : this->solidObjects) {
-            solidObjectsArray.push_back(solidObject.getJson(detailed));
-        }
+    jsonObject["nonSolidObjects"] = nonSolidObjectsArray;
+  }
 
-        jsonObject["solidObjects"] = solidObjectsArray;
+  if (!this->solidObjects.isEmpty()) {
+    for (const SolidObject& solidObject : this->solidObjects) {
+      solidObjectsArray.push_back(solidObject.getJson(detailed));
     }
 
-    return jsonObject;
+    jsonObject["solidObjects"] = solidObjectsArray;
+  }
+
+  return jsonObject;
 }

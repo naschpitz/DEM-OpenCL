@@ -12,32 +12,32 @@ class LogSender : public QThread
 {
     Q_OBJECT
 
-    public:
-        LogSender();
+  public:
+    LogSender();
 
-        void send(const QString& url, const QByteArray& data);
+    void send(const QString& url, const QByteArray& data);
 
-    private:
-        // Structure to hold log data
-        struct LogData {
-            QString url;
-            QSharedPointer<QByteArray> data;
-            bool scheduled = false;
-        };
+  private:
+    // Structure to hold log data
+    struct LogData {
+        QString url;
+        QSharedPointer<QByteArray> data;
+        bool scheduled = false;
+    };
 
-        QMutex mutex;
-        QVector<LogData> inflatedLogs;
-        QVector<LogData> deflatedLogs;
+    QMutex mutex;
+    QVector<LogData> inflatedLogs;
+    QVector<LogData> deflatedLogs;
 
-        Deflater deflater;
+    Deflater deflater;
 
-        void sendLog(const LogData& logData);
+    void sendLog(const LogData& logData);
 
-    protected:
-        void run();
+  protected:
+    void run();
 
-    public slots:
-        void dataDeflated(QSharedPointer<QByteArray> inflatedData, QSharedPointer<QByteArray> deflatedData);
+  public slots:
+    void dataDeflated(QSharedPointer<QByteArray> inflatedData, QSharedPointer<QByteArray> deflatedData);
 };
 
 #endif // LOGSENDER_H

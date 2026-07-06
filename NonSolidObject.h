@@ -19,73 +19,72 @@
 
 class NonSolidObject
 {
-    private:
-        QString id;
-        QString material;
+  private:
+    QString id;
+    QString material;
 
-        bool fixed;
-        double density;
+    bool fixed;
+    double density;
 
-        Vector3D length;
-        double spacing;
+    Vector3D length;
+    double spacing;
 
-        Vector3D position;
-        Vector3D velocity;
+    Vector3D position;
+    Vector3D velocity;
 
-        QVector<Particle> particles;
+    QVector<Particle> particles;
 
-    public:
-        NonSolidObject();
-        NonSolidObject(const nlohmann::json& jsonObject);
+  public:
+    NonSolidObject();
+    NonSolidObject(const nlohmann::json& jsonObject);
 
-        void initialize();
+    void initialize();
 
-        const QString& getId()       const;
-        const QString& getMaterial() const;
-        
-        double   getCurrentMass()     const;
-        double   getCurrentVolume()   const;
+    const QString& getId() const;
+    const QString& getMaterial() const;
 
-        void getBox(Vector3D& min, Vector3D& max);
+    double getCurrentMass() const;
+    double getCurrentVolume() const;
 
-        Vector3D getCurrentPosition() const;
-        
-        Vector3D getCurrentVelocity() const;
-        Vector3D getMeanVelocity()    const;
+    void getBox(Vector3D& min, Vector3D& max);
 
-        Vector3D getCurrentMomentum() const;
-        Vector3D getMeanMomentum()    const;
+    Vector3D getCurrentPosition() const;
 
-        Vector3D getCurrentAngularMomentum() const;
-        Vector3D getMeanAngularMomentum()    const;
-        
-        Vector3D getCurrentForce() const;
-        Vector3D getMeanForce()    const;
-        
-        double getCurrentKineticEnergyTotal() const;
-        double getMeanKineticEnergyTotal()    const;
+    Vector3D getCurrentVelocity() const;
+    Vector3D getMeanVelocity() const;
 
-        double getCurrentKineticEnergyExternal() const;
-        double getMeanKineticEnergyExternal()    const;
+    Vector3D getCurrentMomentum() const;
+    Vector3D getMeanMomentum() const;
 
-        double getCurrentKineticEnergyInternal() const;
-        double getMeanKineticEnergyInternal()    const;
+    Vector3D getCurrentAngularMomentum() const;
+    Vector3D getMeanAngularMomentum() const;
 
+    Vector3D getCurrentForce() const;
+    Vector3D getMeanForce() const;
 
-        const QVector<Particle>& getParticles() const;
-        void setParticlesCL(const QVector<ParticleCL>& particlesCL);
-        nlohmann::json getJson(bool detailed) const;
+    double getCurrentKineticEnergyTotal() const;
+    double getMeanKineticEnergyTotal() const;
 
-        void reset();
+    double getCurrentKineticEnergyExternal() const;
+    double getMeanKineticEnergyExternal() const;
 
-    private:
-        void setMaterial();
-        void setFixed();
-        void setDensity();
-        void setPosition();
-        void setVelocity();
+    double getCurrentKineticEnergyInternal() const;
+    double getMeanKineticEnergyInternal() const;
 
-        void buildObject();
+    const QVector<Particle>& getParticles() const;
+    void setParticlesCL(const QVector<ParticleCL>& particlesCL);
+    nlohmann::json getJson(bool detailed) const;
+
+    void reset();
+
+  private:
+    void setMaterial();
+    void setFixed();
+    void setDensity();
+    void setPosition();
+    void setVelocity();
+
+    void buildObject();
 };
 
 #endif // NONSOLIDOBJECT_H

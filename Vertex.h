@@ -14,8 +14,7 @@
 
 #include <CL/opencl.hpp>
 
-typedef struct
-{
+typedef struct {
     cl_bool fixed;
 
     cl_float4 originalPosition;
@@ -41,48 +40,48 @@ typedef struct
 
 class Vertex
 {
-    protected:
-        bool fixed;
+  protected:
+    bool fixed;
 
-        Vector3D originalPosition;
-        Vector3D originalVelocity;
-        Vector3D acceleration;
+    Vector3D originalPosition;
+    Vector3D originalVelocity;
+    Vector3D acceleration;
 
-        Vector3D currentPosition;
-        Vector3D oldPosition;
+    Vector3D currentPosition;
+    Vector3D oldPosition;
 
-        Vector3D currentVelocity;
-        Vector3D meanVelocity;
-        Vector3D oldVelocity;
+    Vector3D currentVelocity;
+    Vector3D meanVelocity;
+    Vector3D oldVelocity;
 
-        Vector3D angularAcceleration;
+    Vector3D angularAcceleration;
 
-        Vector3D currentAngularVelocity;
-        Vector3D meanAngularVelocity;
-        Vector3D oldAngularVelocity;
+    Vector3D currentAngularVelocity;
+    Vector3D meanAngularVelocity;
+    Vector3D oldAngularVelocity;
 
-    public:
-        Vertex();
-        Vertex(const Vertex& other);
-        Vertex& operator=(const Vertex& other);  // Copy assignment operator
-        Vertex(const Vector3D& vector);
-        Vertex(const double& x, const double& y, const double& z);
+  public:
+    Vertex();
+    Vertex(const Vertex& other);
+    Vertex& operator=(const Vertex& other); // Copy assignment operator
+    Vertex(const Vector3D& vector);
+    Vertex(const double& x, const double& y, const double& z);
 
-        VertexCL getCL() const;
-        void setCL(const VertexCL& vertexCL);
+    VertexCL getCL() const;
+    void setCL(const VertexCL& vertexCL);
 
-        virtual void setFixed(bool fixed);
-        virtual void setPosition(const Vector3D& position);
-        virtual void setVelocity(const Vector3D& velocity);
+    virtual void setFixed(bool fixed);
+    virtual void setPosition(const Vector3D& position);
+    virtual void setVelocity(const Vector3D& velocity);
 
-        virtual void displaceBy(const Vector3D& displacement);
+    virtual void displaceBy(const Vector3D& displacement);
 
-        virtual const Vector3D& getCurrentPosition() const;
+    virtual const Vector3D& getCurrentPosition() const;
 
-        virtual const Vector3D& getCurrentVelocity() const;
-        virtual const Vector3D& getMeanVelocity()    const;
+    virtual const Vector3D& getCurrentVelocity() const;
+    virtual const Vector3D& getMeanVelocity() const;
 
-        nlohmann::json getJson() const;
+    nlohmann::json getJson() const;
 };
 
 #endif // VERTEX_H

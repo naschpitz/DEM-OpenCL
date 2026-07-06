@@ -9,18 +9,18 @@ class TestVector : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestVector();
+  public:
+    TestVector();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
-        void getUnitaryGeneric();
-        void getUnitaryAlreadyUnit();
-        void getUnitaryZero();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void getUnitaryGeneric();
+    void getUnitaryAlreadyUnit();
+    void getUnitaryZero();
 };
 
 #endif // TESTVECTOR_H

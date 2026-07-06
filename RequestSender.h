@@ -14,41 +14,41 @@
 #include "SimulationSink.h"
 
 class RequestSender : public QObject, public SimulationSink
-{        
+{
     Q_OBJECT
 
-    public:
-        static RequestSender& getInstance();
+  public:
+    static RequestSender& getInstance();
 
-    public:
-        // SimulationSink interface — the originating Simulation is passed
-        // explicitly (no QObject::sender()).
-        void onNewFrame(const Simulation* simulation, bool detailed) override;
-        void onNewLog(const Simulation* simulation, const QString& message) override;
-        void onWaitForAllFramesSent(const Simulation* simulation) override;
+  public:
+    // SimulationSink interface — the originating Simulation is passed
+    // explicitly (no QObject::sender()).
+    void onNewFrame(const Simulation* simulation, bool detailed) override;
+    void onNewLog(const Simulation* simulation, const QString& message) override;
+    void onWaitForAllFramesSent(const Simulation* simulation) override;
 
-    private:
-        bool remoteInterface;
+  private:
+    bool remoteInterface;
 
-        FrameSender frameSender;
-        LogSender logSender;
+    FrameSender frameSender;
+    LogSender logSender;
 
-        RequestSender(); // Constructor? (the {} brackets) are needed here.
-        QString getInterfaceAddress(const Simulation* simulation) const;
+    RequestSender(); // Constructor? (the {} brackets) are needed here.
+    QString getInterfaceAddress(const Simulation* simulation) const;
 
-        // C++ 11
-        // =======
-        // We can use the better technique of deleting the methods
-        // we don't want.
-    public:
-        RequestSender(RequestSender const&)  = delete;
-        void operator=(RequestSender const&) = delete;
+    // C++ 11
+    // =======
+    // We can use the better technique of deleting the methods
+    // we don't want.
+  public:
+    RequestSender(RequestSender const&) = delete;
+    void operator=(RequestSender const&) = delete;
 
-        // Note: Scott Meyers mentions in his Effective Modern
-        //       C++ book, that deleted functions should generally
-        //       be public as it results in better error messages
-        //       due to the compilers behavior to check accessibility
-        //       before deleted status
+    // Note: Scott Meyers mentions in his Effective Modern
+    //       C++ book, that deleted functions should generally
+    //       be public as it results in better error messages
+    //       due to the compilers behavior to check accessibility
+    //       before deleted status
 };
 
 #endif // REQUESTSENDER_H

@@ -9,21 +9,21 @@ class TestVertex : public QObject
 {
     Q_OBJECT
 
-    public:
-        TestVertex();
+  public:
+    TestVertex();
 
-    private slots:
-        void defaultConstructor();
-        void xyzConstructor();
-        void vectorConstructor();
-        void copyConstructor();
-        void assignmentOperator();
-        void setFixed();
-        void setPosition();
-        void setVelocity();
-        void displaceBy();
-        void getCLsetCLRoundtrip();
-        void getJson();
+  private slots:
+    void defaultConstructor();
+    void xyzConstructor();
+    void vectorConstructor();
+    void copyConstructor();
+    void assignmentOperator();
+    void setFixed();
+    void setPosition();
+    void setVelocity();
+    void displaceBy();
+    void getCLsetCLRoundtrip();
+    void getJson();
 };
 
 #endif // TESTVERTEX_H

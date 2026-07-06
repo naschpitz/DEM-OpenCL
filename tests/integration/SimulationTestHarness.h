@@ -19,13 +19,13 @@ class Simulation;
 // object itself must NOT be touched afterwards — it is scheduled for deletion.
 class SimulationTestHarness
 {
-    public:
-        FakeSimulationSink sink;
+  public:
+    FakeSimulationSink sink;
 
-        ulong  finalStep = 0;
-        double finalTime  = 0.0;
+    ulong finalStep = 0;
+    double finalTime = 0.0;
 
-        void runUntilFinished(Simulation* simulation);
+    void runUntilFinished(Simulation* simulation);
 };
 
 #endif // SIMULATION_TEST_HARNESS_H

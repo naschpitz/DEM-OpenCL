@@ -9,26 +9,25 @@
 #include <QString>
 #include <QJsonArray>
 
-typedef struct
-{
+typedef struct {
     cl_int size;
     MaterialCL materials[20];
 } MaterialsManagerCL;
 
 class MaterialsManager
 {
-    private:
-        QVector<Material> materials;
-        QMap<QString, int> idsMap;
+  private:
+    QVector<Material> materials;
+    QMap<QString, int> idsMap;
 
-    public:
-        MaterialsManager();
-        MaterialsManager(const nlohmann::json& materialsArray);
+  public:
+    MaterialsManager();
+    MaterialsManager(const nlohmann::json& materialsArray);
 
-        MaterialsManagerCL getCL() const;
+    MaterialsManagerCL getCL() const;
 
-        const QVector<Material>& getMaterials() const;
-        uint getMaterialIndex(const QString& id) const;
+    const QVector<Material>& getMaterials() const;
+    uint getMaterialIndex(const QString& id) const;
 };
 
 #endif // MATERIALMANAGER_H

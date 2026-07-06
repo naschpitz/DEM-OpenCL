@@ -9,20 +9,20 @@ class TestEdge : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestEdge();
+  public:
+    TestEdge();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
-        void getClosestToInside();
-        void getClosestToBeforeP1();
-        void getClosestToAfterP2();
-        void getClosestToCollinearBeyond();
-        void getClosestToDegenerate();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void getClosestToInside();
+    void getClosestToBeforeP1();
+    void getClosestToAfterP2();
+    void getClosestToCollinearBeyond();
+    void getClosestToDegenerate();
 };
 
 #endif // TESTEDGE_H

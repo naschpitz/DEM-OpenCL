@@ -9,21 +9,21 @@ class TestNonSolidObject : public QObject
 {
     Q_OBJECT
 
-    private:
-        nlohmann::json nonSolidObjectWireframeJsonValue;
+  private:
+    nlohmann::json nonSolidObjectWireframeJsonValue;
 
-    public:
-        TestNonSolidObject();
+  public:
+    TestNonSolidObject();
 
-    private Q_SLOTS:
-        void constructorWireframe();
-        void getMaterialId();
-        void getBox();
-        void getCurrentMomentum();
-        void getCurrentKineticEnergyTotal();
-        void getCurrentKineticEnergyExternal();
-        void getCurrentKineticEnergyInternal();
-        void particlePackingCount();
+  private Q_SLOTS:
+    void constructorWireframe();
+    void getMaterialId();
+    void getBox();
+    void getCurrentMomentum();
+    void getCurrentKineticEnergyTotal();
+    void getCurrentKineticEnergyExternal();
+    void getCurrentKineticEnergyInternal();
+    void particlePackingCount();
 };
 
 #endif // TESTNONSOLIDOBJECT_H

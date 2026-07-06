@@ -10,25 +10,25 @@
 
 class ObjectsManager
 {
-    private:
-        QVector<NonSolidObject> nonSolidObjects;
-        QVector<SolidObject> solidObjects;
+  private:
+    QVector<NonSolidObject> nonSolidObjects;
+    QVector<SolidObject> solidObjects;
 
-    public:
-        ObjectsManager();
-        ObjectsManager(const nlohmann::json& jsonValue);
+  public:
+    ObjectsManager();
+    ObjectsManager(const nlohmann::json& jsonValue);
 
-        void initialize();
+    void initialize();
 
-        const QVector<NonSolidObject>& getNonSolidObjects() const;
-        const QVector<SolidObject>& getSolidObjects() const;
+    const QVector<NonSolidObject>& getNonSolidObjects() const;
+    const QVector<SolidObject>& getSolidObjects() const;
 
-        QVector<ParticleCL> getParticlesCL(const MaterialsManager& materialsManager) const;
-        QVector<FaceCL>     getFacesCL(const MaterialsManager& materialsManager) const;
-        void setParticlesCL(const QVector<ParticleCL>& particlesCL);
-        void setFacesCL(const QVector<FaceCL>& facesCL);
+    QVector<ParticleCL> getParticlesCL(const MaterialsManager& materialsManager) const;
+    QVector<FaceCL> getFacesCL(const MaterialsManager& materialsManager) const;
+    void setParticlesCL(const QVector<ParticleCL>& particlesCL);
+    void setFacesCL(const QVector<FaceCL>& facesCL);
 
-        nlohmann::json getJson(bool detailed) const;
+    nlohmann::json getJson(bool detailed) const;
 };
 
 #endif // OBJECTSMANAGER_H

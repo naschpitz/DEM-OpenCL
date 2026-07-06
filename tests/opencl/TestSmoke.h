@@ -9,16 +9,16 @@ class TestSmoke : public QObject
 {
     Q_OBJECT
 
-    private:
-        KernelTestHarness* harness;
+  private:
+    KernelTestHarness* harness;
 
-    public:
-        TestSmoke();
+  public:
+    TestSmoke();
 
-    private Q_SLOTS:
-        void initTestCase();
-        void cleanupTestCase();
-        void passthrough();
+  private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void passthrough();
 };
 
 #endif // TESTSMOKE_H
