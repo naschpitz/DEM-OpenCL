@@ -60,14 +60,11 @@ void face_getBox(const Face* face, float4* min, float4* max)
   max->z = maxZ;
 }
 
-void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace,
-                       float4* closestOnOtherParticle)
+void face_projectPoint(const Face* thisFace, float4 q, float4* closestOnThisFace)
 {
   float4 p1 = thisFace->vertexes[0].currentPosition;
   float4 p2 = thisFace->vertexes[1].currentPosition;
   float4 p3 = thisFace->vertexes[2].currentPosition;
-
-  float4 q = otherParticle->vertex.currentPosition;
 
   float4 a = q - p1;
   float4 b = p2 - p1;
@@ -109,11 +106,50 @@ void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, floa
 
   else // Inside the triangle.
     (*closestOnThisFace) = p1 + u * edge_getDistance(&e1) + v * edge_getDistance(&e2);
+}
 
-  float4 distance = otherParticle->vertex.currentPosition - (*closestOnThisFace);
+void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace,
+                       float4* closestOnOtherParticle)
+{
+  float4 q = otherParticle->vertex.currentPosition;
+
+  face_projectPoint(thisFace, q, closestOnThisFace);
+
+  float4 distance = q - (*closestOnThisFace);
   float4 distanceUnitary = vector_getUnitary(distance);
 
-  (*closestOnOtherParticle) = otherParticle->vertex.currentPosition - distanceUnitary * otherParticle->radius;
+  (*closestOnOtherParticle) = q - distanceUnitary * otherParticle->radius;
+}
+
+void face_getClosestToFace(const Face* faceA, const Face* faceB, float4* closestOnA, float4* closestOnB)
+{
+  float4 xA = faceA->vertexes[0].currentPosition;
+  float4 xB;
+
+  face_projectPoint(faceB, xA, &xB);
+
+  float4 delta = xA - xB;
+  float dNew = sqrt(dot(delta, delta));
+  float dOld = 0.0f;
+
+  const float EPS = 1e-6f;
+  const uint MAX_ITER = 32;
+
+  for (uint iter = 0; iter < MAX_ITER; iter++) {
+    if (fabs(dNew - dOld) < EPS)
+      break;
+
+    dOld = dNew;
+
+    face_projectPoint(faceA, xB, &xA);
+    face_projectPoint(faceB, xA, &xB);
+
+    delta = xA - xB;
+    dNew = sqrt(dot(delta, delta));
+  }
+
+  *closestOnA = xA;
+  *closestOnB = xB;
 }
 
 void face_calculateCurrentPosition(Face* face)
