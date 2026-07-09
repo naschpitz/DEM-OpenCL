@@ -48,4 +48,36 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
   thisFace->currentTorque += torque;
 }
 
+void faceToFaceWorker_run(Face* thisFace, const Face* otherFace, const Material* material)
+{
+  float4 closestOnThisFace, closestOnOtherFace;
+
+  face_getClosestToFace(thisFace, otherFace, &closestOnThisFace, &closestOnOtherFace);
+
+  float4 distance = closestOnOtherFace - closestOnThisFace;
+  float4 distanceUnitary = vector_getUnitary(distance);
+
+  if (length(distance) > material->distanceThreshold)
+    return;
+
+  float4 velocity = otherFace->currentVelocity - thisFace->currentVelocity;
+
+  float minContactArea = min(thisFace->area, otherFace->area);
+  float originalLength = 0.0f;
+  float4 oldForce = otherFace->oldForce - thisFace->oldForce;
+
+  float4 force =
+    material_calculateForce(material, distance, distanceUnitary, false, minContactArea, originalLength, oldForce);
+  float4 dragForce = material_calculateDragForce(material, velocity, (float4)0, force);
+
+  float4 totalForce = -(force + dragForce);
+
+  thisFace->currentForce += totalForce;
+
+  float4 r = closestOnThisFace - thisFace->currentPosition;
+  float4 torque = cross(r, totalForce);
+
+  thisFace->currentTorque += torque;
+}
+
 #endif // FACEWORKER_CPP_CL

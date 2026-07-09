@@ -17,7 +17,7 @@ add_executable(TestOpenCL
     TestFace.cpp            TestFace.h
     TestObject.cpp          TestObject.h
     TestNonConvexObject.cpp TestNonConvexObject.h
-    TestObjectToObject.cpp  TestObjectToObject.h
+    TestCalculateFaceToFace.cpp  TestCalculateFaceToFace.h
     TestMaterial.cpp          TestMaterial.h
     TestParticleWorker.cpp    TestParticleWorker.h
 )

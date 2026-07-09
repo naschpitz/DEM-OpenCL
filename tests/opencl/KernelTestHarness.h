@@ -13,6 +13,7 @@
 
 #include "Face.h"
 #include "Material.h"
+#include "MaterialsManager.h"
 #include "Particle.h"
 #include "Vertex.h"
 
@@ -56,8 +57,8 @@ class KernelTestHarness
     void runObjectToParticle(const std::vector<FaceCL>& faces, const std::vector<ParticleCL>& particles,
                              std::vector<cl_float4>& outFace, std::vector<cl_float4>& outParticle);
 
-    void runObjectToObject(const std::vector<FaceCL>& facesA, const std::vector<FaceCL>& facesB, cl_float4& outClosestA,
-                           cl_float4& outClosestB, float& outDistance);
+    void runCalculateFaceToFace(std::vector<FaceCL>& faces, const MaterialsManagerCL& materialsManager, cl_uint startA,
+                                cl_uint countA, cl_uint startB, cl_uint countB);
 
     cl_float4 runMaterialCalculateForce(const MaterialCL& material, cl_float4 distance, cl_float4 distanceUnitary,
                                         bool internal, float contactArea, float originalLength, cl_float4 oldForce);

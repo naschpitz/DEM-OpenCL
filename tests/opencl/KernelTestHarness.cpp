@@ -7,6 +7,7 @@
 namespace
 {
   const std::string KERNEL_SOURCE_PATH = "../opencl/Tests.cpp.cl";
+  const std::string SIMULATION_SOURCE_PATH = "../opencl/Simulation.cpp.cl";
 
   const cl_float4 ZERO4 = {0.0f, 0.0f, 0.0f, 0.0f};
 }
@@ -18,6 +19,7 @@ KernelTestHarness::KernelTestHarness()
   try {
     this->core = std::make_unique<OpenCLWrapper::Core>(false);
     this->core->addSourceFile(KERNEL_SOURCE_PATH);
+    this->core->addSourceFile(SIMULATION_SOURCE_PATH);
     this->ready = true;
   }
 
@@ -190,51 +192,26 @@ void KernelTestHarness::runObjectToParticle(const std::vector<FaceCL>& faces, co
   this->core->readBuffer<cl_float4>("obj_out_particle", outParticle, 0);
 }
 
-void KernelTestHarness::runObjectToObject(const std::vector<FaceCL>& facesA, const std::vector<FaceCL>& facesB,
-                                          cl_float4& outClosestA, cl_float4& outClosestB, float& outDistance)
+void KernelTestHarness::runCalculateFaceToFace(std::vector<FaceCL>& faces, const MaterialsManagerCL& materialsManager,
+                                               cl_uint startA, cl_uint countA, cl_uint startB, cl_uint countB)
 {
-  cl_uint numFacesA = static_cast<cl_uint>(facesA.size());
-  cl_uint numFacesB = static_cast<cl_uint>(facesB.size());
+  std::vector<MaterialsManagerCL> mmVec = {materialsManager};
 
-  std::vector<cl_float4> outA(facesA.size(), ZERO4);
-  std::vector<cl_float4> outB(facesA.size(), ZERO4);
-  std::vector<float> outDist(facesA.size(), std::numeric_limits<float>::max());
+  this->core->writeBuffer<FaceCL>("ftf_faces", faces, 0);
+  this->core->writeBuffer<MaterialsManagerCL>("ftf_mm", mmVec, 0);
 
-  this->core->writeBuffer<FaceCL>("o2o_facesA", facesA, 0);
-  this->core->writeBuffer<FaceCL>("o2o_facesB", facesB, 0);
-  this->core->writeBuffer<cl_float4>("o2o_outA", outA, 0);
-  this->core->writeBuffer<cl_float4>("o2o_outB", outB, 0);
-  this->core->writeBuffer<float>("o2o_outDist", outDist, 0);
-
-  this->core->addKernel("test_object_to_object", facesA.size());
-  this->core->addArgument<FaceCL>("test_object_to_object", "o2o_facesA");
-  this->core->addArgument<cl_uint>("test_object_to_object", numFacesA);
-  this->core->addArgument<FaceCL>("test_object_to_object", "o2o_facesB");
-  this->core->addArgument<cl_uint>("test_object_to_object", numFacesB);
-  this->core->addArgument<cl_float4>("test_object_to_object", "o2o_outA");
-  this->core->addArgument<cl_float4>("test_object_to_object", "o2o_outB");
-  this->core->addArgument<float>("test_object_to_object", "o2o_outDist");
+  this->core->addKernel("calculate_face_to_face", countA);
+  this->core->addArgument<FaceCL>("calculate_face_to_face", "ftf_faces");
+  this->core->addArgument<MaterialsManagerCL>("calculate_face_to_face", "ftf_mm");
+  this->core->addArgument<cl_uint>("calculate_face_to_face", startA);
+  this->core->addArgument<cl_uint>("calculate_face_to_face", countA);
+  this->core->addArgument<cl_uint>("calculate_face_to_face", startB);
+  this->core->addArgument<cl_uint>("calculate_face_to_face", countB);
 
   this->core->run();
   this->core->clearKernels();
 
-  this->core->readBuffer<cl_float4>("o2o_outA", outA, 0);
-  this->core->readBuffer<cl_float4>("o2o_outB", outB, 0);
-  this->core->readBuffer<float>("o2o_outDist", outDist, 0);
-
-  float bestDist = std::numeric_limits<float>::max();
-  size_t bestIdx = 0;
-
-  for (size_t i = 0; i < outDist.size(); i++) {
-    if (outDist[i] < bestDist) {
-      bestDist = outDist[i];
-      bestIdx = i;
-    }
-  }
-
-  outClosestA = outA[bestIdx];
-  outClosestB = outB[bestIdx];
-  outDistance = bestDist;
+  this->core->readBuffer<FaceCL>("ftf_faces", faces, 0);
 }
 
 cl_float4 KernelTestHarness::runMaterialCalculateForce(const MaterialCL& material, cl_float4 distance,

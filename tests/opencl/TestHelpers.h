@@ -2,6 +2,8 @@
 #define TESTHELPERS_H
 
 #include "Face.h"
+#include "Material.h"
+#include "MaterialsManager.h"
 #include "Particle.h"
 #include "Vertex.h"
 
@@ -97,6 +99,26 @@ inline void translateFaces(std::vector<FaceCL>& faces, float dx, float dy, float
       face.vertexes[i].currentPosition.z += dz;
     }
   }
+}
+
+inline MaterialCL makeMaterialCL(int forceType, float coeff, float distanceThreshold)
+{
+  MaterialCL m{};
+  m.materialIndex1 = 0;
+  m.materialIndex2 = 0;
+  m.forceType = forceType;
+  m.dragForceType = -1;
+  m.distanceThreshold = distanceThreshold;
+  m.coefficients[0] = coeff;
+  return m;
+}
+
+inline MaterialsManagerCL makeMaterialsManagerCL(const MaterialCL& material)
+{
+  MaterialsManagerCL mm{};
+  mm.size = 1;
+  mm.materials[0] = material;
+  return mm;
 }
 
 #endif // TESTHELPERS_H
