@@ -227,6 +227,31 @@ kernel void calculate_face_to_particle(global Face* faces, global Particle* part
   faces[idx] = thisFace;
 }
 
+kernel void calculate_face_to_face(global Face* faces, constant MaterialsManager* ptrMaterialsManager,
+                                   const uint startA, const uint countA, const uint startB, const uint countB)
+{
+  size_t i = get_global_id(0);
+
+  if (i >= countA)
+    return;
+
+  Face thisFace = faces[startA + i];
+  MaterialsManager materialsManager = ptrMaterialsManager[0];
+
+  for (uint f = 0; f < countB; f++) {
+    Face otherFace = faces[startB + f];
+
+    int thisMaterialIndex = thisFace.materialIndex;
+    int otherMaterialIndex = otherFace.materialIndex;
+
+    const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMaterialIndex, &materialsManager);
+
+    faceToFaceWorker_run(&thisFace, &otherFace, material);
+  }
+
+  faces[startA + i] = thisFace;
+}
+
 kernel void apply_particles_gravity(global Particle* particles, constant Scenery* ptrScenery)
 {
   size_t idx = get_global_id(0);
@@ -297,31 +322,6 @@ kernel void reset_faces(global Face* faces, constant Simulation* ptrSimulation)
   face_reset(&thisFace, &simulation);
 
   faces[idx] = thisFace;
-}
-
-kernel void calculate_face_to_face(global Face* faces, constant MaterialsManager* ptrMaterialsManager,
-                                   const uint startA, const uint countA, const uint startB, const uint countB)
-{
-  size_t i = get_global_id(0);
-
-  if (i >= countA)
-    return;
-
-  Face thisFace = faces[startA + i];
-  MaterialsManager materialsManager = ptrMaterialsManager[0];
-
-  for (uint f = 0; f < countB; f++) {
-    Face otherFace = faces[startB + f];
-
-    int thisMaterialIndex = thisFace.materialIndex;
-    int otherMaterialIndex = otherFace.materialIndex;
-
-    const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMaterialIndex, &materialsManager);
-
-    faceToFaceWorker_run(&thisFace, &otherFace, material);
-  }
-
-  faces[startA + i] = thisFace;
 }
 
 #endif // SIMULATION_CPP_CL
