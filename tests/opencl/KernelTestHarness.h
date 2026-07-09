@@ -70,6 +70,9 @@ class KernelTestHarness
 
     void runParticleToFaceWorker(ParticleCL& thisParticle, const FaceCL& otherFace, const MaterialCL& material,
                                  cl_float4& outForce, cl_float4& outTorque);
+
+    void runFaceToParticleWorker(FaceCL& thisFace, const ParticleCL& otherParticle, const MaterialCL& material,
+                                 cl_float4& outForce, cl_float4& outTorque);
 };
 
 #endif // KERNELTESTHARNESS_H

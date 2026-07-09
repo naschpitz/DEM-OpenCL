@@ -11,5 +11,6 @@
 #include "../tests/opencl/TestsObject.cpp.cl"
 #include "../tests/opencl/TestsMaterial.cpp.cl"
 #include "../tests/opencl/TestsParticleWorker.cpp.cl"
+#include "../tests/opencl/TestsFaceWorker.cpp.cl"
 
 #endif // TESTS_CPP_CL

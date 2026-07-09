@@ -14,7 +14,9 @@
 #include "TestNonConvexObject.h"
 #include "TestCalculateFaceToFace.h"
 #include "TestMaterial.h"
-#include "TestParticleWorker.h"
+#include "TestCalculateParticleToParticle.h"
+#include "TestCalculateParticleToFace.h"
+#include "TestCalculateFaceToParticle.h"
 
 int main(int argc, char** argv)
 {
@@ -33,7 +35,9 @@ int main(int argc, char** argv)
   TestNonConvexObject testNonConvexObject;
   TestCalculateFaceToFace testCalculateFaceToFace;
   TestMaterial testMaterial;
-  TestParticleWorker testParticleWorker;
+  TestCalculateParticleToParticle testCalculateParticleToParticle;
+  TestCalculateParticleToFace testCalculateParticleToFace;
+  TestCalculateFaceToParticle testCalculateFaceToParticle;
 
   int failures = 0;
   failures += QTest::qExec(&testSmoke);
@@ -45,7 +49,9 @@ int main(int argc, char** argv)
   failures += QTest::qExec(&testNonConvexObject);
   failures += QTest::qExec(&testCalculateFaceToFace);
   failures += QTest::qExec(&testMaterial);
-  failures += QTest::qExec(&testParticleWorker);
+  failures += QTest::qExec(&testCalculateParticleToParticle);
+  failures += QTest::qExec(&testCalculateParticleToFace);
+  failures += QTest::qExec(&testCalculateFaceToParticle);
 
   return failures;
 }

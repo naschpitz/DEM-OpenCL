@@ -327,3 +327,35 @@ void KernelTestHarness::runParticleToFaceWorker(ParticleCL& thisParticle, const 
   outForce = forceVec[0];
   outTorque = torqueVec[0];
 }
+
+void KernelTestHarness::runFaceToParticleWorker(FaceCL& thisFace, const ParticleCL& otherParticle,
+                                                const MaterialCL& material, cl_float4& outForce, cl_float4& outTorque)
+{
+  std::vector<FaceCL> thisVec = {thisFace};
+  std::vector<ParticleCL> particleVec = {otherParticle};
+  std::vector<MaterialCL> matVec = {material};
+  std::vector<cl_float4> forceVec = {ZERO4};
+  std::vector<cl_float4> torqueVec = {ZERO4};
+
+  this->core->writeBuffer<FaceCL>("fpw_this", thisVec, 0);
+  this->core->writeBuffer<ParticleCL>("fpw_particle", particleVec, 0);
+  this->core->writeBuffer<MaterialCL>("fpw_mat", matVec, 0);
+  this->core->writeBuffer<cl_float4>("fpw_force", forceVec, 0);
+  this->core->writeBuffer<cl_float4>("fpw_torque", torqueVec, 0);
+
+  this->core->addKernel("test_faceToParticleWorker", 1);
+  this->core->addArgument<FaceCL>("test_faceToParticleWorker", "fpw_this");
+  this->core->addArgument<ParticleCL>("test_faceToParticleWorker", "fpw_particle");
+  this->core->addArgument<MaterialCL>("test_faceToParticleWorker", "fpw_mat");
+  this->core->addArgument<cl_float4>("test_faceToParticleWorker", "fpw_force");
+  this->core->addArgument<cl_float4>("test_faceToParticleWorker", "fpw_torque");
+
+  this->core->run();
+  this->core->clearKernels();
+
+  this->core->readBuffer<cl_float4>("fpw_force", forceVec, 0);
+  this->core->readBuffer<cl_float4>("fpw_torque", torqueVec, 0);
+
+  outForce = forceVec[0];
+  outTorque = torqueVec[0];
+}
