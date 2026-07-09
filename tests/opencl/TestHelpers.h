@@ -88,4 +88,15 @@ inline std::vector<FaceCL> makeLShapeCL()
   return faces;
 }
 
+inline void translateFaces(std::vector<FaceCL>& faces, float dx, float dy, float dz)
+{
+  for (auto& face : faces) {
+    for (int i = 0; i < 3; i++) {
+      face.vertexes[i].currentPosition.x += dx;
+      face.vertexes[i].currentPosition.y += dy;
+      face.vertexes[i].currentPosition.z += dz;
+    }
+  }
+}
+
 #endif // TESTHELPERS_H
