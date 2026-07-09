@@ -37,7 +37,7 @@ void TestFace::getClosestToInside()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 2.0f);
   QCOMPARE(outFace[0].y, 2.0f);
@@ -56,7 +56,7 @@ void TestFace::getClosestToEdgeVNegative()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 5.0f);
   QCOMPARE(outFace[0].y, 0.0f);
@@ -75,7 +75,7 @@ void TestFace::getClosestToEdgeUNegative()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 0.0f);
   QCOMPARE(outFace[0].y, 5.0f);
@@ -94,7 +94,7 @@ void TestFace::getClosestToEdgeUVOverflow()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 5.0f);
   QCOMPARE(outFace[0].y, 5.0f);
@@ -113,7 +113,7 @@ void TestFace::getClosestToSeamVZero()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 5.0f);
   QCOMPARE(outFace[0].y, 0.0f);
@@ -132,7 +132,7 @@ void TestFace::getClosestToSeamUZero()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 0.0f);
   QCOMPARE(outFace[0].y, 5.0f);
@@ -151,7 +151,7 @@ void TestFace::getClosestToSeamUVSumOne()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 5.0f);
   QCOMPARE(outFace[0].y, 5.0f);
@@ -170,7 +170,7 @@ void TestFace::getClosestToNearVertexV0()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 0.0f);
   QCOMPARE(outFace[0].y, 0.0f);
@@ -189,7 +189,7 @@ void TestFace::getClosestToNearVertexV1()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 10.0f);
   QCOMPARE(outFace[0].y, 0.0f);
@@ -208,7 +208,7 @@ void TestFace::getClosestToNearVertexV2()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 0.0f);
   QCOMPARE(outFace[0].y, 10.0f);
@@ -227,7 +227,7 @@ void TestFace::getClosestToCoplanar()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 2.0f);
   QCOMPARE(outFace[0].y, 2.0f);
@@ -246,7 +246,7 @@ void TestFace::getClosestToDegenerate()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QVERIFY(std::isnan(outFace[0].x));
   QVERIFY(std::isnan(outFace[0].y));
@@ -265,7 +265,7 @@ void TestFace::getClosestToRadiusOffset()
   std::vector<cl_float4> outFace;
   std::vector<cl_float4> outParticle;
 
-  this->harness->runFaceGetClosestTo(faces, particles, outFace, outParticle);
+  this->harness->runFaceGetClosestToParticle(faces, particles, outFace, outParticle);
 
   QCOMPARE(outFace[0].x, 2.0f);
   QCOMPARE(outFace[0].y, 2.0f);

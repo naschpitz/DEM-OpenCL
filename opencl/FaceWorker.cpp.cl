@@ -10,7 +10,7 @@ void faceToParticleWorker_run(Face* thisFace, Particle* otherParticle, const Mat
 {
   float4 closestOnThisFace, closestOnOtherParticle;
 
-  face_getClosestTo(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle);
+  face_getClosestToParticle(thisFace, otherParticle, &closestOnThisFace, &closestOnOtherParticle);
 
   float4 distance = closestOnOtherParticle - closestOnThisFace;
   float4 distanceUnitary = vector_getUnitary(distance);

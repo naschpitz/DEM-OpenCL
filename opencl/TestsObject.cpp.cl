@@ -18,7 +18,7 @@ kernel void test_object_to_particle(global Face* faces, const uint numFaces, glo
     float4 closestFace;
     float4 closestParticle;
 
-    face_getClosestTo(&faces[f], particle, &closestFace, &closestParticle);
+    face_getClosestToParticle(&faces[f], particle, &closestFace, &closestParticle);
 
     float4 delta = particle->vertex.currentPosition - closestFace;
     float dist2 = dot(delta, delta);

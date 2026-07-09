@@ -108,8 +108,8 @@ void face_projectPoint(const Face* thisFace, float4 q, float4* closestOnThisFace
     (*closestOnThisFace) = p1 + u * edge_getDistance(&e1) + v * edge_getDistance(&e2);
 }
 
-void face_getClosestTo(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace,
-                       float4* closestOnOtherParticle)
+void face_getClosestToParticle(const Face* thisFace, const Particle* otherParticle, float4* closestOnThisFace,
+                               float4* closestOnOtherParticle)
 {
   float4 q = otherParticle->vertex.currentPosition;
 
