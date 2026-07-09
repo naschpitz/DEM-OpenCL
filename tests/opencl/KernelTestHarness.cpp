@@ -6,7 +6,7 @@
 
 namespace
 {
-  const std::string KERNEL_SOURCE_PATH = "../opencl/Tests.cpp.cl";
+  const std::string KERNEL_SOURCE_PATH = "../tests/opencl/Tests.cpp.cl";
   const std::string SIMULATION_SOURCE_PATH = "../opencl/Simulation.cpp.cl";
 
   const cl_float4 ZERO4 = {0.0f, 0.0f, 0.0f, 0.0f};
