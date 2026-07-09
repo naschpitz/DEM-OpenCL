@@ -42,13 +42,17 @@ void TestCalculateFaceToFace::hookeForce()
   MaterialCL mat = makeMaterialCL(1, 100.0f, 2.0f);
   MaterialsManagerCL mm = makeMaterialsManagerCL(mat);
 
-  this->harness->runCalculateFaceToFace(faces, mm, 0, 1, 1, 1);
+  this->harness->runCalculateFaceToFace(faces, mm);
 
   // Hooke's law: force = -k * distance, totalForce = k * distance
-  // distance = (0, 0, 1), k = 100 -> totalForce = (0, 0, 100)
+  // Face A: distance = (0, 0, 1), totalForce = (0, 0, 100)
+  // Face B: distance = (0, 0, -1), totalForce = (0, 0, -100)
   QCOMPARE(faces[0].currentForce.x, 0.0f);
   QCOMPARE(faces[0].currentForce.y, 0.0f);
   QCOMPARE(faces[0].currentForce.z, 100.0f);
+  QCOMPARE(faces[1].currentForce.x, 0.0f);
+  QCOMPARE(faces[1].currentForce.y, 0.0f);
+  QCOMPARE(faces[1].currentForce.z, -100.0f);
 }
 
 void TestCalculateFaceToFace::beyondThreshold()
@@ -70,12 +74,15 @@ void TestCalculateFaceToFace::beyondThreshold()
   MaterialCL mat = makeMaterialCL(1, 100.0f, 0.5f);
   MaterialsManagerCL mm = makeMaterialsManagerCL(mat);
 
-  this->harness->runCalculateFaceToFace(faces, mm, 0, 1, 1, 1);
+  this->harness->runCalculateFaceToFace(faces, mm);
 
-  // Distance 1.0 > threshold 0.5 -> no force
+  // Distance 1.0 > threshold 0.5 -> no force on either face
   QCOMPARE(faces[0].currentForce.x, 0.0f);
   QCOMPARE(faces[0].currentForce.y, 0.0f);
   QCOMPARE(faces[0].currentForce.z, 0.0f);
+  QCOMPARE(faces[1].currentForce.x, 0.0f);
+  QCOMPARE(faces[1].currentForce.y, 0.0f);
+  QCOMPARE(faces[1].currentForce.z, 0.0f);
 }
 
 void TestCalculateFaceToFace::overlapping()
@@ -92,40 +99,13 @@ void TestCalculateFaceToFace::overlapping()
   MaterialCL mat = makeMaterialCL(1, 100.0f, 2.0f);
   MaterialsManagerCL mm = makeMaterialsManagerCL(mat);
 
-  this->harness->runCalculateFaceToFace(faces, mm, 0, 1, 1, 1);
+  this->harness->runCalculateFaceToFace(faces, mm);
 
-  // Distance 0 -> force = -k * 0 = 0
+  // Distance 0 -> force = -k * 0 = 0 on both faces
   QCOMPARE(faces[0].currentForce.x, 0.0f);
   QCOMPARE(faces[0].currentForce.y, 0.0f);
   QCOMPARE(faces[0].currentForce.z, 0.0f);
-}
-
-void TestCalculateFaceToFace::swapped()
-{
-  cl_float4 v0 = {-5.0f, -5.0f, 0.0f, 0.0f};
-  cl_float4 v1 = {5.0f, -5.0f, 0.0f, 0.0f};
-  cl_float4 v2 = {5.0f, 5.0f, 0.0f, 0.0f};
-
-  FaceCL faceA = makeFaceCL(v0, v1, v2);
-
-  cl_float4 v3 = {-5.0f, -5.0f, 1.0f, 0.0f};
-  cl_float4 v4 = {5.0f, -5.0f, 1.0f, 0.0f};
-  cl_float4 v5 = {5.0f, 5.0f, 1.0f, 0.0f};
-
-  FaceCL faceB = makeFaceCL(v3, v4, v5);
-
-  std::vector<FaceCL> faces = {faceA, faceB};
-
-  MaterialCL mat = makeMaterialCL(1, 100.0f, 2.0f);
-  MaterialsManagerCL mm = makeMaterialsManagerCL(mat);
-
-  // Swap: thisFace = B (index 1), otherFace = A (index 0)
-  this->harness->runCalculateFaceToFace(faces, mm, 1, 1, 0, 1);
-
-  // distance = closestOnA - closestOnB = (0, 0, -1)
-  // force = -k * distance = -100 * (0, 0, -1) = (0, 0, 100)
-  // totalForce = -force = (0, 0, -100)
   QCOMPARE(faces[1].currentForce.x, 0.0f);
   QCOMPARE(faces[1].currentForce.y, 0.0f);
-  QCOMPARE(faces[1].currentForce.z, -100.0f);
+  QCOMPARE(faces[1].currentForce.z, 0.0f);
 }

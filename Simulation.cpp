@@ -5,7 +5,6 @@
 #include <QString>
 #include <QTextStream>
 #include <iostream>
-#include <string>
 
 #include <OCLW_Core.hpp>
 
@@ -403,38 +402,10 @@ void Simulation::run()
   }
 
   // Face-to-face contact between solid objects
-  const QVector<SolidObject>& solidObjects = this->scenery.getObjectsManager().getSolidObjects();
-
-  if (solidObjects.size() >= 2) {
-    QVector<uint> faceStarts;
-    QVector<uint> faceCounts;
-    uint cumFaces = 0;
-
-    for (const SolidObject& solidObject : solidObjects) {
-      faceStarts.push_back(cumFaces);
-      uint numObjFaces = static_cast<uint>(solidObject.getFaces().size());
-      faceCounts.push_back(numObjFaces);
-      cumFaces += numObjFaces;
-    }
-
-    for (int i = 0; i < solidObjects.size(); i++) {
-      for (int j = i + 1; j < solidObjects.size(); j++) {
-        std::string id = "ftf_" + std::to_string(i) + "_" + std::to_string(j);
-
-        cl_uint startA = faceStarts[i];
-        cl_uint countA = faceCounts[i];
-        cl_uint startB = faceStarts[j];
-        cl_uint countB = faceCounts[j];
-
-        openClCore.addKernel(id, "calculate_face_to_face", countA);
-        openClCore.addArgument<FaceCL>(id, facesCL);
-        openClCore.addArgument<MaterialsManagerCL>(id, materialsManagerCL);
-        openClCore.addArgument<cl_uint>(id, startA);
-        openClCore.addArgument<cl_uint>(id, countA);
-        openClCore.addArgument<cl_uint>(id, startB);
-        openClCore.addArgument<cl_uint>(id, countB);
-      }
-    }
+  if (hasFaces) {
+    openClCore.addKernel("calculate_face_to_face", facesCL.size());
+    openClCore.addArgument<FaceCL>("calculate_face_to_face", facesCL);
+    openClCore.addArgument<MaterialsManagerCL>("calculate_face_to_face", materialsManagerCL);
   }
 
   if (hasParticles) {

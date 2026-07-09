@@ -194,21 +194,16 @@ void KernelTestHarness::runObjectToParticle(const std::vector<FaceCL>& faces, co
   this->core->readBuffer<cl_float4>("obj_out_particle", outParticle, 0);
 }
 
-void KernelTestHarness::runCalculateFaceToFace(std::vector<FaceCL>& faces, const MaterialsManagerCL& materialsManager,
-                                               cl_uint startA, cl_uint countA, cl_uint startB, cl_uint countB)
+void KernelTestHarness::runCalculateFaceToFace(std::vector<FaceCL>& faces, const MaterialsManagerCL& materialsManager)
 {
   std::vector<MaterialsManagerCL> mmVec = {materialsManager};
 
   this->core->writeBuffer<FaceCL>("ftf_faces", faces, 0);
   this->core->writeBuffer<MaterialsManagerCL>("ftf_mm", mmVec, 0);
 
-  this->core->addKernel("calculate_face_to_face", countA);
+  this->core->addKernel("calculate_face_to_face", faces.size());
   this->core->addArgument<FaceCL>("calculate_face_to_face", "ftf_faces");
   this->core->addArgument<MaterialsManagerCL>("calculate_face_to_face", "ftf_mm");
-  this->core->addArgument<cl_uint>("calculate_face_to_face", startA);
-  this->core->addArgument<cl_uint>("calculate_face_to_face", countA);
-  this->core->addArgument<cl_uint>("calculate_face_to_face", startB);
-  this->core->addArgument<cl_uint>("calculate_face_to_face", countB);
 
   this->core->run();
   this->core->clearKernels();

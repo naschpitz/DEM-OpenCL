@@ -227,19 +227,19 @@ kernel void calculate_face_to_particle(global Face* faces, global Particle* part
   faces[idx] = thisFace;
 }
 
-kernel void calculate_face_to_face(global Face* faces, constant MaterialsManager* ptrMaterialsManager,
-                                   const uint startA, const uint countA, const uint startB, const uint countB)
+kernel void calculate_face_to_face(global Face* faces, constant MaterialsManager* ptrMaterialsManager)
 {
-  size_t i = get_global_id(0);
+  size_t idx = get_global_id(0);
+  size_t numFaces = get_global_size(0);
 
-  if (i >= countA)
-    return;
-
-  Face thisFace = faces[startA + i];
+  Face thisFace = faces[idx];
   MaterialsManager materialsManager = ptrMaterialsManager[0];
 
-  for (uint f = 0; f < countB; f++) {
-    Face otherFace = faces[startB + f];
+  for (ulong i = 0; i < numFaces; i++) {
+    if (i == idx)
+      continue;
+
+    Face otherFace = faces[i];
 
     int thisMaterialIndex = thisFace.materialIndex;
     int otherMaterialIndex = otherFace.materialIndex;
@@ -249,7 +249,7 @@ kernel void calculate_face_to_face(global Face* faces, constant MaterialsManager
     faceToFaceWorker_run(&thisFace, &otherFace, material);
   }
 
-  faces[startA + i] = thisFace;
+  faces[idx] = thisFace;
 }
 
 kernel void apply_particles_gravity(global Particle* particles, constant Scenery* ptrScenery)

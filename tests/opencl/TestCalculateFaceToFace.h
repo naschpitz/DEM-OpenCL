@@ -21,7 +21,6 @@ class TestCalculateFaceToFace : public QObject
     void hookeForce();
     void beyondThreshold();
     void overlapping();
-    void swapped();
 };
 
 #endif // TESTCALCULATEFACETOFACE_H
