@@ -40,6 +40,17 @@ void neighborhood_addParticleToFaceNeighborhood(Face* thisFace, const Particle* 
   thisFace->neighborhood.particles[numParticles - 1] = otherParticle->index;
 }
 
+void neighborhood_addFaceToFaceNeighborhood(Face* thisFace, const Face* otherFace, global Error* error)
+{
+  if (thisFace->neighborhood.numFaces == MAX_FACES_TO_FACES) {
+    error->errorCode = ERROR_MAX_FACES_TO_FACES;
+    return;
+  }
+
+  uint numFaces = ++thisFace->neighborhood.numFaces;
+  thisFace->neighborhood.faces[numFaces - 1] = otherFace->index;
+}
+
 void neighborhood_resetParticleNeighborhood(Particle* thisParticle)
 {
   thisParticle->neighborhood.numParticles = 0;
@@ -49,6 +60,7 @@ void neighborhood_resetParticleNeighborhood(Particle* thisParticle)
 void neighborhood_resetFaceNeighborhood(Face* thisFace)
 {
   thisFace->neighborhood.numParticles = 0;
+  thisFace->neighborhood.numFaces = 0;
 }
 
 #endif // NEIGHBORHOOD_CPP_CL

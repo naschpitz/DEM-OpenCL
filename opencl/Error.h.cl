@@ -6,6 +6,7 @@
 #define ERROR_MAX_PARTICLES_TO_PARTICLES 1
 #define ERROR_MAX_FACES_TO_PARTICLES 2
 #define ERROR_MAX_PARTICLES_TO_FACES 3
+#define ERROR_MAX_FACES_TO_FACES 4
 
 typedef struct {
     uint errorCode;

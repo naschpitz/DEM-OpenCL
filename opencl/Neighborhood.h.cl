@@ -5,6 +5,7 @@
 #define MAX_FACES_TO_PARTICLES 512
 
 #define MAX_PARTICLES_TO_FACES 1024
+#define MAX_FACES_TO_FACES 512
 
 typedef struct {
     uint numParticles;
@@ -16,8 +17,10 @@ typedef struct {
 
 typedef struct {
     uint numParticles;
+    uint numFaces;
 
     uint particles[MAX_PARTICLES_TO_FACES];
+    uint faces[MAX_FACES_TO_FACES];
 } FaceNeighborhood;
 
 #endif // NEIGHBORHOOD_H_CL

@@ -153,6 +153,23 @@ kernel void calculate_faces_neighborhood(global Face* faces, global Particle* pa
     neighborhood_addParticleToFaceNeighborhood(&thisFace, &otherParticle, error);
   }
 
+  for (ulong i = 0; i < scenery.numFaces; i++) {
+    Face otherFace = faces[i];
+
+    if (thisFace.index == otherFace.index)
+      continue;
+
+    int thisMaterialIndex = thisFace.materialIndex;
+    int otherMaterialIndex = otherFace.materialIndex;
+
+    const Material* material = materialsManager_getMaterial(thisMaterialIndex, otherMaterialIndex, &materialsManager);
+
+    if (!testBox_faceToFace(&thisFace, &otherFace, material->distanceThreshold * simulation.neighDistThresMult))
+      continue;
+
+    neighborhood_addFaceToFaceNeighborhood(&thisFace, &otherFace, error);
+  }
+
   faces[idx] = thisFace;
 }
 
